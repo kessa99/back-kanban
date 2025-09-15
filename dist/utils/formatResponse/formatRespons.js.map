@@ -1,0 +1,1 @@
+{"version":3,"file":"formatRespons.js","sourceRoot":"","sources":["../../../src/utils/formatResponse/formatRespons.ts"],"names":[],"mappings":";;;AAaO,MAAM,cAAc,GAAG,CAAC,GAAa,EAAE,UAAkB,EAAE,MAAc,EAAE,OAAe,EAAE,OAAY,EAAE,EAAE;IACjH,OAAO,GAAG,CAAC,MAAM,CAAC,UAAU,CAAC,CAAC,IAAI,CAAC;QACjC,MAAM;QACN,OAAO;QACP,OAAO;KACR,CAAC,CAAC;AACL,CAAC,CAAC;AANW,QAAA,cAAc,kBAMzB"}
