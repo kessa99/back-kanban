@@ -79,7 +79,7 @@ docker-compose ps
 
 # Vérifier la santé de l'application
 print_status "Vérification de la santé de l'application..."
-if curl -f http://localhost:3000/health &> /dev/null; then
+if curl -f http://localhost:3000/auth/health &> /dev/null; then
     print_success "L'application est en cours d'exécution et répond aux health checks! "
 else
     print_warning "L'application ne répond pas encore aux health checks. Vérifiez les logs."

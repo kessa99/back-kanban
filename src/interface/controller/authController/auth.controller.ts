@@ -12,6 +12,8 @@ export class AuthController {
     health() {
         return { status: 'ok' };
     }
+
+    
     @Post('register')
     async register(
         @Body() user: { name: string, email: string, password: string },

@@ -42,12 +42,17 @@ RUN npm install --only=production --legacy-peer-deps && npm cache clean --force
 # Switch to non-root user
 USER nestjs
 
+# Commande pour démarrer NestJS
+CMD ["node", "dist/main.js"]
+
 # Expose port
 EXPOSE 3000
 
-# Health check
+
+# Commande pour vérifier que l'app répond
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/auth/health || exit 1
+CMD curl -f http://localhost:3000/auth/health || exit 1
+
 
 # Start the application
 CMD ["npm", "run", "start:prod"]
