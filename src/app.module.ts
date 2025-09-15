@@ -19,6 +19,7 @@ import { UsersModule } from 'src/config/module/users.module';
 import { TeamModule } from 'src/config/module/team.module';
 import { FirebaseModule } from 'src/config/module/firebase.module';
 import { BoardModule } from 'src/config/module/boards.module';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { BoardModule } from 'src/config/module/boards.module';
     TeamModule, // Team management operations
     BoardModule, // Board management operations
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [],
 })
 export class AppModule {}

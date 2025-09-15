@@ -14,6 +14,7 @@ const users_module_1 = require("src/config/module/users.module");
 const team_module_1 = require("src/config/module/team.module");
 const firebase_module_1 = require("src/config/module/firebase.module");
 const boards_module_1 = require("src/config/module/boards.module");
+const health_controller_1 = require("./health.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,7 +28,7 @@ exports.AppModule = AppModule = __decorate([
             team_module_1.TeamModule,
             boards_module_1.BoardModule,
         ],
-        controllers: [],
+        controllers: [health_controller_1.HealthController],
         providers: [],
     })
 ], AppModule);
