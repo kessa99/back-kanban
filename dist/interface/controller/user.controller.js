@@ -17,11 +17,20 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("src/interface/service/user.service");
 const formatRespons_1 = require("src/utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
+const constance_role_1 = require("src/utils/constance/constance.role");
 const passport_1 = require("@nestjs/passport");
 let UserController = class UserController {
     constructor(userService, jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;
+    }
+    getHealth() {
+        return {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            environment: process.env.NODE_ENV || 'development'
+        };
     }
     async createUser(body, req, res) {
         try {
@@ -39,57 +48,74 @@ let UserController = class UserController {
             return (0, formatRespons_1.formatResponse)(res, 400, "failed", "User creation failed", error);
         }
     }
-    async getUserById(id, res) {
+    async findAllUsers(req, res) {
         try {
-            const user = await this.userService.findUserById(id);
-            return (0, formatRespons_1.formatResponse)(res, 200, "success", "User found successfully", user);
-        }
-        catch (error) {
-            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "User not found", error);
-        }
-    }
-    async updateUser(id, body, res) {
-        try {
-            const user = await this.userService.updateUser(id, body.name, body.email, body.password);
-            return (0, formatRespons_1.formatResponse)(res, 200, "success", "User updated successfully", user);
-        }
-        catch (error) {
-            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "User update failed", error);
-        }
-    }
-    async getUsers(req, res) {
-        try {
-            console.log('Request user for getUsers:', req.user);
-            console.log('User ID from token:', req.user?.id);
             const createdBy = req.user?.id;
             if (!createdBy) {
                 return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
             }
             const users = await this.userService.findUsersByCreatedBy(createdBy);
-            console.log('Found users:', users.length);
-            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Users found successfully", users);
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Users retrieved successfully", users);
         }
         catch (error) {
-            console.error('Get users error:', error);
-            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Users not found", error);
+            console.error('Find all users error:', error);
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to retrieve users", error);
         }
     }
-    async deleteUser(id, res) {
+    async findOneUser(id, req, res) {
         try {
+            const createdBy = req.user?.id;
+            if (!createdBy) {
+                return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
+            }
+            const user = await this.userService.findById(id);
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "User retrieved successfully", user);
+        }
+        catch (error) {
+            console.error('Find one user error:', error);
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to retrieve user", error);
+        }
+    }
+    async updateUser(id, updateUserDto, req, res) {
+        try {
+            const createdBy = req.user?.id;
+            if (!createdBy) {
+                return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
+            }
+            const user = await this.userService.updateUser(id, updateUserDto.name || '', updateUserDto.email || '', updateUserDto.password || '');
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "User updated successfully", user);
+        }
+        catch (error) {
+            console.error('Update user error:', error);
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to update user", error);
+        }
+    }
+    async removeUser(id, req, res) {
+        try {
+            const createdBy = req.user?.id;
+            if (!createdBy) {
+                return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
+            }
             await this.userService.deleteUser(id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "User deleted successfully", null);
         }
         catch (error) {
-            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "User deletion failed", error);
+            console.error('Remove user error:', error);
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to delete user", error);
         }
     }
-    async inviteUser(body, res) {
+    async inviteUser(inviteData, req, res) {
         try {
-            const user = await this.userService.inviteUser(body.teamId, body.inviteData, body.ownerId, body.role);
-            return (0, formatRespons_1.formatResponse)(res, 200, "success", "User invited successfully", user);
+            const createdBy = req.user?.id;
+            if (!createdBy) {
+                return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
+            }
+            const result = await this.userService.inviteUser(inviteData.teamId, { email: inviteData.email }, createdBy, constance_role_1.Role.MEMBER);
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Invitation sent successfully", result);
         }
         catch (error) {
-            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "User invitation failed", error);
+            console.error('Invite user error:', error);
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to send invitation", error);
         }
     }
     async verifyInvite(token, userData, res) {
@@ -104,6 +130,12 @@ let UserController = class UserController {
 };
 exports.UserController = UserController;
 __decorate([
+    (0, common_1.Get)('health'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "getHealth", null);
+__decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Request)()),
@@ -113,44 +145,48 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "createUser", null);
 __decorate([
-    (0, common_1.Get)(":id"),
-    __param(0, (0, common_1.Param)("id")),
-    __param(1, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "getUserById", null);
-__decorate([
-    (0, common_1.Put)(":id"),
-    __param(0, (0, common_1.Param)("id")),
-    __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "updateUser", null);
-__decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "getUsers", null);
+], UserController.prototype, "findAllUsers", null);
 __decorate([
-    (0, common_1.Delete)(":id"),
-    __param(0, (0, common_1.Param)("id")),
-    __param(1, (0, common_1.Res)()),
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "deleteUser", null);
+], UserController.prototype, "findOneUser", null);
 __decorate([
-    (0, common_1.Post)("invite"),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)()),
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [String, Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateUser", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "removeUser", null);
+__decorate([
+    (0, common_1.Post)('invite'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "inviteUser", null);
 __decorate([

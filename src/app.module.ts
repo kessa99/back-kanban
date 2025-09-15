@@ -13,13 +13,12 @@
  */
 
 import { Module } from '@nestjs/common';
-import { ConfigModule } from 'src/config/module/config.module';
-import { AuthModule } from 'src/config/module/auth.module';
-import { UsersModule } from 'src/config/module/users.module';
-import { TeamModule } from 'src/config/module/team.module';
-import { FirebaseModule } from 'src/config/module/firebase.module';
-import { BoardModule } from 'src/config/module/boards.module';
-import { HealthController } from './health.controller';
+import { ConfigModule } from './config/module/config.module';
+import { AuthModule } from './config/module/auth.module';
+import { UsersModule } from './config/module/users.module';
+import { TeamModule } from './config/module/team.module';
+import { FirebaseModule } from './config/module/firebase.module';
+import { BoardModule } from './config/module/boards.module';
 
 @Module({
   imports: [
@@ -30,7 +29,7 @@ import { HealthController } from './health.controller';
     TeamModule, // Team management operations
     BoardModule, // Board management operations
   ],
-  controllers: [HealthController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}

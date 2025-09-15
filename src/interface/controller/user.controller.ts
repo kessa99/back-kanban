@@ -22,6 +22,16 @@ export class UserController {
     private readonly jwtService: JwtService
   ) {}
 
+  @Get('health')
+  getHealth() {
+    return {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      environment: process.env.NODE_ENV || 'development'
+    };
+  }
+
   @Post()
   async createUser(
     @Body() body: { name: string, email: string, password: string },
@@ -48,43 +58,9 @@ export class UserController {
     }
   }
 
-  @Get(":id")
-  async getUserById(
-    @Param("id") id: string,
-    @Res() res: Response
-  ) {
-    try {
-      const user = await this.userService.findUserById(id);
-      return formatResponse(res, 200, "success", "User found successfully", user);
-    } catch (error) {
-      return formatResponse(res, 400, "failed", "User not found", error);
-    }
-  }
-
-  @Put(":id")
-  async updateUser(
-    @Param("id") id: string,
-    @Body() body: { name: string, email: string, password: string },
-    @Res() res: Response
-  ) {
-    try {
-      const user = await this.userService.updateUser(id, body.name, body.email, body.password);
-      return formatResponse(res, 200, "success", "User updated successfully", user);
-    } catch (error) {
-      return formatResponse(res, 400, "failed", "User update failed", error);
-    }
-  }
-
   @Get()
-  async getUsers(
-    @Request() req: any,
-    @Res() res: Response
-  ) {
+  async findAllUsers(@Request() req: any, @Res() res: Response) {
     try {
-      // Debug: Vérifier le contenu du token
-      console.log('Request user for getUsers:', req.user);
-      console.log('User ID from token:', req.user?.id);
-      
       const createdBy = req.user?.id;
       
       if (!createdBy) {
@@ -92,37 +68,78 @@ export class UserController {
       }
       
       const users = await this.userService.findUsersByCreatedBy(createdBy);
-      console.log('Found users:', users.length);
-      return formatResponse(res, 200, "success", "Users found successfully", users);
+      return formatResponse(res, 200, "success", "Users retrieved successfully", users);
     } catch (error) {
-      console.error('Get users error:', error);
-      return formatResponse(res, 400, "failed", "Users not found", error);
+      console.error('Find all users error:', error);
+      return formatResponse(res, 400, "failed", "Failed to retrieve users", error);
     }
   }
 
-  @Delete(":id")
-  async deleteUser(
-    @Param("id") id: string,
-    @Res() res: Response
-  ) {
+  @Get(':id')
+  async findOneUser(@Param('id') id: string, @Request() req: any, @Res() res: Response) {
     try {
+      const createdBy = req.user?.id;
+      
+      if (!createdBy) {
+        return formatResponse(res, 401, "failed", "User not authenticated", null);
+      }
+      
+      const user = await this.userService.findById(id);
+      return formatResponse(res, 200, "success", "User retrieved successfully", user);
+    } catch (error) {
+      console.error('Find one user error:', error);
+      return formatResponse(res, 400, "failed", "Failed to retrieve user", error);
+    }
+  }
+
+  @Patch(':id')
+  async updateUser(@Param('id') id: string, @Body() updateUserDto: { name?: string, email?: string, password?: string }, @Request() req: any, @Res() res: Response) {
+    try {
+      const createdBy = req.user?.id;
+      
+      if (!createdBy) {
+        return formatResponse(res, 401, "failed", "User not authenticated", null);
+      }
+      
+      const user = await this.userService.updateUser(id, updateUserDto.name || '', updateUserDto.email || '', updateUserDto.password || '');
+      return formatResponse(res, 200, "success", "User updated successfully", user);
+    } catch (error) {
+      console.error('Update user error:', error);
+      return formatResponse(res, 400, "failed", "Failed to update user", error);
+    }
+  }
+
+  @Delete(':id')
+  async removeUser(@Param('id') id: string, @Request() req: any, @Res() res: Response) {
+    try {
+      const createdBy = req.user?.id;
+      
+      if (!createdBy) {
+        return formatResponse(res, 401, "failed", "User not authenticated", null);
+      }
+      
       await this.userService.deleteUser(id);
       return formatResponse(res, 200, "success", "User deleted successfully", null);
     } catch (error) {
-      return formatResponse(res, 400, "failed", "User deletion failed", error);
+      console.error('Remove user error:', error);
+      return formatResponse(res, 400, "failed", "Failed to delete user", error);
     }
   }
 
-  @Post("invite")
-  async inviteUser(
-    @Body() body: { teamId: string, inviteData: { email: string }, ownerId: string, role: string },
-    @Res() res: Response
-  ) {
+  @Post('invite')
+  async inviteUser(@Body() inviteData: { email: string, teamId: string }, @Request() req: any, @Res() res: Response) {
     try {
-      const user = await this.userService.inviteUser(body.teamId, body.inviteData, body.ownerId, body.role);
-      return formatResponse(res, 200, "success", "User invited successfully", user);
+      const createdBy = req.user?.id;
+      
+      if (!createdBy) {
+        return formatResponse(res, 401, "failed", "User not authenticated", null);
+      }
+      
+      const result = await this.userService.inviteUser(inviteData.teamId, { email: inviteData.email }, createdBy, Role.MEMBER);
+      return formatResponse(res, 200, "success", "Invitation sent successfully", result);
     } catch (error) {
-      return formatResponse(res, 400, "failed", "User invitation failed", error);
+      console.error('Invite user error:', error);
+      return formatResponse(res, 400, "failed", "Failed to send invitation", error);
     }
   }
 
