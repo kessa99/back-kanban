@@ -5,12 +5,6 @@ export declare class UserController {
     private readonly userService;
     private readonly jwtService;
     constructor(userService: UserService, jwtService: JwtService);
-    getHealth(): {
-        status: string;
-        timestamp: string;
-        uptime: number;
-        environment: string;
-    };
     createUser(body: {
         name: string;
         email: string;

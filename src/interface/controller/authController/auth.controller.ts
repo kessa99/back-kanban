@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Res, Get } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from 'src/interface/service/auth.service';
 import { UserEntity } from 'src/domain/entities/userTeam/userTeam.user.entity';
@@ -8,7 +8,15 @@ import { Role } from 'src/utils/constance/constance.role';
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
-
+    @Get('health')
+    getHealth() {
+      return {
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development'
+      };
+    }
     @Post('register')
     async register(
         @Body() user: { name: string, email: string, password: string },

@@ -24,14 +24,6 @@ let UserController = class UserController {
         this.userService = userService;
         this.jwtService = jwtService;
     }
-    getHealth() {
-        return {
-            status: 'ok',
-            timestamp: new Date().toISOString(),
-            uptime: process.uptime(),
-            environment: process.env.NODE_ENV || 'development'
-        };
-    }
     async createUser(body, req, res) {
         try {
             console.log('Request user:', req.user);
@@ -129,12 +121,6 @@ let UserController = class UserController {
     }
 };
 exports.UserController = UserController;
-__decorate([
-    (0, common_1.Get)('health'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserController.prototype, "getHealth", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

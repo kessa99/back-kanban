@@ -3,6 +3,12 @@ import { AuthService } from 'src/interface/service/auth.service';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
+    getHealth(): {
+        status: string;
+        timestamp: string;
+        uptime: number;
+        environment: string;
+    };
     register(user: {
         name: string;
         email: string;
