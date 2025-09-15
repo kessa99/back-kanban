@@ -1,0 +1,297 @@
+# API ENDPOINTS DOCUMENTATION
+# TaskFlow Backend - NestJS Application
+# Generated on: $(date)
+
+## BASE URL
+http://localhost:3000 (or process.env.PORT)
+
+## AUTHENTICATION
+Most endpoints require JWT authentication via Bearer token in Authorization header.
+Protected endpoints are marked with @UseGuards(AuthGuard('jwt'))
+
+================================================================================
+## AUTHENTICATION ENDPOINTS (/auth)
+================================================================================
+
+POST /auth/register
+# Description: Register a new user account
+# Body: { name: string, email: string, password: string }
+# Response: User object with success/failure status
+# Authentication: None (public endpoint)
+
+POST /auth/verify-otp
+# Description: Verify OTP code sent to user's email during registration
+# Body: { email: string, otp: string }
+# Response: Verification status
+# Authentication: None (public endpoint)
+
+POST /auth/resend-otp
+# Description: Resend OTP code to user's email
+# Body: { email: string }
+# Response: New OTP sent confirmation
+# Authentication: None (public endpoint)
+
+POST /auth/login
+# Description: Authenticate user and return JWT token
+# Body: { email: string, password: string }
+# Response: JWT token for authenticated requests
+# Authentication: None (public endpoint)
+
+POST /auth/logout
+# Description: Logout user (client-side token invalidation)
+# Body: None
+# Response: Logout confirmation
+# Authentication: None (public endpoint)
+
+================================================================================
+## USER MANAGEMENT ENDPOINTS (/users)
+================================================================================
+
+POST /users
+# Description: Create a new user account
+# Body: { name: string, email: string, password: string }
+# Response: Created user object
+# Authentication: None (public endpoint)
+
+GET /users/:id
+# Description: Get user information by user ID
+# Params: id (string) - User ID
+# Response: User object
+# Authentication: None (public endpoint)
+
+PUT /users/:id
+# Description: Update user information
+# Params: id (string) - User ID
+# Body: { name: string, email: string, password: string }
+# Response: Updated user object
+# Authentication: None (public endpoint)
+
+GET /users
+# Description: Get all users
+# Response: Array of user objects
+# Authentication: None (public endpoint)
+
+DELETE /users/:id
+# Description: Delete user account
+# Params: id (string) - User ID
+# Response: Deletion confirmation
+# Authentication: None (public endpoint)
+
+POST /users/invite
+# Description: Send invitation to join a team
+# Body: { teamId: string, inviteData: { email: string }, ownerId: string, role: string }
+# Response: Invitation sent confirmation
+# Authentication: None (public endpoint)
+
+POST /users/verify-invite
+# Description: Verify and accept team invitation
+# Body: { token: string, userData: { name: string, password: string } }
+# Response: User account created and added to team
+# Authentication: None (public endpoint)
+
+================================================================================
+## TEAM MANAGEMENT ENDPOINTS (/teams)
+================================================================================
+# All team endpoints require JWT authentication and email verification
+
+POST /teams/create
+# Description: Create a new team
+# Body: CreateTeamDto (team name, description, etc.)
+# Response: Created team object
+# Authentication: JWT required, email verification required
+
+GET /teams
+# Description: Get all teams where user is owner
+# Response: Array of team objects
+# Authentication: JWT required, email verification required
+
+GET /teams/:id
+# Description: Get specific team by ID
+# Params: id (string) - Team ID
+# Response: Team object with members
+# Authentication: JWT required, email verification required
+
+PUT /teams/:id
+# Description: Update team information
+# Params: id (string) - Team ID
+# Body: UpdateTeamDto (team name, description, etc.)
+# Response: Updated team object
+# Authentication: JWT required, email verification required
+
+DELETE /teams/:id
+# Description: Delete team
+# Params: id (string) - Team ID
+# Response: Deletion confirmation
+# Authentication: JWT required, email verification required
+
+POST /teams/:id/members
+# Description: Add member to team
+# Params: id (string) - Team ID
+# Body: { memberId: string }
+# Response: Updated team object with new member
+# Authentication: JWT required, email verification required
+
+DELETE /teams/:id/members/:memberId
+# Description: Remove member from team
+# Params: id (string) - Team ID, memberId (string) - Member ID
+# Response: Updated team object without removed member
+# Authentication: JWT required, email verification required
+
+GET /teams/:id/members
+# Description: Get all team members
+# Params: id (string) - Team ID
+# Response: Array of team member objects
+# Authentication: JWT required, email verification required
+
+PUT /teams/:id/members/:memberId
+# Description: Change member role in team
+# Params: id (string) - Team ID, memberId (string) - Member ID
+# Response: Updated team object with changed member role
+# Authentication: JWT required, email verification required
+
+================================================================================
+## BOARD MANAGEMENT ENDPOINTS (/boards)
+================================================================================
+# All board endpoints require JWT authentication
+
+GET /boards
+# Description: Get all boards for user's team
+# Query: teamId (optional) - Team ID
+# Response: Array of board objects
+# Authentication: JWT required
+
+POST /boards
+# Description: Create a new kanban board
+# Body: CreateBoardDto (board name, description, etc.)
+# Response: Created board object
+# Authentication: JWT required
+
+GET /boards/:id
+# Description: Get specific board by ID
+# Params: id (string) - Board ID
+# Response: Board object with columns and tasks
+# Authentication: JWT required
+
+PATCH /boards/:id
+# Description: Update board information
+# Params: id (string) - Board ID
+# Body: UpdateBoardDto (board name, description, etc.)
+# Response: Updated board object
+# Authentication: JWT required
+
+DELETE /boards/:id
+# Description: Delete board
+# Params: id (string) - Board ID
+# Response: Deletion confirmation
+# Authentication: JWT required
+
+GET /boards/:boardId/columns
+# Description: Get all columns for a specific board
+# Params: boardId (string) - Board ID
+# Response: Array of column objects
+# Authentication: JWT required, email verification required
+
+================================================================================
+## TASK MANAGEMENT ENDPOINTS (/boards/:boardId/tasks)
+================================================================================
+
+POST /boards/:boardId/tasks
+# Description: Create a new task in a board
+# Params: boardId (string) - Board ID
+# Body: { title: string, description: string, columnId: string }
+# Response: Created task object
+# Authentication: JWT required, email verification required
+
+PATCH /boards/:boardId/tasks/:taskId/move
+# Description: Move task to different column
+# Params: boardId (string) - Board ID, taskId (string) - Task ID
+# Body: { newColumnId: string }
+# Response: Updated task object
+# Authentication: JWT required
+
+================================================================================
+## COMMENT MANAGEMENT ENDPOINTS (/boards/:boardId/tasks/:taskId/comments)
+================================================================================
+
+POST /boards/:boardId/tasks/:taskId/comments
+# Description: Add comment to a task
+# Params: boardId (string) - Board ID, taskId (string) - Task ID
+# Body: { content: string }
+# Response: Created comment object
+# Authentication: JWT required
+
+================================================================================
+## FILE MANAGEMENT ENDPOINTS (/boards/:boardId/tasks/:taskId/files)
+================================================================================
+
+POST /boards/:boardId/tasks/:taskId/files
+# Description: Upload file attachment to a task
+# Params: boardId (string) - Board ID, taskId (string) - Task ID
+# Body: File data
+# Response: Created file object
+# Authentication: JWT required
+
+================================================================================
+## TASK VIEW TRACKING ENDPOINTS (/boards/:boardId/tasks/:taskId/views)
+================================================================================
+
+POST /boards/:boardId/tasks/:taskId/views
+# Description: Record that user viewed a task
+# Params: boardId (string) - Board ID, taskId (string) - Task ID
+# Response: View record object
+# Authentication: JWT required
+
+GET /boards/views
+# Description: Get all task views for authenticated user
+# Response: Array of task view objects
+# Authentication: JWT required
+
+================================================================================
+## RESPONSE FORMAT
+================================================================================
+All endpoints return responses in the following format:
+{
+  "status": "success" | "failed",
+  "message": "Description of the operation result",
+  "data": object | array | null,
+  "error": object | null (only on failure)
+}
+
+## ERROR HANDLING
+- 200: Success
+- 201: Created
+- 400: Bad Request / Validation Error
+- 401: Unauthorized (invalid/missing JWT)
+- 403: Forbidden (insufficient permissions)
+- 404: Not Found
+- 500: Internal Server Error
+
+## AUTHENTICATION NOTES
+- JWT tokens should be included in Authorization header as "Bearer <token>"
+- Email verification is required for most team and board operations
+- Some endpoints are public (auth, user creation) and don't require authentication
+
+## RATE LIMITING
+- No explicit rate limiting implemented
+- Consider implementing rate limiting for production use
+
+## CORS
+- CORS should be configured for frontend domain
+- Consider implementing proper CORS policies for production
+
+================================================================================
+## ENDPOINT SUMMARY
+================================================================================
+Total Endpoints: 25
+
+Authentication Endpoints: 5
+User Management Endpoints: 7
+Team Management Endpoints: 8
+Board Management Endpoints: 5
+Task Management Endpoints: 2
+Comment Management Endpoints: 1
+File Management Endpoints: 1
+View Tracking Endpoints: 2
+
+Protected Endpoints: 20 (require JWT)
+Public Endpoints: 5 (auth and user creation) 
