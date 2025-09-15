@@ -9,13 +9,8 @@ import { Role } from 'src/utils/constance/constance.role';
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
     @Get('health')
-    getHealth() {
-      return {
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development'
-      };
+    health() {
+        return { status: 'ok' };
     }
     @Post('register')
     async register(
