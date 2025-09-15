@@ -12,6 +12,8 @@ import { Role } from "../../utils/constance/constance.role";
 import { FirebaseTeamRepository } from "../../infrastructure/repositories/firebase-team.repository";
 import { JwtService } from '@nestjs/jwt';
 import { sendOTPEmail } from "../../utils/mailer/invitMail";
+import { RegisterUserDto } from "../../utils/dto/users/register.dto";
+import * as firebaseAdmin from 'firebase-admin';
 
 @Injectable()
 export class UserService {
@@ -21,6 +23,22 @@ export class UserService {
     private readonly jwtService: JwtService
   ) {}
 
+  async registerUser(registerUser: RegisterUserDto) {
+    console.log(registerUser);
+    try {
+      const userRecord = await firebaseAdmin.auth().createUser({
+        displayName: registerUser.name,
+        email: registerUser.email,
+        password: registerUser.password,        
+      });
+      console.log('User Record:', userRecord);
+      return userRecord;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw new Error('User registration failed'); // Handle errors gracefully
+    }
+  }
+  
   async createUser(name: string, email: string, password: string, createdBy: string): Promise<UserEntity> {
     console.log('Creating user with createdBy:', createdBy); // Debug log
     
@@ -34,7 +52,7 @@ export class UserService {
         email,
         password,
         role: Role.MEMBER,
-        createdBy: createdBy, // S'assurer que createdBy est bien passé
+        createdBy: createdBy,
         teamId: '',
         otp: '',
         otpExpiresAt: new Date(),

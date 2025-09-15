@@ -1,15 +1,33 @@
-import { Controller, Post, Body, UseGuards, Request, Res, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Res, Get, ValidationPipe, UsePipes } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from '../../../interface/service/auth.service';
 import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
 import { formatResponse } from '../../../utils/formatResponse/formatRespons';
 import { Role } from '../../../utils/constance/constance.role';
+import { RegisterUserDto } from '../../../utils/dto/users/register.dto';
+import { UserService } from '../../service/user.service';
+import { LoginDto } from '../../../utils/dto/users/login.dta';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly userService: UserService
+    ) {}
 
+    @Post('register-firebase')
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async registerUser(@Body() registerUserDTo: RegisterUserDto, @Res() res: Response) {
+      const newUser = await this.userService.registerUser(registerUserDTo);
+      return formatResponse(res, 200, 'success', 'User registered successfully', newUser);
+    }
     
+    @Post('login-firebase')
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async loginFirebase(@Body() loginDto: LoginDto, @Res() res: Response) {
+      const token = await this.authService.loginUser(loginDto);
+      return formatResponse(res, 200, 'success', 'User logged in successfully', token);
+    }
     @Post('register')
     async register(
         @Body() user: { name: string, email: string, password: string },

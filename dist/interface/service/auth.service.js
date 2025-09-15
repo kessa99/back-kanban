@@ -41,6 +41,9 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -50,11 +53,51 @@ const userTeam_user_entity_1 = require("../../domain/entities/userTeam/userTeam.
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
 const constance_role_1 = require("../../utils/constance/constance.role");
 const otpMailer_1 = require("../../utils/mailer/otpMailer");
+const axios_1 = __importDefault(require("axios"));
 let AuthService = class AuthService {
     constructor(jwtService, userRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.otpStore = new Map();
+    }
+    async loginUser(payload) {
+        const { email, password } = payload;
+        try {
+            const { idToken, refreshToken, expiresIn } = await this.signInWithEmailAndPassword(email, password);
+            return { idToken, refreshToken, expiresIn };
+        }
+        catch (error) {
+            if (error.message.includes('EMAIL_NOT_FOUND')) {
+                throw new Error('User not found.');
+            }
+            else if (error.message.includes('INVALID_PASSWORD')) {
+                throw new Error('Invalid password.');
+            }
+            else {
+                throw new Error(error.message);
+            }
+        }
+    }
+    async signInWithEmailAndPassword(email, password) {
+        console.log('Firebase API Key:', process.env.FIREBASE_WEB_API_KEY);
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBNd9QVXQ6AoNqY5U0HxdTWqlC3gIn6hG4
+`;
+        return await this.sendPostRequest(url, {
+            email,
+            password,
+            returnSecureToken: true,
+        });
+    }
+    async sendPostRequest(url, data) {
+        try {
+            const response = await axios_1.default.post(url, data, {
+                headers: { 'Content-Type': 'application/json' },
+            });
+            return response.data;
+        }
+        catch (error) {
+            console.log('error', error);
+        }
     }
     generateOTP() {
         return Math.floor(100000 + Math.random() * 900000).toString();

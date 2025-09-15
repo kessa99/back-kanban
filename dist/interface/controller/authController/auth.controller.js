@@ -18,9 +18,21 @@ const auth_service_1 = require("../../../interface/service/auth.service");
 const userTeam_user_entity_1 = require("../../../domain/entities/userTeam/userTeam.user.entity");
 const formatRespons_1 = require("../../../utils/formatResponse/formatRespons");
 const constance_role_1 = require("../../../utils/constance/constance.role");
+const register_dto_1 = require("../../../utils/dto/users/register.dto");
+const user_service_1 = require("../../service/user.service");
+const login_dta_1 = require("../../../utils/dto/users/login.dta");
 let AuthController = class AuthController {
-    constructor(authService) {
+    constructor(authService, userService) {
         this.authService = authService;
+        this.userService = userService;
+    }
+    async registerUser(registerUserDTo, res) {
+        const newUser = await this.userService.registerUser(registerUserDTo);
+        return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User registered successfully', newUser);
+    }
+    async loginFirebase(loginDto, res) {
+        const token = await this.authService.loginUser(loginDto);
+        return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User logged in successfully', token);
     }
     async register(user, res) {
         try {
@@ -93,6 +105,24 @@ let AuthController = class AuthController {
 };
 exports.AuthController = AuthController;
 __decorate([
+    (0, common_1.Post)('register-firebase'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [register_dto_1.RegisterUserDto, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "registerUser", null);
+__decorate([
+    (0, common_1.Post)('login-firebase'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [login_dta_1.LoginDto, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "loginFirebase", null);
+__decorate([
     (0, common_1.Post)('register'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -133,6 +163,7 @@ __decorate([
 ], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService,
+        user_service_1.UserService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

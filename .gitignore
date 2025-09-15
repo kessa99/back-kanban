@@ -57,3 +57,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Firebase service account credentials
 src/config/firebase/*.json
+kanban-5a370-firebase-adminsdk-fbsvc-b60c1950fd.json

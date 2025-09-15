@@ -5,7 +5,7 @@
     It is used to handle the user data.
 */
 
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpException, HttpStatus, UseGuards, Request } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpException, HttpStatus, UseGuards, Request, ValidationPipe, UsePipes } from "@nestjs/common";
 import type { Response } from "express";
 import { UserService } from "../../interface/service/user.service";
 import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity";
@@ -13,6 +13,7 @@ import { formatResponse } from "../../utils/formatResponse/formatRespons";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "../../utils/constance/constance.role";
 import { AuthGuard } from '@nestjs/passport';
+import { RegisterUserDto } from "../../utils/dto/users/register.dto";
 
 @Controller("users")
 @UseGuards(AuthGuard('jwt'))
@@ -22,7 +23,11 @@ export class UserController {
     private readonly jwtService: JwtService
   ) {}
 
-
+  // @Post('register')
+  // @UsePipes(new ValidationPipe({ transform: true }))
+  // registerUser(@Body() registerUserDTo: RegisterUserDto) {
+  //   return this.userService.registerUser(registerUserDTo);
+  // }
 
   @Post()
   async createUser(

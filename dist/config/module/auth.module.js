@@ -15,12 +15,15 @@ const jwt_config_1 = require("../../config/jwt/jwt.config");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
 const passport_1 = require("@nestjs/passport");
 const config_1 = require("@nestjs/config");
+const users_module_1 = require("./users.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            (0, common_1.forwardRef)(() => users_module_1.UsersModule),
+            users_module_1.UsersModule,
             passport_1.PassportModule,
             jwt_1.JwtModule.registerAsync({
                 imports: [config_1.ConfigModule],

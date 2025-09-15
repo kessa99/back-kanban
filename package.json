@@ -26,8 +26,10 @@
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.0",
     "@nestjs/typeorm": "^11.0.0",
     "@types/nodemailer": "^7.0.1",
+    "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -40,7 +42,8 @@
     "pg": "^8.16.3",
     "react-day-picker": "^9.9.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -55,6 +58,7 @@
     "@types/nodemailer": "^7.0.1",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.2",
+    "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.57.1",

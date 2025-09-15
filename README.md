@@ -2,115 +2,446 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<h1 align="center">Kanban Board Backend API</h1>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  A powerful RESTful API backend for Kanban board management built with NestJS and Firebase.
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#technologies-used">Technologies</a> •
+  <a href="#setup-instructions">Setup</a> •
+  <a href="#api-documentation">API</a> •
+  <a href="#deployment">Deployment</a>
+</p>
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Environment Setup
+## Project Overview
 
-Before running the application, you need to set up your environment variables:
+This is a comprehensive **Kanban Board Management System Backend API** that provides:
 
-1. Copy the example environment file:
+- **Team-based Kanban boards** with multi-user collaboration
+- **Task management** with priorities, due dates, and status tracking
+- **User authentication** with email verification (OTP)
+- **Team management** with role-based access control
+- **Task comments and file attachments**
+- **Checklist functionality** with individual user assignments
+- **Task view tracking** for analytics
+- **Real-time collaboration** features
+
+The API is built using modern backend technologies and follows RESTful principles with comprehensive error handling and security measures.
+
+## Technologies Used
+
+### Backend Framework
+- **NestJS** - Progressive Node.js framework for scalable applications
+- **TypeScript** - Type-safe JavaScript for better development experience
+- **Node.js** - JavaScript runtime environment
+
+### Database & Storage
+- **Firebase Firestore** - NoSQL document database for real-time data
+- **Firebase Admin SDK** - Server-side Firebase integration
+- **Firebase Authentication** - User authentication system
+
+### Authentication & Security
+- **JWT (JSON Web Tokens)** - Stateless authentication
+- **Passport.js** - Authentication middleware
+- **bcryptjs** - Password hashing and verification
+
+### Email & Notifications
+- **Nodemailer** - Email sending service
+- **Gmail SMTP** - Email delivery service
+
+### Validation & Transformation
+- **Class-validator** - DTO validation
+- **Class-transformer** - Data transformation
+
+### Development & Deployment
+- **Docker & Docker Compose** - Containerization
+- **Railway** - Cloud deployment platform
+- **ESLint & Prettier** - Code quality and formatting
+- **Jest** - Testing framework
+
+## Setup Instructions
+
+### Prerequisites
+- Node.js (v20+ recommended)
+- npm or yarn
+- Firebase project
+- Gmail account for email services
+
+### 1. Clone and Install Dependencies
+
 ```bash
-cp .env.example .env
+# Clone the repository
+git clone <repository-url>
+cd back-kanban
+
+# Install dependencies with legacy peer deps
+npm install
 ```
 
-2. Update the `.env` file with your actual Firebase credentials:
-   - `FIREBASE_PROJECT_ID`: Your Firebase project ID
-   - `FIREBASE_PRIVATE_KEY`: Your Firebase service account private key
-   - `FIREBASE_CLIENT_EMAIL`: Your Firebase service account client email
-   - `FIREBASE_DATABASE_URL`: Your Firebase database URL
-   - `JWT_SECRET`: Your JWT secret for authentication
+### 2. Firebase Setup
 
-**Important**: Never commit your `.env` file to version control. The `.env.example` file is provided as a template.
+1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+2. Enable Firestore Database
+3. Create a service account:
+   - Go to Project Settings > Service Accounts
+   - Generate new private key
+   - Download the JSON file
 
-## Project setup
+### 3. Environment Configuration
+
+Create a `.env` file in the root directory:
 
 ```bash
-$ npm install
+# Firebase Configuration
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY_HERE\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@your-project.iam.gserviceaccount.com
+FIREBASE_DATABASE_URL=https://your-project-id.firebaseio.com
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key
+
+# Email Configuration (Gmail SMTP)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+
+# Application Configuration
+NODE_ENV=development
+PORT=3000
 ```
 
-## Compile and run the project
+### 4. Gmail SMTP Setup
+
+1. Enable 2-Factor Authentication on your Gmail account
+2. Generate an App Password:
+   - Go to Google Account Settings
+   - Security > App passwords
+   - Generate password for "Mail"
+   - Use this password in `EMAIL_HOST_PASSWORD`
+
+### 5. Run the Application
 
 ```bash
-# development
-$ npm run start
+# Development mode with hot reload
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
+# Production mode
+npm run start:prod
 
-# production mode
-$ npm run start:prod
+# Debug mode
+npm run start:debug
 ```
 
-## Run tests
+The API will be available at `http://localhost:3000`
+
+### 6. Verify Installation
+
+Check the health endpoint:
+```bash
+curl http://localhost:3000/health
+```
+```bash
+live link(front-end): https://kanban-test-project.vercel.app/
+live link(back-end): https://back-kanban-production.up.railway.app/
+```
+
+## Features
+
+### Core Kanban Features
+-  **Board Management**: Create, read, update, delete Kanban boards
+-  **Column Management**: Organize tasks in customizable columns
+-  **Task Management**: Full CRUD operations for tasks
+-  **Task Status Tracking**: Pending, In Progress, Completed, Cancelled
+-  **Task Priorities**: Low, Medium, High, Urgent priority levels
+-  **Drag & Drop Support**: Move tasks between columns via API
+
+### Team Collaboration
+-  **Team Creation**: Create and manage teams
+-  **Member Management**: Add/remove team members
+-  **Role-Based Access**: Admin, Member, Viewer roles
+-  **Email Invitations**: Send team invitations via email
+-  **Permission Control**: Role-based feature access
+
+### User Management
+-  **User Registration**: Account creation with validation
+-  **Email Verification**: OTP-based email verification
+-  **JWT Authentication**: Secure token-based authentication
+-  **Password Security**: bcrypt hashing
+-  **User Profiles**: Manage user information
+
+### Task Collaboration
+-  **Comments**: Add comments to tasks
+-  **File Attachments**: Upload and manage task files
+-  **Checklists**: Individual checklist items with user assignments
+-  **Task Views**: Track task view analytics
+-  **Due Dates**: Set and manage task deadlines
+
+### Advanced Features
+-  **Email Notifications**: OTP and invitation emails
+-  **CORS Support**: Frontend integration ready
+-  **Health Checks**: Application monitoring endpoints
+-  **Error Handling**: Comprehensive error responses
+-  **API Documentation**: Detailed endpoint documentation
+
+## API Documentation
+
+### Base URL
+```
+http://localhost:3000 (development)
+https://your-domain.com (production)
+```
+
+### Authentication
+Most endpoints require JWT authentication. Include the token in the Authorization header:
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+### Core API Endpoints
+
+#### Authentication (`/auth`)
+```bash
+POST /auth/register          # Register new user
+POST /auth/login             # User login
+POST /auth/verify-otp        # Verify email OTP
+POST /auth/resend-otp        # Resend OTP code
+POST /auth/logout            # User logout
+```
+
+#### User Management (`/users`)
+```bash
+GET    /users                # Get all users
+GET    /users/:id            # Get user by ID
+PUT    /users/:id            # Update user
+DELETE /users/:id            # Delete user
+POST   /users/invite         # Send team invitation
+POST   /users/verify-invite  # Verify team invitation
+```
+
+#### Team Management (`/teams`)
+```bash
+POST   /teams/create                    # Create team
+GET    /teams                          # Get user teams
+GET    /teams/:id                      # Get team details
+PUT    /teams/:id                      # Update team
+DELETE /teams/:id                      # Delete team
+POST   /teams/:id/members              # Add team member
+DELETE /teams/:id/members/:memberId    # Remove member
+GET    /teams/:id/members              # Get team members
+PUT    /teams/:id/members/:memberId/role # Change member role
+```
+
+#### Board Management (`/boards`)
+```bash
+GET    /boards                 # Get all boards
+POST   /boards                 # Create board
+GET    /boards/:id             # Get board details
+PATCH  /boards/:id             # Update board
+DELETE /boards/:id             # Delete board
+GET    /boards/:id/columns     # Get board columns
+```
+
+#### Task Management (`/boards/:boardId/tasks`)
+```bash
+POST   /boards/:boardId/tasks                    # Create task
+GET    /boards/:boardId/tasks                    # Get board tasks
+PATCH  /boards/:boardId/tasks/:taskId/move       # Move task
+POST   /boards/:boardId/tasks/:taskId/comments   # Add comment
+POST   /boards/:boardId/tasks/:taskId/files      # Upload file
+POST   /boards/:boardId/tasks/:taskId/views      # Record view
+```
+
+### Response Format
+All endpoints return responses in this format:
+```json
+{
+  "status": "success" | "failed",
+  "message": "Description of the operation result",
+  "data": object | array | null
+}
+```
+
+### HTTP Status Codes
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request / Validation Error
+- `401` - Unauthorized
+- `403` - Forbidden
+- `404` - Not Found
+- `500` - Internal Server Error
+
+For detailed API documentation, see [API_ENDPOINTS_DOCUMENTATION.txt](./API_ENDPOINTS_DOCUMENTATION.txt)
+
+## Testing
 
 ```bash
-# unit tests
-$ npm run test
+# Run unit tests
+npm run test
 
-# e2e tests
-$ npm run test:e2e
+# Run e2e tests
+npm run test:e2e
 
-# test coverage
-$ npm run test:cov
+# Run tests with coverage
+npm run test:cov
+
+# Run tests in watch mode
+npm run test:watch
 ```
 
 ## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Docker Deployment
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+1. **Build and run with Docker Compose:**
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker-compose up --build
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+2. **Build Docker image manually:**
+```bash
+docker build -t kanban-backend .
+docker run -p 3000:3000 --env-file .env kanban-backend
+```
 
-## Resources
+### Railway Deployment
 
-Check out a few resources that may come in handy when working with NestJS:
+1. **Connect your repository to Railway**
+2. **Set environment variables in Railway dashboard**
+3. **Deploy automatically on push to main branch**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+For detailed deployment instructions, see [RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md)
 
-## Support
+### Environment Variables for Production
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Ensure these variables are set in your production environment:
+```bash
+NODE_ENV=production
+PORT=3000
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
+FIREBASE_DATABASE_URL=https://your-project.firebaseio.com
+JWT_SECRET=your-production-jwt-secret
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+```
 
-## Stay in touch
+## Known Issues
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Security Concerns
+-  **Hardcoded Credentials**: Email credentials are hardcoded in `otpMailer.ts`
+-  **Firebase Key Exposure**: Service account key committed to repository
+-  **No Rate Limiting**: API endpoints lack rate limiting protection
+-  **Input Sanitization**: Missing comprehensive input validation
+
+### Code Quality Issues
+-  **Mixed Languages**: French/English comments and error messages
+-  **Error Handling**: Inconsistent error handling patterns
+-  **Dead Code**: Some unused imports and code segments
+
+### Architecture Issues
+-  **Direct Repository Calls**: Controllers directly calling Firebase repositories
+-  **Missing Validation**: Some endpoints lack proper input validation
+-  **Logging System**: No structured logging implementation
+
+### Deployment Issues
+-  **Environment Variables**: Missing `.env.example` file
+-  **Error Handling**: Poor handling of missing environment variables
+-  **Health Checks**: Basic health check implementation
+
+## Future Improvements
+
+### Security Enhancements
+-  Implement rate limiting (express-rate-limit)
+-  Add comprehensive input validation and sanitization
+-  Implement proper secrets management
+-  Add API versioning strategy
+-  Implement request/response logging
+
+### Feature Enhancements
+-  Advanced task filtering and search capabilities
+-  Task templates and bulk operations
+-  Advanced analytics and reporting
+-  Mobile app API support
+-  File upload with cloud storage
+-  Task dependencies and relationships
+
+### Technical Improvements
+- Implement caching layer (Redis)
+- Add comprehensive testing suite
+-  Implement proper error handling middleware
+- Add Swagger/OpenAPI documentation
+- Implement database migrations
+- Add structured logging (Winston)
+- Implement application metrics
+
+### DevOps Improvements
+- Add CI/CD pipeline
+- Implement proper monitoring and alerting
+- Add backup and recovery procedures
+- Implement proper secrets management
+- Add performance monitoring
+
+## Clean Architecture Overview
+
+```
+src/
+├── config/          # Configuration modules (JWT, Firebase, etc.)
+├── domain/          # Domain entities and business logic
+│   ├── entities/    # Domain entities
+│   └── repositories/ # Repository interfaces
+├── infrastructure/ # External service implementations
+│   └── repositories/ # Firebase repository implementations
+├── interface/      # API layer
+│   ├── controller/ # REST API controllers
+│   └── service/   # Application services
+└── utils/          # Utilities, DTOs, constants
+    ├── dto/       # Data Transfer Objects
+    ├── constance/ # Application constants
+    └── mailer/    # Email services
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+If you encounter any issues or have questions:
+
+1. Check the [Known Issues](#known-issues) section
+2. Review the [API Documentation](#api-documentation)
+3. Check existing issues in the repository
+4. Create a new issue with detailed information
+
+---
+
+<p align="center">
+  <a href="https://nestjs.com/" target="_blank"><img src="https://nestjs.com/img/logo_text.svg" width="200" alt="Nest Logo" /></a>
+  <br>
+  Built with using NestJS and Firebase
+  <br>
+  KIPRE KESSA DAVID
+  <br>
+  kessadavidkipre@gmail.com
+  <br>
+  github: kessa99
+  <br>
+  phone number: 92152971
+
+</p>

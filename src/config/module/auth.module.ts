@@ -5,7 +5,7 @@
  * exporte le module pour que UserModule puisse l'utiliser
 */
 
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from '../../interface/service/auth.service';
 import { AuthController } from '../../interface/controller/authController/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
@@ -13,9 +13,12 @@ import { JwtConfigService } from '../../config/jwt/jwt.config';
 import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersModule } from './users.module';
 
 @Module({
   imports: [
+    forwardRef(() => UsersModule),
+    UsersModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

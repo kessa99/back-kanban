@@ -16,6 +16,8 @@ import { UserEntity } from '../../domain/entities/userTeam/userTeam.user.entity'
 import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
 import { Role } from '../../utils/constance/constance.role';
 import { sendOTPEmail } from '../../utils/mailer/otpMailer';
+import { LoginDto } from '../../utils/dto/users/login.dta';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +27,44 @@ export class AuthService {
         private readonly jwtService: JwtService, 
         private readonly userRepository: FirebaseUserRepository,
     ) {}
+
+    async loginUser(payload: LoginDto) {
+        const { email, password } = payload;
+        try {
+          const { idToken, refreshToken, expiresIn } =
+            await this.signInWithEmailAndPassword(email, password);
+          return { idToken, refreshToken, expiresIn };
+        } catch (error: any) {
+          if (error.message.includes('EMAIL_NOT_FOUND')) {
+            throw new Error('User not found.');
+          } else if (error.message.includes('INVALID_PASSWORD')) {
+            throw new Error('Invalid password.');
+          } else {
+            throw new Error(error.message);
+          }
+        }
+      }
+      private async signInWithEmailAndPassword(email: string, password: string) {
+        console.log('Firebase API Key:', process.env.FIREBASE_WEB_API_KEY);
+
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBNd9QVXQ6AoNqY5U0HxdTWqlC3gIn6hG4
+`;
+        return await this.sendPostRequest(url, {
+          email,
+          password,
+          returnSecureToken: true,
+        });
+      }
+      private async sendPostRequest(url: string, data: any) {
+        try {
+          const response = await axios.post(url, data, {
+            headers: { 'Content-Type': 'application/json' },
+          });
+          return response.data;
+        } catch (error) {
+          console.log('error', error);
+        }
+    }
 
     private generateOTP(): string {
         return Math.floor(100000 + Math.random() * 900000).toString();
