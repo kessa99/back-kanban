@@ -10,7 +10,9 @@ exports.FirebaseTaskRepository = void 0;
 const common_1 = require("@nestjs/common");
 const firebase_admin_1 = require("firebase-admin");
 let FirebaseTaskRepository = class FirebaseTaskRepository {
-    collection = (0, firebase_admin_1.firestore)().collection('tasks');
+    constructor() {
+        this.collection = (0, firebase_admin_1.firestore)().collection('tasks');
+    }
     async create(task) {
         const docRef = await this.collection.add({
             title: task.title,

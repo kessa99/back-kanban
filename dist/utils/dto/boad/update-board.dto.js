@@ -12,8 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateBoardDto = void 0;
 const class_validator_1 = require("class-validator");
 class UpdateBoardDto {
-    name;
-    description;
 }
 exports.UpdateBoardDto = UpdateBoardDto;
 __decorate([

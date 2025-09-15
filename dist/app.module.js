@@ -8,12 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const config_module_1 = require("./config/module/config.module");
-const auth_module_1 = require("./config/module/auth.module");
-const users_module_1 = require("./config/module/users.module");
-const team_module_1 = require("./config/module/team.module");
-const firebase_module_1 = require("./config/module/firebase.module");
-const boards_module_1 = require("./config/module/boards.module");
+const config_module_1 = require("src/config/module/config.module");
+const auth_module_1 = require("src/config/module/auth.module");
+const users_module_1 = require("src/config/module/users.module");
+const team_module_1 = require("src/config/module/team.module");
+const firebase_module_1 = require("src/config/module/firebase.module");
+const boards_module_1 = require("src/config/module/boards.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;

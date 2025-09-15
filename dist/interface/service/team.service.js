@@ -11,12 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamService = void 0;
 const common_1 = require("@nestjs/common");
-const userTeam_team_entity_1 = require("../../domain/entities/userTeam/userTeam.team.entity");
-const firebase_team_repository_1 = require("../../infrastructure/repositories/firebase-team.repository");
+const userTeam_team_entity_1 = require("src/domain/entities/userTeam/userTeam.team.entity");
+const firebase_team_repository_1 = require("src/infrastructure/repositories/firebase-team.repository");
 const user_service_1 = require("./user.service");
 let TeamService = class TeamService {
-    teamRepository;
-    userService;
     constructor(teamRepository, userService) {
         this.teamRepository = teamRepository;
         this.userService = userService;

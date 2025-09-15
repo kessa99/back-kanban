@@ -10,7 +10,9 @@ exports.FirebaseFileRepository = exports.FirebaseCommentRepository = void 0;
 const common_1 = require("@nestjs/common");
 const firebase_admin_1 = require("firebase-admin");
 let FirebaseCommentRepository = class FirebaseCommentRepository {
-    collection = (0, firebase_admin_1.firestore)().collection('comments');
+    constructor() {
+        this.collection = (0, firebase_admin_1.firestore)().collection('comments');
+    }
     async create(comment) {
         const docRef = await this.collection.add({
             content: comment.content,
@@ -31,7 +33,9 @@ exports.FirebaseCommentRepository = FirebaseCommentRepository = __decorate([
     (0, common_1.Injectable)()
 ], FirebaseCommentRepository);
 let FirebaseFileRepository = class FirebaseFileRepository {
-    collection = (0, firebase_admin_1.firestore)().collection('files');
+    constructor() {
+        this.collection = (0, firebase_admin_1.firestore)().collection('files');
+    }
     async create(file) {
         const docRef = await this.collection.add({
             name: file.name,

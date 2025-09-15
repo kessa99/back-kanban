@@ -2,18 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserEntity = void 0;
 class UserEntity {
-    id;
-    name;
-    email;
-    password;
-    role;
-    teamId;
-    createdBy;
-    otp;
-    otpExpiresAt;
-    otpVerified;
-    createdAt;
-    updatedAt;
     constructor(props) {
         this.id = props.id;
         this.name = props.name;

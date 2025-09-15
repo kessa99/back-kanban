@@ -2,12 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KanbanColumnEntity = void 0;
 class KanbanColumnEntity {
-    id;
-    name;
-    boardId;
-    status;
-    createdAt;
-    updatedAt;
     constructor(props) {
         this.id = props.id;
         this.name = props.name;

@@ -11,15 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TasksController = void 0;
 const common_1 = require("@nestjs/common");
-const firebase_task_repository_1 = require("../../../infrastructure/repositories/firebase-task.repository");
-const board_service_1 = require("../../service/board.service");
-const user_service_1 = require("../../service/user.service");
-const firebase_user_repository_1 = require("../../../infrastructure/repositories/firebase-user.repository");
+const firebase_task_repository_1 = require("src/infrastructure/repositories/firebase-task.repository");
+const board_service_1 = require("src/interface/service/board.service");
+const user_service_1 = require("src/interface/service/user.service");
+const firebase_user_repository_1 = require("src/infrastructure/repositories/firebase-user.repository");
 let TasksController = class TasksController {
-    taskRepository;
-    userRepository;
-    boardsService;
-    userService;
     constructor(taskRepository, userRepository, boardsService, userService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;

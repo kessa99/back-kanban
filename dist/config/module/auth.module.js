@@ -8,11 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
-const auth_service_1 = require("../../interface/service/auth.service");
-const auth_controller_1 = require("../../interface/controller/authController/auth.controller");
+const auth_service_1 = require("src/interface/service/auth.service");
+const auth_controller_1 = require("src/interface/controller/authController/auth.controller");
 const jwt_1 = require("@nestjs/jwt");
-const jwt_config_1 = require("../jwt/jwt.config");
-const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
+const jwt_config_1 = require("src/config/jwt/jwt.config");
+const firebase_user_repository_1 = require("src/infrastructure/repositories/firebase-user.repository");
 const passport_1 = require("@nestjs/passport");
 const config_1 = require("@nestjs/config");
 let AuthModule = class AuthModule {

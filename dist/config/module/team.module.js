@@ -8,11 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamModule = void 0;
 const common_1 = require("@nestjs/common");
-const team_service_1 = require("../../interface/service/team.service");
-const team_controller_1 = require("../../interface/controller/teamController/team.controller");
-const firebase_team_repository_1 = require("../../infrastructure/repositories/firebase-team.repository");
-const user_service_1 = require("../../interface/service/user.service");
-const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
+const team_service_1 = require("src/interface/service/team.service");
+const team_controller_1 = require("src/interface/controller/teamController/team.controller");
+const firebase_team_repository_1 = require("src/infrastructure/repositories/firebase-team.repository");
+const user_service_1 = require("src/interface/service/user.service");
+const firebase_user_repository_1 = require("src/infrastructure/repositories/firebase-user.repository");
 const auth_module_1 = require("./auth.module");
 const users_module_1 = require("./users.module");
 let TeamModule = class TeamModule {

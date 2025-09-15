@@ -14,13 +14,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
-const user_service_1 = require("../service/user.service");
-const formatRespons_1 = require("../../utils/formatResponse/formatRespons");
+const user_service_1 = require("src/interface/service/user.service");
+const formatRespons_1 = require("src/utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 let UserController = class UserController {
-    userService;
-    jwtService;
     constructor(userService, jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;

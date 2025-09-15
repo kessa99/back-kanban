@@ -9,9 +9,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FirebaseTaskViewRepository = void 0;
 const common_1 = require("@nestjs/common");
 const firebase_admin_1 = require("firebase-admin");
-const collaboration_taskView_entity_1 = require("../../domain/entities/collaboration/collaboration.taskView.entity");
+const collaboration_taskView_entity_1 = require("src/domain/entities/collaboration/collaboration.taskView.entity");
 let FirebaseTaskViewRepository = class FirebaseTaskViewRepository {
-    collection = (0, firebase_admin_1.firestore)().collection('task_views');
+    constructor() {
+        this.collection = (0, firebase_admin_1.firestore)().collection('task_views');
+    }
     async create(view) {
         const docRef = await this.collection.add({
             taskId: view.taskId,

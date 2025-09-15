@@ -1,23 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KanbanTaskEntity = void 0;
-const constance_status_1 = require("../../../utils/constance/constance.status");
-const constance_priority_1 = require("../../../utils/constance/constance.priority");
+const constance_status_1 = require("src/utils/constance/constance.status");
+const constance_priority_1 = require("src/utils/constance/constance.priority");
 class KanbanTaskEntity {
-    id;
-    taskId;
-    columnId;
-    boardId;
-    title;
-    description;
-    dueDate;
-    status;
-    assignTo;
-    createdBy;
-    priority;
-    checklistIds;
-    createdAt;
-    updatedAt;
     constructor(props) {
         this.id = props.id;
         this.taskId = props.taskId || props.id;

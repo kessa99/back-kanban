@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateTeamDto = void 0;
 const class_validator_1 = require("class-validator");
 class UpdateTeamDto {
-    name;
 }
 exports.UpdateTeamDto = UpdateTeamDto;
 __decorate([
