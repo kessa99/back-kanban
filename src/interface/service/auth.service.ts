@@ -9,7 +9,7 @@
  * - Connexion avec génération d'un token JWT pour les sessions sécurisées.
  */
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Request } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UserEntity } from '../../domain/entities/userTeam/userTeam.user.entity';
@@ -18,6 +18,7 @@ import { Role } from '../../utils/constance/constance.role';
 import { sendOTPEmail } from '../../utils/mailer/otpMailer';
 import { LoginDto } from '../../utils/dto/users/login.dta';
 import axios from 'axios';
+import * as firebaseAdmin from 'firebase-admin';
 
 @Injectable()
 export class AuthService {
@@ -63,6 +64,35 @@ export class AuthService {
           return response.data;
         } catch (error) {
           console.log('error', error);
+        }
+    }
+
+    async validateRequest(req: Request): Promise<boolean> {
+        const authHeader = req.headers['Authorization'];
+        if (!authHeader) {
+          console.log('Authorization header not provided.');
+          return false;
+        }
+    
+        const [bearer, token] = authHeader.split('Bearer ');
+        if (bearer !== 'Bearer' && !token) {
+          console.log('Invalid authorization format. Expected "Bearer <token>".');
+          return false;
+        }
+    
+        try {
+          const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
+          console.log('Decoded Token:', decodedToken);
+          return true;
+        } catch (error) {
+          if (error.code === 'auth/id-token-expired') {
+            console.error('Token has expired.');
+          } else if (error.code === 'auth/invalid-id-token') {
+            console.error('Invalid ID token provided.');
+          } else {
+            console.error('Error verifying token:', error);
+          }
+          return false;
         }
     }
 

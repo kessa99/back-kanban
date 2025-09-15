@@ -15,6 +15,7 @@ const team_module_1 = require("./config/module/team.module");
 const firebase_module_1 = require("./config/module/firebase.module");
 const boards_module_1 = require("./config/module/boards.module");
 const heath_controller_1 = require("./interface/controller/heath.controller");
+const jwtAuth_guard_1 = require("./config/jwt/jwtAuth.guard");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -29,7 +30,7 @@ exports.AppModule = AppModule = __decorate([
             boards_module_1.BoardModule,
         ],
         controllers: [heath_controller_1.HealthController],
-        providers: [],
+        providers: [jwtAuth_guard_1.AuthGuardFirebase],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

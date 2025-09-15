@@ -54,6 +54,7 @@ const firebase_user_repository_1 = require("../../infrastructure/repositories/fi
 const constance_role_1 = require("../../utils/constance/constance.role");
 const otpMailer_1 = require("../../utils/mailer/otpMailer");
 const axios_1 = __importDefault(require("axios"));
+const firebaseAdmin = __importStar(require("firebase-admin"));
 let AuthService = class AuthService {
     constructor(jwtService, userRepository) {
         this.jwtService = jwtService;
@@ -97,6 +98,35 @@ let AuthService = class AuthService {
         }
         catch (error) {
             console.log('error', error);
+        }
+    }
+    async validateRequest(req) {
+        const authHeader = req.headers['Authorization'];
+        if (!authHeader) {
+            console.log('Authorization header not provided.');
+            return false;
+        }
+        const [bearer, token] = authHeader.split('Bearer ');
+        if (bearer !== 'Bearer' && !token) {
+            console.log('Invalid authorization format. Expected "Bearer <token>".');
+            return false;
+        }
+        try {
+            const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
+            console.log('Decoded Token:', decodedToken);
+            return true;
+        }
+        catch (error) {
+            if (error.code === 'auth/id-token-expired') {
+                console.error('Token has expired.');
+            }
+            else if (error.code === 'auth/invalid-id-token') {
+                console.error('Invalid ID token provided.');
+            }
+            else {
+                console.error('Error verifying token:', error);
+            }
+            return false;
         }
     }
     generateOTP() {

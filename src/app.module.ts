@@ -20,6 +20,7 @@ import { TeamModule } from './config/module/team.module';
 import { FirebaseModule } from './config/module/firebase.module';
 import { BoardModule } from './config/module/boards.module';
 import { HealthController } from './interface/controller/heath.controller';
+import { AuthGuardFirebase } from './config/jwt/jwtAuth.guard';
 
 @Module({
   imports: [
@@ -32,6 +33,6 @@ import { HealthController } from './interface/controller/heath.controller';
     
   ],
   controllers: [HealthController],
-  providers: [],
+  providers: [AuthGuardFirebase],
 })
 export class AppModule {}

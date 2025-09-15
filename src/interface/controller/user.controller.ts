@@ -14,9 +14,11 @@ import { JwtService } from "@nestjs/jwt";
 import { Role } from "../../utils/constance/constance.role";
 import { AuthGuard } from '@nestjs/passport';
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
+import { AuthGuardFirebase } from "../../config/jwt/jwtAuth.guard";
 
 @Controller("users")
-@UseGuards(AuthGuard('jwt'))
+// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuardFirebase)
 export class UserController {
   constructor(
     private readonly userService: UserService,

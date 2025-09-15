@@ -14,6 +14,7 @@ export declare class AuthService {
     }>;
     private signInWithEmailAndPassword;
     private sendPostRequest;
+    validateRequest(req: Request): Promise<boolean>;
     private generateOTP;
     verifyOTP(email: string, otp: string): Promise<boolean>;
     private sendOTP;
