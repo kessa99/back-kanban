@@ -17,8 +17,6 @@ const userTeam_team_entity_1 = require("../../domain/entities/userTeam/userTeam.
 const firebase_admin_1 = require("firebase-admin");
 const common_1 = require("@nestjs/common");
 let FirebaseTeamRepository = class FirebaseTeamRepository {
-    firestore;
-    teamCollection;
     constructor(firestore) {
         this.firestore = firestore;
         this.teamCollection = this.firestore.collection('teams');

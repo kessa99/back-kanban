@@ -2,12 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KanbanCommentEntity = void 0;
 class KanbanCommentEntity {
-    id;
-    content;
-    taskId;
-    userId;
-    createdAt;
-    updatedAt;
     constructor(props) {
         this.id = props.id;
         this.content = props.content;

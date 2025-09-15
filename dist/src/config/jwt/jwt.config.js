@@ -15,7 +15,6 @@ const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const config_1 = require("@nestjs/config");
 let JwtConfigService = class JwtConfigService extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt') {
-    configService;
     constructor(configService) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),

@@ -51,12 +51,10 @@ const firebase_user_repository_1 = require("src/infrastructure/repositories/fire
 const constance_role_1 = require("src/utils/constance/constance.role");
 const otpMailer_1 = require("src/utils/mailer/otpMailer");
 let AuthService = class AuthService {
-    jwtService;
-    userRepository;
-    otpStore = new Map();
     constructor(jwtService, userRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.otpStore = new Map();
     }
     generateOTP() {
         return Math.floor(100000 + Math.random() * 900000).toString();

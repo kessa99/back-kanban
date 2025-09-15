@@ -16,10 +16,6 @@ const board_service_1 = require("src/interface/service/board.service");
 const user_service_1 = require("src/interface/service/user.service");
 const firebase_user_repository_1 = require("src/infrastructure/repositories/firebase-user.repository");
 let TasksController = class TasksController {
-    taskRepository;
-    userRepository;
-    boardsService;
-    userService;
     constructor(taskRepository, userRepository, boardsService, userService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;

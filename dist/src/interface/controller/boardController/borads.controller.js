@@ -27,10 +27,6 @@ const constance_status_1 = require("src/utils/constance/constance.status");
 const constance_priority_1 = require("src/utils/constance/constance.priority");
 const kanban_checkList_entity_1 = require("src/domain/entities/kanban/kanban.checkList.entity");
 let BoardController = class BoardController {
-    taskRepository;
-    userRepository;
-    boardsService;
-    userService;
     constructor(taskRepository, userRepository, boardsService, userService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;

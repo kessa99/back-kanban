@@ -26,14 +26,6 @@ const firebase_viewTask_repository_1 = require("src/infrastructure/repositories/
 const constance_status_1 = require("src/utils/constance/constance.status");
 const firebase_user_repository_1 = require("src/infrastructure/repositories/firebase-user.repository");
 let BoardsService = class BoardsService {
-    boardRepository;
-    teamService;
-    columnRepository;
-    taskRepository;
-    commentRepository;
-    fileRepository;
-    taskViewRepository;
-    userRepository;
     constructor(boardRepository, teamService, columnRepository, taskRepository, commentRepository, fileRepository, taskViewRepository, userRepository) {
         this.boardRepository = boardRepository;
         this.teamService = teamService;

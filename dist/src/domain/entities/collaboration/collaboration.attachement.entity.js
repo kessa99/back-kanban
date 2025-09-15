@@ -2,18 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CollaborationAttachementEntity = void 0;
 class CollaborationAttachementEntity {
-    id;
-    userId;
-    taskId;
-    type;
-    name;
-    url;
-    size;
-    mimeType;
-    thumbnailUrl;
-    previewUrl;
-    createdAt;
-    updatedAt;
     constructor(props) {
         this.id = props.id;
         this.userId = props.userId;

@@ -18,9 +18,6 @@ const firebase_team_repository_1 = require("src/infrastructure/repositories/fire
 const jwt_1 = require("@nestjs/jwt");
 const invitMail_1 = require("src/utils/mailer/invitMail");
 let UserService = class UserService {
-    userRepository;
-    teamRepository;
-    jwtService;
     constructor(userRepository, teamRepository, jwtService) {
         this.userRepository = userRepository;
         this.teamRepository = teamRepository;

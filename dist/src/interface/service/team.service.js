@@ -15,8 +15,6 @@ const userTeam_team_entity_1 = require("src/domain/entities/userTeam/userTeam.te
 const firebase_team_repository_1 = require("src/infrastructure/repositories/firebase-team.repository");
 const user_service_1 = require("./user.service");
 let TeamService = class TeamService {
-    teamRepository;
-    userService;
     constructor(teamRepository, userService) {
         this.teamRepository = teamRepository;
         this.userService = userService;

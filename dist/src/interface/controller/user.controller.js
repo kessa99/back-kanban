@@ -19,8 +19,6 @@ const formatRespons_1 = require("src/utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 let UserController = class UserController {
-    userService;
-    jwtService;
     constructor(userService, jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;

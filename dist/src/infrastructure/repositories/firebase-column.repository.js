@@ -11,7 +11,9 @@ const common_1 = require("@nestjs/common");
 const firebase_admin_1 = require("firebase-admin");
 const kaban_column_entity_1 = require("src/domain/entities/kanban/kaban.column.entity");
 let FirebaseColumnRepository = class FirebaseColumnRepository {
-    collection = (0, firebase_admin_1.firestore)().collection('columns');
+    constructor() {
+        this.collection = (0, firebase_admin_1.firestore)().collection('columns');
+    }
     async findById(id) {
         const doc = await this.collection.doc(id).get();
         if (!doc.exists)

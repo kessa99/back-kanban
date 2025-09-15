@@ -2,12 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamEntity = void 0;
 class TeamEntity {
-    id;
-    name;
-    ownerId;
-    members;
-    createdAt;
-    updatedAt;
     constructor(props) {
         this.id = props.id;
         this.name = props.name;

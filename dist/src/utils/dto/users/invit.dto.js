@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InvitationDto = void 0;
 const class_validator_1 = require("class-validator");
 class InvitationDto {
-    email;
 }
 exports.InvitationDto = InvitationDto;
 __decorate([

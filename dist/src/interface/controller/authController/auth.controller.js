@@ -19,7 +19,6 @@ const userTeam_user_entity_1 = require("src/domain/entities/userTeam/userTeam.us
 const formatRespons_1 = require("src/utils/formatResponse/formatRespons");
 const constance_role_1 = require("src/utils/constance/constance.role");
 let AuthController = class AuthController {
-    authService;
     constructor(authService) {
         this.authService = authService;
     }

@@ -2,10 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CollaborationTaskViewEntity = void 0;
 class CollaborationTaskViewEntity {
-    id;
-    taskId;
-    userId;
-    viewedAt;
     constructor(props) {
         this.id = props.id;
         this.taskId = props.taskId;

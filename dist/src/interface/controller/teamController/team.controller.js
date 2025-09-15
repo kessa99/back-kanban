@@ -21,8 +21,6 @@ const passport_1 = require("@nestjs/passport");
 const formatRespons_1 = require("src/utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
 let TeamController = class TeamController {
-    teamService;
-    jwtService;
     constructor(teamService, jwtService) {
         this.teamService = teamService;
         this.jwtService = jwtService;
