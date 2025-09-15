@@ -25,6 +25,24 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Environment Setup
+
+Before running the application, you need to set up your environment variables:
+
+1. Copy the example environment file:
+```bash
+cp .env.example .env
+```
+
+2. Update the `.env` file with your actual Firebase credentials:
+   - `FIREBASE_PROJECT_ID`: Your Firebase project ID
+   - `FIREBASE_PRIVATE_KEY`: Your Firebase service account private key
+   - `FIREBASE_CLIENT_EMAIL`: Your Firebase service account client email
+   - `FIREBASE_DATABASE_URL`: Your Firebase database URL
+   - `JWT_SECRET`: Your JWT secret for authentication
+
+**Important**: Never commit your `.env` file to version control. The `.env.example` file is provided as a template.
+
 ## Project setup
 
 ```bash
