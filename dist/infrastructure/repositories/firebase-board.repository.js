@@ -41,10 +41,10 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FirebaseBoardRepository = void 0;
 const common_1 = require("@nestjs/common");
-const kaban_board_entity_1 = require("src/domain/entities/kanban/kaban.board.entity");
+const kaban_board_entity_1 = require("../../domain/entities/kanban/kaban.board.entity");
 const firebase = __importStar(require("firebase-admin"));
 const firebase_admin_1 = require("firebase-admin");
-const kaban_column_entity_1 = require("src/domain/entities/kanban/kaban.column.entity");
+const kaban_column_entity_1 = require("../../domain/entities/kanban/kaban.column.entity");
 let FirebaseBoardRepository = class FirebaseBoardRepository {
     constructor() {
         this.collection = firebase.firestore().collection('boards');

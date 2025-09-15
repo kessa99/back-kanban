@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { firestore } from 'firebase-admin';
-import { KanbanColumnEntity } from 'src/domain/entities/kanban/kaban.column.entity';
-import { KanbanChecklistEntity } from 'src/domain/entities/kanban/kanban.checkList.entity';
-import { KanbanTaskEntity } from 'src/domain/entities/kanban/kanban.task.entity';
-import { ITaskRepository } from 'src/domain/repositories/task.repository';
-import { Status } from 'src/utils/constance/constance.status';
+import { KanbanColumnEntity } from '../../domain/entities/kanban/kaban.column.entity';
+import { KanbanChecklistEntity } from '../../domain/entities/kanban/kanban.checkList.entity';
+import { KanbanTaskEntity } from '../../domain/entities/kanban/kanban.task.entity';
+import { ITaskRepository } from '../../domain/repositories/task.repository';
+import { Status } from '../../utils/constance/constance.status';
 
 @Injectable()
 export class FirebaseTaskRepository implements ITaskRepository {

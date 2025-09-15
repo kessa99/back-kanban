@@ -1,7 +1,7 @@
-import { FirebaseTaskRepository } from 'src/infrastructure/repositories/firebase-task.repository';
-import { BoardsService } from 'src/interface/service/board.service';
-import { UserService } from 'src/interface/service/user.service';
-import { FirebaseUserRepository } from 'src/infrastructure/repositories/firebase-user.repository';
+import { FirebaseTaskRepository } from '../../../infrastructure/repositories/firebase-task.repository';
+import { BoardsService } from '../../../interface/service/board.service';
+import { UserService } from '../../../interface/service/user.service';
+import { FirebaseUserRepository } from '../../../infrastructure/repositories/firebase-user.repository';
 export declare class TasksController {
     private readonly taskRepository;
     private readonly userRepository;

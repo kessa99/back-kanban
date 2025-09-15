@@ -12,10 +12,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { UserEntity } from 'src/domain/entities/userTeam/userTeam.user.entity';
-import { FirebaseUserRepository } from 'src/infrastructure/repositories/firebase-user.repository';
-import { Role } from 'src/utils/constance/constance.role';
-import { sendOTPEmail } from 'src/utils/mailer/otpMailer';
+import { UserEntity } from '../../domain/entities/userTeam/userTeam.user.entity';
+import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
+import { Role } from '../../utils/constance/constance.role';
+import { sendOTPEmail } from '../../utils/mailer/otpMailer';
 
 @Injectable()
 export class AuthService {

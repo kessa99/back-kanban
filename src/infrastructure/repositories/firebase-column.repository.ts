@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { firestore } from 'firebase-admin';
-import { KanbanColumnEntity } from 'src/domain/entities/kanban/kaban.column.entity';
-import { IColumnRepository } from 'src/domain/repositories/column.repository';
+import { KanbanColumnEntity } from '../../domain/entities/kanban/kaban.column.entity';
+import { IColumnRepository } from '../../domain/repositories/column.repository';
 
 @Injectable()
 export class FirebaseColumnRepository implements IColumnRepository {

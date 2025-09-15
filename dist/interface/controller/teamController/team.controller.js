@@ -14,11 +14,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamController = void 0;
 const common_1 = require("@nestjs/common");
-const team_service_1 = require("src/interface/service/team.service");
-const create_team_dto_1 = require("src/utils/dto/team/create-team.dto");
-const update_team_dto_1 = require("src/utils/dto/team/update-team.dto");
+const team_service_1 = require("../../../interface/service/team.service");
+const create_team_dto_1 = require("../../../utils/dto/team/create-team.dto");
+const update_team_dto_1 = require("../../../utils/dto/team/update-team.dto");
 const passport_1 = require("@nestjs/passport");
-const formatRespons_1 = require("src/utils/formatResponse/formatRespons");
+const formatRespons_1 = require("../../../utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
 let TeamController = class TeamController {
     constructor(teamService, jwtService) {

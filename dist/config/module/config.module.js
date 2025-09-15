@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConfigModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const jwt_config_1 = require("src/config/jwt/jwt.config");
+const jwt_config_1 = require("../jwt/jwt.config");
 let ConfigModule = class ConfigModule {
 };
 exports.ConfigModule = ConfigModule;

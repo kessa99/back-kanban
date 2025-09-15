@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { firestore } from 'firebase-admin';
-import { CollaborationTaskViewEntity } from 'src/domain/entities/collaboration/collaboration.taskView.entity';
-import { ITaskViewRepository } from 'src/domain/repositories/view.repository';
+import { CollaborationTaskViewEntity } from '../../domain/entities/collaboration/collaboration.taskView.entity';
+import { ITaskViewRepository } from '../../domain/repositories/view.repository';
 
 @Injectable()
 export class FirebaseTaskViewRepository implements ITaskViewRepository {

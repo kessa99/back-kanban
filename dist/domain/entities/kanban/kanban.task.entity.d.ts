@@ -1,5 +1,5 @@
-import { Status } from "src/utils/constance/constance.status";
-import { Priority } from "src/utils/constance/constance.priority";
+import { Status } from "../../../utils/constance/constance.status";
+import { Priority } from "../../../utils/constance/constance.priority";
 export declare class KanbanTaskEntity {
     id: string;
     taskId: string;

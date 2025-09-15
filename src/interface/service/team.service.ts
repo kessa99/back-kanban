@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { TeamEntity } from 'src/domain/entities/userTeam/userTeam.team.entity';
-import { FirebaseTeamRepository } from 'src/infrastructure/repositories/firebase-team.repository';
-import { CreateTeamDto } from 'src/utils/dto/team/create-team.dto';
-import { UpdateTeamDto } from 'src/utils/dto/team/update-team.dto';
+import { TeamEntity } from '../../domain/entities/userTeam/userTeam.team.entity';
+import { FirebaseTeamRepository } from '../../infrastructure/repositories/firebase-team.repository';
+import { CreateTeamDto } from '../../utils/dto/team/create-team.dto';
+import { UpdateTeamDto } from '../../utils/dto/team/update-team.dto';
 import { UserService } from './user.service';
 
 @Injectable()

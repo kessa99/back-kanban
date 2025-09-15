@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FirebaseColumnRepository = void 0;
 const common_1 = require("@nestjs/common");
 const firebase_admin_1 = require("firebase-admin");
-const kaban_column_entity_1 = require("src/domain/entities/kanban/kaban.column.entity");
+const kaban_column_entity_1 = require("../../domain/entities/kanban/kaban.column.entity");
 let FirebaseColumnRepository = class FirebaseColumnRepository {
     constructor() {
         this.collection = (0, firebase_admin_1.firestore)().collection('columns');

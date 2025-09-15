@@ -1,7 +1,7 @@
-import { KanbanCommentEntity } from "src/domain/entities/collaboration/collaboration.comment.entity";
-import { ICommentRepository } from "src/domain/repositories/comment.repository";
-import { IFileRepository } from "src/domain/repositories/file.repository";
-import { CollaborationAttachementEntity } from "src/domain/entities/collaboration/collaboration.attachement.entity";
+import { KanbanCommentEntity } from "../../domain/entities/collaboration/collaboration.comment.entity";
+import { ICommentRepository } from "../../domain/repositories/comment.repository";
+import { IFileRepository } from "../../domain/repositories/file.repository";
+import { CollaborationAttachementEntity } from "../../domain/entities/collaboration/collaboration.attachement.entity";
 export declare class FirebaseCommentRepository implements ICommentRepository {
     private readonly collection;
     create(comment: KanbanCommentEntity): Promise<KanbanCommentEntity>;

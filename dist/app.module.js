@@ -27,9 +27,8 @@ exports.AppModule = AppModule = __decorate([
             users_module_1.UsersModule,
             team_module_1.TeamModule,
             boards_module_1.BoardModule,
-            heath_controller_1.HealthController,
         ],
-        controllers: [],
+        controllers: [heath_controller_1.HealthController],
         providers: [],
     })
 ], AppModule);

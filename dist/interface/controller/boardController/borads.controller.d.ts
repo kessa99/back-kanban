@@ -1,12 +1,12 @@
-import { BoardsService } from 'src/interface/service/board.service';
-import { CreateBoardDto } from 'src/utils/dto/boad/create-board.dto';
-import { UpdateBoardDto } from 'src/utils/dto/boad/update-board.dto';
+import { BoardsService } from '../../../interface/service/board.service';
+import { CreateBoardDto } from '../../../utils/dto/boad/create-board.dto';
+import { UpdateBoardDto } from '../../../utils/dto/boad/update-board.dto';
 import type { Response } from 'express';
-import { FirebaseTaskRepository } from 'src/infrastructure/repositories/firebase-task.repository';
-import { FirebaseUserRepository } from 'src/infrastructure/repositories/firebase-user.repository';
-import { UserService } from 'src/interface/service/user.service';
-import { Status } from 'src/utils/constance/constance.status';
-import { Priority } from 'src/utils/constance/constance.priority';
+import { FirebaseTaskRepository } from '../../../infrastructure/repositories/firebase-task.repository';
+import { FirebaseUserRepository } from '../../../infrastructure/repositories/firebase-user.repository';
+import { UserService } from '../../../interface/service/user.service';
+import { Status } from '../../../utils/constance/constance.status';
+import { Priority } from '../../../utils/constance/constance.priority';
 export declare class BoardController {
     private readonly taskRepository;
     private readonly userRepository;

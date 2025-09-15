@@ -1,21 +1,21 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { KanbanBoardEntity } from 'src/domain/entities/kanban/kaban.board.entity';
+import { KanbanBoardEntity } from '../../domain/entities/kanban/kaban.board.entity';
 import { FirebaseBoardRepository } from '../../infrastructure/repositories/firebase-board.repository';
 import { TeamService } from './team.service';
-import { KanbanColumnEntity } from 'src/domain/entities/kanban/kaban.column.entity';
-import { FirebaseColumnRepository } from 'src/infrastructure/repositories/firebase-column.repository'; // À créer
-import { FirebaseTaskRepository } from 'src/infrastructure/repositories/firebase-task.repository'; // À créer
-import { FirebaseCommentRepository, FirebaseFileRepository } from 'src/infrastructure/repositories/firebase-commentAndFile.repo';
-import { ICommentRepository } from 'src/domain/repositories/comment.repository';
-import { IFileRepository } from 'src/domain/repositories/file.repository';
-import { KanbanTaskEntity } from 'src/domain/entities/kanban/kanban.task.entity';
-import { KanbanCommentEntity } from 'src/domain/entities/collaboration/collaboration.comment.entity';
-import { CollaborationAttachementEntity } from 'src/domain/entities/collaboration/collaboration.attachement.entity';
-import { CollaborationTaskViewEntity } from 'src/domain/entities/collaboration/collaboration.taskView.entity';
-import { FirebaseTaskViewRepository } from 'src/infrastructure/repositories/firebase-viewTask.repository';
-import { Status } from 'src/utils/constance/constance.status';
-import { Priority } from 'src/utils/constance/constance.priority';
-import { FirebaseUserRepository } from 'src/infrastructure/repositories/firebase-user.repository';
+import { KanbanColumnEntity } from '../../domain/entities/kanban/kaban.column.entity';
+import { FirebaseColumnRepository } from '../../infrastructure/repositories/firebase-column.repository'; // À créer
+import { FirebaseTaskRepository } from '../../infrastructure/repositories/firebase-task.repository'; // À créer
+import { FirebaseCommentRepository, FirebaseFileRepository } from '../../infrastructure/repositories/firebase-commentAndFile.repo';
+import { ICommentRepository } from '../../domain/repositories/comment.repository';
+import { IFileRepository } from '../../domain/repositories/file.repository';
+import { KanbanTaskEntity } from '../../domain/entities/kanban/kanban.task.entity';
+import { KanbanCommentEntity } from '../../domain/entities/collaboration/collaboration.comment.entity';
+import { CollaborationAttachementEntity } from '../../domain/entities/collaboration/collaboration.attachement.entity';
+import { CollaborationTaskViewEntity } from '../../domain/entities/collaboration/collaboration.taskView.entity';
+import { FirebaseTaskViewRepository } from '../../infrastructure/repositories/firebase-viewTask.repository';
+import { Status } from '../../utils/constance/constance.status';
+import { Priority } from '../../utils/constance/constance.priority';
+import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
 
 @Injectable()
 export class BoardsService {

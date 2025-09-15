@@ -46,10 +46,10 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcryptjs"));
-const userTeam_user_entity_1 = require("src/domain/entities/userTeam/userTeam.user.entity");
-const firebase_user_repository_1 = require("src/infrastructure/repositories/firebase-user.repository");
-const constance_role_1 = require("src/utils/constance/constance.role");
-const otpMailer_1 = require("src/utils/mailer/otpMailer");
+const userTeam_user_entity_1 = require("../../domain/entities/userTeam/userTeam.user.entity");
+const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
+const constance_role_1 = require("../../utils/constance/constance.role");
+const otpMailer_1 = require("../../utils/mailer/otpMailer");
 let AuthService = class AuthService {
     constructor(jwtService, userRepository) {
         this.jwtService = jwtService;

@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { firestore } from "firebase-admin";
-import { KanbanCommentEntity } from "src/domain/entities/collaboration/collaboration.comment.entity";
-import { ICommentRepository } from "src/domain/repositories/comment.repository";
-import { IFileRepository } from "src/domain/repositories/file.repository";
-import { CollaborationAttachementEntity } from "src/domain/entities/collaboration/collaboration.attachement.entity";
+import { KanbanCommentEntity } from "../../domain/entities/collaboration/collaboration.comment.entity";
+import { ICommentRepository } from "../../domain/repositories/comment.repository";
+import { IFileRepository } from "../../domain/repositories/file.repository";
+import { CollaborationAttachementEntity } from "../../domain/entities/collaboration/collaboration.attachement.entity";
 
 @Injectable()
 export class FirebaseCommentRepository implements ICommentRepository {

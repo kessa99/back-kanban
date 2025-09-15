@@ -1,5 +1,5 @@
 import type { Response } from "express";
-import { UserService } from "src/interface/service/user.service";
+import { UserService } from "../../interface/service/user.service";
 import { JwtService } from "@nestjs/jwt";
 export declare class UserController {
     private readonly userService;

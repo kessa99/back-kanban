@@ -7,10 +7,10 @@
 import { Module } from '@nestjs/common';
 import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
 import { FirebaseTeamRepository } from '../../infrastructure/repositories/firebase-team.repository';
-import { AuthModule } from 'src/config/module/auth.module';
-import { UserController } from 'src/interface/controller/user.controller';
-import { UserService } from 'src/interface/service/user.service';
-import { HealthController } from 'src/interface/controller/heath.controller';
+import { AuthModule } from '../../config/module/auth.module';
+import { UserController } from '../../interface/controller/user.controller';
+import { UserService } from '../../interface/service/user.service';
+import { HealthController } from '../../interface/controller/heath.controller';
 
 @Module({
   imports: [AuthModule], // Importe AuthModule pour utiliser JwtAuthGuard

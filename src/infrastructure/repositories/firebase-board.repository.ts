@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { IBoardRepository } from "src/domain/repositories/board.repository";
-import { KanbanBoardEntity } from "src/domain/entities/kanban/kaban.board.entity";
+import { IBoardRepository } from "../../domain/repositories/board.repository";
+import { KanbanBoardEntity } from "../../domain/entities/kanban/kaban.board.entity";
 import * as firebase from 'firebase-admin';
 import { firestore } from "firebase-admin";
-import { KanbanColumnEntity } from "src/domain/entities/kanban/kaban.column.entity";
+import { KanbanColumnEntity } from "../../domain/entities/kanban/kaban.column.entity";
 
 @Injectable()
 export class FirebaseBoardRepository implements IBoardRepository {

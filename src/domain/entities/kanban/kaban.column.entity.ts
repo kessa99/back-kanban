@@ -1,4 +1,4 @@
-import { Status } from 'src/utils/constance/constance.status';
+import { Status } from '../../../utils/constance/constance.status';
 
 export class KanbanColumnEntity {
     id: string;

@@ -1,5 +1,5 @@
 import type { Response } from 'express';
-import { AuthService } from 'src/interface/service/auth.service';
+import { AuthService } from '../../../interface/service/auth.service';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);

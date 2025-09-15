@@ -11,7 +11,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FirebaseModule = void 0;
 const common_1 = require("@nestjs/common");
-const firebase_config_1 = __importDefault(require("src/config/firebase/firebase.config"));
+const firebase_config_1 = __importDefault(require("../../config/firebase/firebase.config"));
 let FirebaseModule = class FirebaseModule {
 };
 exports.FirebaseModule = FirebaseModule;

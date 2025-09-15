@@ -1,5 +1,5 @@
-import { KanbanColumnEntity } from 'src/domain/entities/kanban/kaban.column.entity';
-import { IColumnRepository } from 'src/domain/repositories/column.repository';
+import { KanbanColumnEntity } from '../../domain/entities/kanban/kaban.column.entity';
+import { IColumnRepository } from '../../domain/repositories/column.repository';
 export declare class FirebaseColumnRepository implements IColumnRepository {
     private readonly collection;
     findById(id: string): Promise<KanbanColumnEntity | null>;

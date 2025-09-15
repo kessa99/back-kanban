@@ -10,10 +10,10 @@ exports.UsersModule = void 0;
 const common_1 = require("@nestjs/common");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
 const firebase_team_repository_1 = require("../../infrastructure/repositories/firebase-team.repository");
-const auth_module_1 = require("src/config/module/auth.module");
-const user_controller_1 = require("src/interface/controller/user.controller");
-const user_service_1 = require("src/interface/service/user.service");
-const heath_controller_1 = require("src/interface/controller/heath.controller");
+const auth_module_1 = require("../../config/module/auth.module");
+const user_controller_1 = require("../../interface/controller/user.controller");
+const user_service_1 = require("../../interface/service/user.service");
+const heath_controller_1 = require("../../interface/controller/heath.controller");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;

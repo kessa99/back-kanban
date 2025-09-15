@@ -1,11 +1,11 @@
 import { Controller, Post, Get, Put, Delete, Param, Body, UseGuards, Request, Res } from '@nestjs/common';
 import type { Response } from 'express';
-import { TeamService } from 'src/interface/service/team.service';
-import { CreateTeamDto } from 'src/utils/dto/team/create-team.dto';
-import { UpdateTeamDto } from 'src/utils/dto/team/update-team.dto';
+import { TeamService } from '../../../interface/service/team.service';
+import { CreateTeamDto } from '../../../utils/dto/team/create-team.dto';
+import { UpdateTeamDto } from '../../../utils/dto/team/update-team.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { UserEntity } from 'src/domain/entities/userTeam/userTeam.user.entity';
-import { formatResponse } from 'src/utils/formatResponse/formatRespons';
+import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
+import { formatResponse } from '../../../utils/formatResponse/formatRespons';
 import { JwtService } from '@nestjs/jwt';
 
 @Controller('teams')

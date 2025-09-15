@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { firestore } from 'firebase-admin';
-import { KanbanTaskEntity } from 'src/domain/entities/kanban/kanban.task.entity';
+import { KanbanTaskEntity } from '../entities/kanban/kanban.task.entity';
 
 export interface ITaskRepository {
   create(task: KanbanTaskEntity): Promise<KanbanTaskEntity>;

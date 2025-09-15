@@ -1,9 +1,9 @@
 import { Controller, Post, Body, UseGuards, Request, Res, Get } from '@nestjs/common';
 import type { Response } from 'express';
-import { AuthService } from 'src/interface/service/auth.service';
-import { UserEntity } from 'src/domain/entities/userTeam/userTeam.user.entity';
-import { formatResponse } from 'src/utils/formatResponse/formatRespons';
-import { Role } from 'src/utils/constance/constance.role';
+import { AuthService } from '../../../interface/service/auth.service';
+import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
+import { formatResponse } from '../../../utils/formatResponse/formatRespons';
+import { Role } from '../../../utils/constance/constance.role';
 
 @Controller('auth')
 export class AuthController {

@@ -7,11 +7,11 @@
 
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpException, HttpStatus, UseGuards, Request } from "@nestjs/common";
 import type { Response } from "express";
-import { UserService } from "src/interface/service/user.service";
-import { UserEntity } from "src/domain/entities/userTeam/userTeam.user.entity";
-import { formatResponse } from "src/utils/formatResponse/formatRespons";
+import { UserService } from "../../interface/service/user.service";
+import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity";
+import { formatResponse } from "../../utils/formatResponse/formatRespons";
 import { JwtService } from "@nestjs/jwt";
-import { Role } from "src/utils/constance/constance.role";
+import { Role } from "../../utils/constance/constance.role";
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller("users")

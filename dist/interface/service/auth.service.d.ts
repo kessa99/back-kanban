@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from 'src/domain/entities/userTeam/userTeam.user.entity';
-import { FirebaseUserRepository } from 'src/infrastructure/repositories/firebase-user.repository';
+import { UserEntity } from '../../domain/entities/userTeam/userTeam.user.entity';
+import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
 export declare class AuthService {
     private readonly jwtService;
     private readonly userRepository;

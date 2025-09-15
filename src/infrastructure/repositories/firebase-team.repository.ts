@@ -1,5 +1,5 @@
 import { TeamEntity } from '../../domain/entities/userTeam/userTeam.team.entity';
-import { ITeamRepository } from 'src/domain/repositories/teamrepository';
+import { ITeamRepository } from '../../domain/repositories/teamrepository';
 import { firestore } from 'firebase-admin';
 import { Inject, Injectable } from '@nestjs/common';
 

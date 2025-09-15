@@ -1,4 +1,4 @@
-import { Role } from 'src/utils/constance/constance.role';
+import { Role } from '../../../utils/constance/constance.role';
 
 export interface TeamMember {
   userId: string;

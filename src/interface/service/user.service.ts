@@ -6,13 +6,12 @@
 */
 
 import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { FirebaseUserRepository } from "src/infrastructure/repositories/firebase-user.repository";
-import { UserEntity } from "src/domain/entities/userTeam/userTeam.user.entity";
-import { v4 as uuidv4 } from "uuid";
-import { Role } from "src/utils/constance/constance.role";
-import { FirebaseTeamRepository } from "src/infrastructure/repositories/firebase-team.repository";
+import { FirebaseUserRepository } from "../../infrastructure/repositories/firebase-user.repository";
+import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity";
+import { Role } from "../../utils/constance/constance.role";
+import { FirebaseTeamRepository } from "../../infrastructure/repositories/firebase-team.repository";
 import { JwtService } from '@nestjs/jwt';
-import { sendOTPEmail } from 'src/utils/mailer/invitMail';
+import { sendOTPEmail } from "../../utils/mailer/invitMail";
 
 @Injectable()
 export class UserService {

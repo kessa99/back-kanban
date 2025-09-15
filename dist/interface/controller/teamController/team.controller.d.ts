@@ -1,7 +1,7 @@
 import type { Response } from 'express';
-import { TeamService } from 'src/interface/service/team.service';
-import { CreateTeamDto } from 'src/utils/dto/team/create-team.dto';
-import { UpdateTeamDto } from 'src/utils/dto/team/update-team.dto';
+import { TeamService } from '../../../interface/service/team.service';
+import { CreateTeamDto } from '../../../utils/dto/team/create-team.dto';
+import { UpdateTeamDto } from '../../../utils/dto/team/update-team.dto';
 import { JwtService } from '@nestjs/jwt';
 export declare class TeamController {
     private readonly teamService;

@@ -1,8 +1,8 @@
-import { KanbanColumnEntity } from 'src/domain/entities/kanban/kaban.column.entity';
-import { KanbanChecklistEntity } from 'src/domain/entities/kanban/kanban.checkList.entity';
-import { KanbanTaskEntity } from 'src/domain/entities/kanban/kanban.task.entity';
-import { ITaskRepository } from 'src/domain/repositories/task.repository';
-import { Status } from 'src/utils/constance/constance.status';
+import { KanbanColumnEntity } from '../../domain/entities/kanban/kaban.column.entity';
+import { KanbanChecklistEntity } from '../../domain/entities/kanban/kanban.checkList.entity';
+import { KanbanTaskEntity } from '../../domain/entities/kanban/kanban.task.entity';
+import { ITaskRepository } from '../../domain/repositories/task.repository';
+import { Status } from '../../utils/constance/constance.status';
 export declare class FirebaseTaskRepository implements ITaskRepository {
     private readonly collection;
     create(task: KanbanTaskEntity): Promise<KanbanTaskEntity>;
