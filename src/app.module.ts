@@ -19,6 +19,7 @@ import { UsersModule } from './config/module/users.module';
 import { TeamModule } from './config/module/team.module';
 import { FirebaseModule } from './config/module/firebase.module';
 import { BoardModule } from './config/module/boards.module';
+import { HealthController } from './interface/controller/heath.controller';
 
 @Module({
   imports: [
@@ -28,8 +29,9 @@ import { BoardModule } from './config/module/boards.module';
     UsersModule, // User management operations
     TeamModule, // Team management operations
     BoardModule, // Board management operations
+    
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [],
 })
 export class AppModule {}

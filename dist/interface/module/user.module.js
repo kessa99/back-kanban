@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const user_controller_1 = require("../controller/user.controller");
 const user_service_1 = require("src/interface/service/user.service");
 const firebase_user_repository_1 = require("src/infrastructure/repositories/firebase-user.repository");
+const heath_controller_1 = require("../controller/heath.controller");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
-        controllers: [user_controller_1.UserController],
+        controllers: [user_controller_1.UserController, heath_controller_1.HealthController],
         providers: [user_service_1.UserService, firebase_user_repository_1.FirebaseUserRepository],
     })
 ], UserModule);

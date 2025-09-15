@@ -13,13 +13,14 @@ const firebase_team_repository_1 = require("../../infrastructure/repositories/fi
 const auth_module_1 = require("src/config/module/auth.module");
 const user_controller_1 = require("src/interface/controller/user.controller");
 const user_service_1 = require("src/interface/service/user.service");
+const heath_controller_1 = require("src/interface/controller/heath.controller");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
         imports: [auth_module_1.AuthModule],
-        controllers: [user_controller_1.UserController],
+        controllers: [user_controller_1.UserController, heath_controller_1.HealthController],
         providers: [user_service_1.UserService, firebase_user_repository_1.FirebaseUserRepository, firebase_team_repository_1.FirebaseTeamRepository],
         exports: [user_service_1.UserService],
     })

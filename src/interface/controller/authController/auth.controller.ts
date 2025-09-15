@@ -8,10 +8,6 @@ import { Role } from 'src/utils/constance/constance.role';
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
-    @Get('health')
-    health() {
-        return { status: 'ok' };
-    }
 
     
     @Post('register')

@@ -10,10 +10,11 @@ import { FirebaseTeamRepository } from '../../infrastructure/repositories/fireba
 import { AuthModule } from 'src/config/module/auth.module';
 import { UserController } from 'src/interface/controller/user.controller';
 import { UserService } from 'src/interface/service/user.service';
+import { HealthController } from 'src/interface/controller/heath.controller';
 
 @Module({
   imports: [AuthModule], // Importe AuthModule pour utiliser JwtAuthGuard
-  controllers: [UserController],
+  controllers: [UserController, HealthController],
   providers: [UserService, FirebaseUserRepository, FirebaseTeamRepository],
   exports: [UserService], // Exporte pour réutilisation
 })
