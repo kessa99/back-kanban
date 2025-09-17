@@ -17,22 +17,26 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("../../interface/service/user.service");
 const formatRespons_1 = require("../../utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
-const constance_role_1 = require("../../utils/constance/constance.role");
 const firebase_auth_guard_1 = require("../../config/jwt/firebase-auth.guard");
+const register_dto_1 = require("../../utils/dto/users/register.dto");
 let UserController = class UserController {
     constructor(userService, jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;
     }
-    async createUser(body, req, res) {
+    async createUser(registerUserDto, req, res) {
         try {
-            console.log('Request user:', req.user);
-            console.log('User ID from token:', req.user?.id);
             const createdBy = req.user?.id;
+            console.log('-------------------------------------------------------------------');
+            console.log('User ID from token:', req.user?.id);
+            console.log('-------------------------------------------------------------------');
             if (!createdBy) {
                 return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
             }
-            const user = await this.userService.createUser(body.name, body.email, body.password, createdBy);
+            const user = await this.userService.createUser(registerUserDto, createdBy);
+            console.log('-------------------------------------------------------------------');
+            console.log('User created with succès dans le controller');
+            console.log('-------------------------------------------------------------------');
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "User created successfully", user);
         }
         catch (error) {
@@ -47,6 +51,9 @@ let UserController = class UserController {
                 return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
             }
             const users = await this.userService.findUsersByCreatedBy(createdBy);
+            console.log('-------------------------------------------------------------------');
+            console.log('Users retrieved with succès dans le controller');
+            console.log('-------------------------------------------------------------------');
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Users retrieved successfully", users);
         }
         catch (error) {
@@ -61,6 +68,9 @@ let UserController = class UserController {
                 return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
             }
             const user = await this.userService.findById(id);
+            console.log('-------------------------------------------------------------------');
+            console.log('User retrieved with succès dans le controller');
+            console.log('-------------------------------------------------------------------');
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "User retrieved successfully", user);
         }
         catch (error) {
@@ -74,7 +84,10 @@ let UserController = class UserController {
             if (!createdBy) {
                 return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
             }
-            const user = await this.userService.updateUser(id, updateUserDto.name || '', updateUserDto.email || '', updateUserDto.password || '');
+            const user = await this.userService.updateUser(id, updateUserDto);
+            console.log('-------------------------------------------------------------------');
+            console.log('==> User updated with succès dans le controller');
+            console.log('-------------------------------------------------------------------');
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "User updated successfully", user);
         }
         catch (error) {
@@ -89,6 +102,9 @@ let UserController = class UserController {
                 return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
             }
             await this.userService.deleteUser(id);
+            console.log('-------------------------------------------------------------------');
+            console.log('User deleted with succès dans le controller');
+            console.log('-------------------------------------------------------------------');
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "User deleted successfully", null);
         }
         catch (error) {
@@ -96,27 +112,20 @@ let UserController = class UserController {
             return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to delete user", error);
         }
     }
-    async inviteUser(inviteData, req, res) {
+    async getTasks(req, res) {
         try {
-            const createdBy = req.user?.id;
-            if (!createdBy) {
+            const userId = req.user?.id;
+            if (!userId) {
                 return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
             }
-            const result = await this.userService.inviteUser(inviteData.teamId, { email: inviteData.email }, createdBy, constance_role_1.Role.MEMBER);
-            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Invitation sent successfully", result);
+            console.log('-------------------------------------------------------------------');
+            console.log('Tasks retrieved with succès dans le controller');
+            console.log('-------------------------------------------------------------------');
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Tasks retrieved successfully", null);
         }
         catch (error) {
-            console.error('Invite user error:', error);
-            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to send invitation", error);
-        }
-    }
-    async verifyInvite(token, userData, res) {
-        try {
-            const user = await this.userService.verifyInvite(token, userData);
-            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Invitation approved", user);
-        }
-        catch (error) {
-            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Invalid token or expired", {});
+            console.error('Get tasks error:', error);
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to retrieve tasks", error);
         }
     }
 };
@@ -127,7 +136,7 @@ __decorate([
     __param(1, (0, common_1.Request)()),
     __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:paramtypes", [register_dto_1.RegisterUserDto, Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "createUser", null);
 __decorate([
@@ -148,7 +157,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findOneUser", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
+    (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Request)()),
@@ -167,26 +176,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "removeUser", null);
 __decorate([
-    (0, common_1.Post)('invite'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Request)()),
-    __param(2, (0, common_1.Res)()),
+    (0, common_1.Get)('tasks'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "inviteUser", null);
-__decorate([
-    (0, common_1.Post)('verify-invite'),
-    __param(0, (0, common_1.Body)('token')),
-    __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "verifyInvite", null);
+], UserController.prototype, "getTasks", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)("users"),
     (0, common_1.UseGuards)(firebase_auth_guard_1.FirebaseAuthGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     __metadata("design:paramtypes", [user_service_1.UserService,
         jwt_1.JwtService])
 ], UserController);

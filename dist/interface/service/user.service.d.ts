@@ -10,7 +10,7 @@ export declare class UserService {
     private readonly jwtService;
     constructor(userRepository: FirebaseUserRepository, teamRepository: FirebaseTeamRepository, jwtService: JwtService);
     registerUser(registerUser: RegisterUserDto): Promise<firebaseAdmin.firestore.WriteResult>;
-    createUser(name: string, email: string, password: string, createdBy: string): Promise<UserEntity>;
+    createUser(createUserDto: RegisterUserDto, createdBy: string): Promise<UserEntity>;
     verifyInvite(token: string, userData: {
         name: string;
         password: string;
@@ -21,7 +21,11 @@ export declare class UserService {
     findById(id: string): Promise<UserEntity | null>;
     findUsers(): Promise<UserEntity[]>;
     findUsersByCreatedBy(createdBy: string): Promise<UserEntity[]>;
-    updateUser(id: string, name: string, email: string, password: string): Promise<UserEntity>;
+    updateUser(id: string, updateData: {
+        name?: string;
+        email?: string;
+        password?: string;
+    }): Promise<UserEntity>;
     deleteUser(id: string): Promise<void>;
     inviteUser(teamId: string, inviteData: {
         email: string;

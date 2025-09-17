@@ -81,19 +81,35 @@ let UserService = class UserService {
             throw new Error(`User registration failed: ${error.message}`);
         }
     }
-    async createUser(name, email, password, createdBy) {
+    async createUser(createUserDto, createdBy) {
         console.log('Creating user with createdBy:', createdBy);
-        const existingUser = await this.userRepository.findByEmail(email);
+        const existingUser = await this.userRepository.findByEmail(createUserDto.email);
         if (existingUser)
             throw new common_1.HttpException('Email already registered', common_1.HttpStatus.BAD_REQUEST);
-        const newUser = await this.userRepository.create(userTeam_user_entity_1.UserEntity.create({
-            id: '',
-            name,
-            email,
-            password,
+        const userRecord = await firebaseAdmin.auth().createUser({
+            displayName: createUserDto.name,
+            email: createUserDto.email,
+            password: createUserDto.password,
+        });
+        await firebase_config_1.firestore.collection('users').doc(userRecord.uid).set({
+            name: createUserDto.name,
+            email: createUserDto.email,
+            password: createUserDto.password,
             createdBy: createdBy,
-        }));
-        console.log('Created user:', newUser);
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+        const newUser = userTeam_user_entity_1.UserEntity.create({
+            id: userRecord.uid,
+            name: createUserDto.name,
+            email: createUserDto.email,
+            password: createUserDto.password,
+            createdBy: createdBy,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+        console.log('-------------------------------------------------------------------');
+        console.log('User created with succès dans le service');
         return newUser;
     }
     async verifyInvite(token, userData) {
@@ -135,17 +151,22 @@ let UserService = class UserService {
     async findUsersByCreatedBy(createdBy) {
         return this.userRepository.findUsersByCreatedBy(createdBy);
     }
-    async updateUser(id, name, email, password) {
+    async updateUser(id, updateData) {
         const user = await this.userRepository.findById(id);
         if (!user) {
             throw new common_1.NotFoundException("User not found");
         }
-        user.name = name;
-        user.email = email;
-        user.password = password;
-        return this.userRepository.update(user);
+        user.name = updateData.name || user.name;
+        user.email = updateData.email || user.email;
+        user.password = updateData.password || user.password;
+        const updatedUser = await this.userRepository.update(user);
+        console.log('-------------------------------------------------------------------');
+        console.log('User updated with succès dans le service');
+        console.log('-------------------------------------------------------------------');
+        return updatedUser;
     }
     async deleteUser(id) {
+        await firebaseAdmin.auth().deleteUser(id);
         await this.userRepository.delete(id);
     }
     async inviteUser(teamId, inviteData, ownerId, role) {

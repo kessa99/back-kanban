@@ -57,23 +57,40 @@ export class UserService {
   }
   
   
-  async createUser(name: string, email: string, password: string, createdBy: string): Promise<UserEntity> {
+  async createUser(createUserDto: RegisterUserDto, createdBy: string): Promise<UserEntity> {
     console.log('Creating user with createdBy:', createdBy);
     
-    const existingUser = await this.userRepository.findByEmail(email);
+    const existingUser = await this.userRepository.findByEmail(createUserDto.email);
     if (existingUser) throw new HttpException('Email already registered', HttpStatus.BAD_REQUEST);
     
-    const newUser = await this.userRepository.create(
-      UserEntity.create({
-        id: '',
-        name,
-        email,
-        password,
-        createdBy: createdBy,
-      })
-    );
+    const userRecord = await firebaseAdmin.auth().createUser({
+      displayName: createUserDto.name,
+      email: createUserDto.email,
+      password: createUserDto.password,
+    });
+
+    await firestore.collection('users').doc(userRecord.uid).set({
+      name: createUserDto.name,
+      email: createUserDto.email,
+      password: createUserDto.password,
+      createdBy: createdBy,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     
-    console.log('Created user:', newUser); // Debug log
+    // Create and return a UserEntity object
+    const newUser = UserEntity.create({
+      id: userRecord.uid,
+      name: createUserDto.name,
+      email: createUserDto.email,
+      password: createUserDto.password,
+      createdBy: createdBy,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    
+    console.log('-------------------------------------------------------------------');
+    console.log('User created with succès dans le service');
     return newUser;
   }
 
@@ -125,19 +142,25 @@ export class UserService {
     return this.userRepository.findUsersByCreatedBy(createdBy);
   }
 
-  async updateUser(id: string, name: string, email: string, password: string): Promise<UserEntity> {
+  async updateUser(id: string, updateData: { name?: string, email?: string, password?: string }): Promise<UserEntity> {
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException("User not found");
     }
-    user.name = name;
-    user.email = email;
-    user.password = password;
+    user.name = updateData.name || user.name;
+    user.email = updateData.email || user.email;
+    user.password = updateData.password || user.password;
 
-    return this.userRepository.update(user);
+    const updatedUser = await this.userRepository.update(user);
+    console.log('-------------------------------------------------------------------');
+    console.log('User updated with succès dans le service');
+    console.log('-------------------------------------------------------------------')
+    return updatedUser;
   }
 
   async deleteUser(id: string): Promise<void> {
+    // firebaseAdmin delete
+    await firebaseAdmin.auth().deleteUser(id);
     await this.userRepository.delete(id);
   }
 
