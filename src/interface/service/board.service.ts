@@ -129,12 +129,12 @@ export class BoardsService {
     
     // Normaliser assignTo en tableau d'objets utilisateur
     let assignToArray: { id: string; name: string; email: string }[] = [];
-    if (createData.assignTo) {
-      const userIds = Array.isArray(createData.assignTo) ? createData.assignTo : [createData.assignTo];
-      // Récupérer les détails des utilisateurs
-      const userDetails = await this.userRepository.getUsersDetails(userIds);
-      assignToArray = userDetails;
-    }
+    // if (createData.assignTo) {
+    //   const userIds = Array.isArray(createData.assignTo) ? createData.assignTo : [createData.assignTo];
+    //   // Récupérer les détails des utilisateurs
+    //   const userDetails = await this.userRepository.getUserDetails(userIds[0]);
+    //   assignToArray = userDetails;
+    // }
     
     // Valider que tous les utilisateurs assignés sont membres de l'équipe
     if (assignToArray.length > 0) {

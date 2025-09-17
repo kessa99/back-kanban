@@ -76,9 +76,6 @@ let BoardController = class BoardController {
     async getColm(boardId, req, res) {
         try {
             const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const columns = await this.boardsService.getColumns(boardId);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Columns fetched successfully", columns);
         }
@@ -119,9 +116,6 @@ let BoardController = class BoardController {
             console.log('Creating task for board:', boardId);
             console.log('User:', user);
             console.log('Task data:', createData);
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, 'failed', 'Vous devez vérifier votre email pour accéder à cette fonctionnalité', null);
-            }
             const dueDate = createData.dueDate
                 ? typeof createData.dueDate === 'string'
                     ? new Date(createData.dueDate)
@@ -267,9 +261,6 @@ let BoardController = class BoardController {
     async getColumns(boardId, req, res) {
         try {
             const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const columns = await this.boardsService.getColumns(boardId);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Columns fetched successfully", columns);
         }

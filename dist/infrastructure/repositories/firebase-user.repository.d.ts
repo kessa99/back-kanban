@@ -14,11 +14,6 @@ export declare class FirebaseUserRepository implements IUserRepository {
         name: string;
         email: string;
     } | null>;
-    getUsersDetails(userIds: string[]): Promise<{
-        id: string;
-        name: string;
-        email: string;
-    }[]>;
     findById(id: string): Promise<UserEntity | null>;
     findAll(): Promise<UserEntity[]>;
     update(user: UserEntity): Promise<UserEntity>;

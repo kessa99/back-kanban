@@ -38,6 +38,7 @@
     "firebase-admin": "^13.5.0",
     "nodemailer": "^7.0.6",
     "passport": "^0.7.0",
+    "passport-custom": "^1.1.1",
     "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",
     "react-day-picker": "^9.9.0",

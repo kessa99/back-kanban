@@ -8,17 +8,17 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpException, HttpStatus, UseGuards, Request, ValidationPipe, UsePipes } from "@nestjs/common";
 import type { Response } from "express";
 import { UserService } from "../../interface/service/user.service";
-import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity";
+// import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity";
 import { formatResponse } from "../../utils/formatResponse/formatRespons";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "../../utils/constance/constance.role";
-import { AuthGuard } from '@nestjs/passport';
-import { RegisterUserDto } from "../../utils/dto/users/register.dto";
-import { AuthGuardFirebase } from "../../config/jwt/jwtAuth.guard";
+// import { AuthGuard } from '@nestjs/passport';
+// import { RegisterUserDto } from "../../utils/dto/users/register.dto";
+import { FirebaseAuthGuard } from "../../config/jwt/firebase-auth.guard";
 
 @Controller("users")
 // @UseGuards(AuthGuard('jwt'))
-@UseGuards(AuthGuardFirebase)
+@UseGuards(FirebaseAuthGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,

@@ -3,12 +3,13 @@ import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity"
 import { FirebaseTeamRepository } from "../../infrastructure/repositories/firebase-team.repository";
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
+import * as firebaseAdmin from 'firebase-admin';
 export declare class UserService {
     private readonly userRepository;
     private readonly teamRepository;
     private readonly jwtService;
     constructor(userRepository: FirebaseUserRepository, teamRepository: FirebaseTeamRepository, jwtService: JwtService);
-    registerUser(registerUser: RegisterUserDto): Promise<import("firebase-admin/lib/auth/user-record").UserRecord>;
+    registerUser(registerUser: RegisterUserDto): Promise<firebaseAdmin.firestore.WriteResult>;
     createUser(name: string, email: string, password: string, createdBy: string): Promise<UserEntity>;
     verifyInvite(token: string, userData: {
         name: string;

@@ -2,6 +2,7 @@ import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity"
 import { IUserRepository } from "../../domain/repositories/user.repositories";
 import { Injectable, Inject } from "@nestjs/common";
 import { firestore } from "firebase-admin";
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class FirebaseUserRepository implements IUserRepository {
@@ -14,16 +15,12 @@ export class FirebaseUserRepository implements IUserRepository {
   }
 
   async create(user: UserEntity): Promise<UserEntity> {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
     const docRef = await this.userCollection.add({
       name: user.name,
       email: user.email,
-      password: user.password,
-      role: user.role,
-      createdBy: user.createdBy, // Ajouter cette ligne
-      teamId: user.teamId, // Ajouter cette ligne aussi
-      otp: user.otp,
-      otpExpiresAt: user.otpExpiresAt,
-      otpVerified: user.otpVerified,
+      password: hashedPassword,
+      createdBy: user.createdBy,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     });
@@ -32,18 +29,14 @@ export class FirebaseUserRepository implements IUserRepository {
       id: docRef.id,
       name: user.name,
       email: user.email,
-      password: user.password,
-      role: user.role,
-      createdBy: user.createdBy, // Ajouter cette ligne
-      teamId: user.teamId, // Ajouter cette ligne aussi
-      otp: user.otp,
-      otpExpiresAt: user.otpExpiresAt,
-      otpVerified: user.otpVerified,
+      password: hashedPassword,
+      createdBy: user.createdBy,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     });
   }
 
+  // entity to dto
   async findByEmail(email: string): Promise<UserEntity | null> {
     const snapshot = await this.userCollection.where('email', '==', email).get();
     
@@ -59,10 +52,6 @@ export class FirebaseUserRepository implements IUserRepository {
       name: data.name,
       email: data.email,
       password: data.password,
-      role: data.role,
-      otp: data.otp,
-      otpExpiresAt: data.otpExpiresAt?.toDate(),
-      otpVerified: data.otpVerified,
       createdAt: data.createdAt?.toDate(),
       updatedAt: data.updatedAt?.toDate(),
     });
@@ -75,10 +64,6 @@ export class FirebaseUserRepository implements IUserRepository {
       name: doc.data().name,
       email: doc.data().email,
       password: doc.data().password,
-      role: doc.data().role,
-      otp: doc.data().otp,
-      otpExpiresAt: doc.data().otpExpiresAt?.toDate(),
-      otpVerified: doc.data().otpVerified,
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate(),
     }));
@@ -92,12 +77,7 @@ export class FirebaseUserRepository implements IUserRepository {
       email: doc.data().email,
   
       password: doc.data().password,
-      role: doc.data().role,
       createdBy: doc.data().createdBy,
-      teamId: doc.data().teamId,
-      otp: doc.data().otp,
-      otpExpiresAt: doc.data().otpExpiresAt?.toDate(),
-      otpVerified: doc.data().otpVerified,
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate(),
     }));
@@ -110,14 +90,15 @@ export class FirebaseUserRepository implements IUserRepository {
     return { id: userId, name: data?.name || '', email: data?.email || '' };
   }
 
-  async getUsersDetails(userIds: string[]): Promise<{ id: string; name: string; email: string }[]> {
-    const snapshot = await this.userCollection.where('id', 'in', userIds).get();
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      name: doc.data().name || '',
-      email: doc.data().email || '',
-    }));
-  }
+  // async getUsersDetails(userIds: string[]): Promise<{ id: string; name: string; email: string }[]> {
+  //   const snapshot = await this.userCollection.where('id', 'in', userIds).get();
+  //   return snapshot.docs.map(doc => ({
+  //     id: doc.id,
+  //     name: doc.data().name || '',
+  //     email: doc.data().email || '',
+  //   }));
+  // }
+
   async findById(id: string): Promise<UserEntity | null> {
     const doc = await this.userCollection.doc(id).get();
     
@@ -132,10 +113,6 @@ export class FirebaseUserRepository implements IUserRepository {
       name: data?.name,
       email: data?.email,
       password: data?.password,
-      role: data?.role,
-      otp: data?.otp,
-      otpExpiresAt: data?.otpExpiresAt?.toDate(),
-      otpVerified: data?.otpVerified,
       createdAt: data?.createdAt?.toDate(),
       updatedAt: data?.updatedAt?.toDate(),
     });
@@ -148,10 +125,6 @@ export class FirebaseUserRepository implements IUserRepository {
       name: doc.data().name,
       email: doc.data().email,
       password: doc.data().password,
-      role: doc.data().role,
-      otp: doc.data().otp,
-      otpExpiresAt: doc.data().otpExpiresAt?.toDate(),
-      otpVerified: doc.data().otpVerified,
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate(),
     }));
@@ -162,10 +135,6 @@ export class FirebaseUserRepository implements IUserRepository {
       name: user.name,
       email: user.email,
       password: user.password,
-      role: user.role,
-      otp: user.otp,
-      otpExpiresAt: user.otpExpiresAt,
-      otpVerified: user.otpVerified,
       updatedAt: new Date(),
     });
     

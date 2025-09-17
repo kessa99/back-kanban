@@ -15,9 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../../../interface/service/auth.service");
-const userTeam_user_entity_1 = require("../../../domain/entities/userTeam/userTeam.user.entity");
 const formatRespons_1 = require("../../../utils/formatResponse/formatRespons");
-const constance_role_1 = require("../../../utils/constance/constance.role");
 const register_dto_1 = require("../../../utils/dto/users/register.dto");
 const user_service_1 = require("../../service/user.service");
 const login_dta_1 = require("../../../utils/dto/users/login.dta");
@@ -32,39 +30,9 @@ let AuthController = class AuthController {
     }
     async loginFirebase(loginDto, res) {
         const token = await this.authService.loginUser(loginDto);
+        console.log('-------------------------------------------------------------------');
+        console.log('User logged in successfully');
         return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User logged in successfully', token);
-    }
-    async register(user, res) {
-        try {
-            console.log('Registering user:', user.email);
-            const newUser = await this.authService.register(userTeam_user_entity_1.UserEntity.create({
-                id: '',
-                name: user.name,
-                email: user.email,
-                role: constance_role_1.Role.OWNER,
-                teamId: '',
-                createdBy: '',
-                otp: '',
-                otpExpiresAt: new Date(),
-                otpVerified: false,
-                password: user.password,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            }));
-            console.log('User created successfully:', newUser.user.id);
-            return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User created successfully', newUser);
-        }
-        catch (error) {
-            console.error('Registration error:', error);
-            if (error.message && (error.message.includes('email') || error.message.includes('OTP'))) {
-                return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User created successfully, but OTP email failed to send. Please try resending OTP.', {
-                    user: null,
-                    access_token: null,
-                    emailSent: false
-                });
-            }
-            return (0, formatRespons_1.formatResponse)(res, 400, 'failed', 'User creation failed', error);
-        }
     }
     async verifyOtp(user, res) {
         try {
@@ -85,15 +53,6 @@ let AuthController = class AuthController {
             return (0, formatRespons_1.formatResponse)(res, 400, 'failed', 'OTP resend failed', error);
         }
     }
-    async login(user, res) {
-        try {
-            const token = await this.authService.login(user.email, user.password);
-            return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User logged in successfully', token);
-        }
-        catch (error) {
-            return (0, formatRespons_1.formatResponse)(res, 400, 'failed', 'User login failed', error);
-        }
-    }
     async logout(res) {
         try {
             return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User logged out successfully', null);
@@ -105,7 +64,7 @@ let AuthController = class AuthController {
 };
 exports.AuthController = AuthController;
 __decorate([
-    (0, common_1.Post)('register-firebase'),
+    (0, common_1.Post)('register'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -114,7 +73,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "registerUser", null);
 __decorate([
-    (0, common_1.Post)('login-firebase'),
+    (0, common_1.Post)('login'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
@@ -122,14 +81,6 @@ __decorate([
     __metadata("design:paramtypes", [login_dta_1.LoginDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "loginFirebase", null);
-__decorate([
-    (0, common_1.Post)('register'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('verify-otp'),
     __param(0, (0, common_1.Body)()),
@@ -146,14 +97,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resendOtp", null);
-__decorate([
-    (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.Post)('logout'),
     __param(0, (0, common_1.Res)()),

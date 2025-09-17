@@ -108,11 +108,6 @@ let BoardsService = class BoardsService {
             throw new common_1.UnauthorizedException('Access denied: Not a member of this team');
         }
         let assignToArray = [];
-        if (createData.assignTo) {
-            const userIds = Array.isArray(createData.assignTo) ? createData.assignTo : [createData.assignTo];
-            const userDetails = await this.userRepository.getUsersDetails(userIds);
-            assignToArray = userDetails;
-        }
         if (assignToArray.length > 0) {
             const allTeamMembers = [team.ownerId, ...team.members];
             const invalidAssignees = assignToArray.filter(assignee => !allTeamMembers.includes(assignee.id));

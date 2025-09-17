@@ -51,7 +51,6 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcryptjs"));
 const userTeam_user_entity_1 = require("../../domain/entities/userTeam/userTeam.user.entity");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
-const constance_role_1 = require("../../utils/constance/constance.role");
 const otpMailer_1 = require("../../utils/mailer/otpMailer");
 const axios_1 = __importDefault(require("axios"));
 const firebaseAdmin = __importStar(require("firebase-admin"));
@@ -80,9 +79,8 @@ let AuthService = class AuthService {
         }
     }
     async signInWithEmailAndPassword(email, password) {
-        console.log('Firebase API Key:', process.env.FIREBASE_WEB_API_KEY);
-        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBNd9QVXQ6AoNqY5U0HxdTWqlC3gIn6hG4
-`;
+        const apiKey = process.env.FIREBASE_WEB_API_KEY;
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBNd9QVXQ6AoNqY5U0HxdTWqlC3gIn6hG4`;
         return await this.sendPostRequest(url, {
             email,
             password,
@@ -101,19 +99,24 @@ let AuthService = class AuthService {
         }
     }
     async validateRequest(req) {
-        const authHeader = req.headers['Authorization'];
+        const authHeader = req.headers['authorization'];
         if (!authHeader) {
             console.log('Authorization header not provided.');
             return false;
         }
-        const [bearer, token] = authHeader.split('Bearer ');
-        if (bearer !== 'Bearer' && !token) {
+        const [bearer, token] = authHeader.split(' ');
+        if (bearer !== 'Bearer' || !token) {
             console.log('Invalid authorization format. Expected "Bearer <token>".');
             return false;
         }
         try {
             const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
             console.log('Decoded Token:', decodedToken);
+            req.user = {
+                id: decodedToken.uid,
+                email: decodedToken.email,
+                name: decodedToken.name,
+            };
             return true;
         }
         catch (error) {
@@ -153,9 +156,7 @@ let AuthService = class AuthService {
         ;
         await this.userRepository.update(userTeam_user_entity_1.UserEntity.create({
             ...user,
-            otpVerified: true,
-            otp: '',
-            otpExpiresAt: new Date(),
+            updatedAt: new Date(),
         }));
         this.otpStore.delete(email);
         return true;
@@ -173,9 +174,7 @@ let AuthService = class AuthService {
         this.otpStore.set(email, { otp, expiresAt });
         await this.userRepository.update(userTeam_user_entity_1.UserEntity.create({
             ...user,
-            otp: otp,
-            otpExpiresAt: expiresAt,
-            otpVerified: false,
+            updatedAt: new Date(),
         }));
         await this.sendOTP(email, otp);
         return 'OTP resent successfully';
@@ -195,14 +194,9 @@ let AuthService = class AuthService {
         const user = await this.validateUser(email, password);
         if (!user)
             throw new common_1.UnauthorizedException('Invalid credentials');
-        if (!user.otpVerified)
-            throw new common_1.UnauthorizedException('OTP not verified, please verify your otp');
         const payload = {
             email: user.email,
             sub: user.id,
-            role: user.role,
-            teamId: user.teamId || '',
-            otpVerified: user.otpVerified,
         };
         return { access_token: this.jwtService.sign(payload, { expiresIn: '1h' }) };
     }
@@ -217,20 +211,13 @@ let AuthService = class AuthService {
             name: user.name,
             email: user.email,
             password: hashedPassword,
-            role: constance_role_1.Role.OWNER,
-            teamId: user.teamId || '',
             createdBy: user.createdBy || '',
-            otp: otp,
-            otpExpiresAt: expiresAt,
-            otpVerified: false,
             createdAt: new Date(),
             updatedAt: new Date(),
         }));
         const payload = {
             email: newUser.email,
             sub: newUser.id,
-            role: newUser.role,
-            teamId: newUser.teamId,
         };
         const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
         return { user: newUser, access_token };

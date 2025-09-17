@@ -79,9 +79,9 @@ export class BoardController {
   async getColm(@Param('boardId') boardId: string, @Request() req: any, @Res() res: Response) {
     try {
       const user = req.user as UserEntity;
-      if (!user.otpVerified) {
-        return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-      }
+      // if (!user.otpVerified) {
+      //   return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+      // }
       
       const columns = await this.boardsService.getColumns(boardId);
       return formatResponse(res, 200, "success", "Columns fetched successfully", columns);
@@ -154,9 +154,9 @@ async createTask(
     console.log('User:', user);
     console.log('Task data:', createData);
 
-    if (!user.otpVerified) {
-      return formatResponse(res, 400, 'failed', 'Vous devez vérifier votre email pour accéder à cette fonctionnalité', null);
-    }
+    // if (!user.otpVerified) {
+    //   return formatResponse(res, 400, 'failed', 'Vous devez vérifier votre email pour accéder à cette fonctionnalité', null);
+    // }
 
     // Convertir dueDate si c'est une string ISO
     const dueDate = createData.dueDate
@@ -362,9 +362,9 @@ async createTask(
   async getColumns(@Param('boardId') boardId: string, @Request() req: any, @Res() res: Response) {
     try {
       const user = req.user as UserEntity;
-      if (!user.otpVerified) {
-        return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-      }
+      // if (!user.otpVerified) {
+      //   return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+      // }
       
       const columns = await this.boardsService.getColumns(boardId);
       return formatResponse(res, 200, "success", "Columns fetched successfully", columns);

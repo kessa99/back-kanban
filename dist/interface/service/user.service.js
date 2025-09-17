@@ -46,11 +46,11 @@ exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
 const userTeam_user_entity_1 = require("../../domain/entities/userTeam/userTeam.user.entity");
-const constance_role_1 = require("../../utils/constance/constance.role");
 const firebase_team_repository_1 = require("../../infrastructure/repositories/firebase-team.repository");
 const jwt_1 = require("@nestjs/jwt");
 const invitMail_1 = require("../../utils/mailer/invitMail");
 const firebaseAdmin = __importStar(require("firebase-admin"));
+const firebase_config_1 = require("../../config/firebase/firebase.config");
 let UserService = class UserService {
     constructor(userRepository, teamRepository, jwtService) {
         this.userRepository = userRepository;
@@ -58,19 +58,27 @@ let UserService = class UserService {
         this.jwtService = jwtService;
     }
     async registerUser(registerUser) {
-        console.log(registerUser);
         try {
             const userRecord = await firebaseAdmin.auth().createUser({
                 displayName: registerUser.name,
                 email: registerUser.email,
                 password: registerUser.password,
             });
-            console.log('User Record:', userRecord);
-            return userRecord;
+            const newUser = await firebase_config_1.firestore.collection('users').doc(userRecord.uid).set({
+                name: registerUser.name,
+                email: registerUser.email,
+                password: registerUser.password,
+                createdBy: '',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            console.log('-------------------------------------------------------------------');
+            console.log('User enregistrer avec succès dans le service');
+            return newUser;
         }
         catch (error) {
             console.error('Error creating user:', error);
-            throw new Error('User registration failed');
+            throw new Error(`User registration failed: ${error.message}`);
         }
     }
     async createUser(name, email, password, createdBy) {
@@ -83,12 +91,7 @@ let UserService = class UserService {
             name,
             email,
             password,
-            role: constance_role_1.Role.MEMBER,
             createdBy: createdBy,
-            teamId: '',
-            otp: '',
-            otpExpiresAt: new Date(),
-            otpVerified: false,
         }));
         console.log('Created user:', newUser);
         return newUser;
@@ -104,12 +107,9 @@ let UserService = class UserService {
             name: userData.name,
             email,
             password: userData.password,
-            role: role,
             createdBy: ownerId,
-            teamId,
-            otp: '',
-            otpExpiresAt: new Date(),
-            otpVerified: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         }));
         return newUser;
     }
@@ -117,7 +117,7 @@ let UserService = class UserService {
         const user = await this.userRepository.findById(userId);
         if (!user)
             throw new common_1.NotFoundException(`User with ID ${userId} not found`);
-        user.teamId = teamId;
+        user.createdBy = teamId;
         await this.userRepository.update(user);
     }
     async findUserByEmail(email) {
@@ -152,8 +152,6 @@ let UserService = class UserService {
         const owner = await this.userRepository.findById(ownerId);
         if (!owner)
             throw new common_1.NotFoundException(`Owner with ID ${ownerId} not found`);
-        if (owner.role !== constance_role_1.Role.OWNER)
-            throw new common_1.UnauthorizedException('Only owners can invite users');
         const team = await this.teamRepository.findById(teamId);
         if (!team)
             throw new common_1.NotFoundException(`Team with ID ${teamId} not found`);

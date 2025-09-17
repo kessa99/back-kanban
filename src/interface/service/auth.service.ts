@@ -25,8 +25,8 @@ export class AuthService {
     private otpStore = new Map<string, { otp: string, expiresAt: Date }>();
 
     constructor(
-        private readonly jwtService: JwtService, 
-        private readonly userRepository: FirebaseUserRepository,
+      private readonly jwtService: JwtService, 
+      private readonly userRepository: FirebaseUserRepository,
     ) {}
 
     async loginUser(payload: LoginDto) {
@@ -46,10 +46,9 @@ export class AuthService {
         }
       }
       private async signInWithEmailAndPassword(email: string, password: string) {
-        console.log('Firebase API Key:', process.env.FIREBASE_WEB_API_KEY);
-
-        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBNd9QVXQ6AoNqY5U0HxdTWqlC3gIn6hG4
-`;
+        const apiKey = process.env.FIREBASE_WEB_API_KEY; // Make sure this is set in your .env
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBNd9QVXQ6AoNqY5U0HxdTWqlC3gIn6hG4`;
+        
         return await this.sendPostRequest(url, {
           email,
           password,
@@ -68,14 +67,16 @@ export class AuthService {
     }
 
     async validateRequest(req: Request): Promise<boolean> {
-        const authHeader = req.headers['Authorization'];
+        const authHeader = req.headers['authorization'];
+        
         if (!authHeader) {
           console.log('Authorization header not provided.');
           return false;
         }
     
-        const [bearer, token] = authHeader.split('Bearer ');
-        if (bearer !== 'Bearer' && !token) {
+        const [bearer, token] = authHeader.split(' ');
+        
+        if (bearer !== 'Bearer' || !token) {
           console.log('Invalid authorization format. Expected "Bearer <token>".');
           return false;
         }
@@ -83,6 +84,14 @@ export class AuthService {
         try {
           const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
           console.log('Decoded Token:', decodedToken);
+          
+          // Add user info to request for the controller to use
+          (req as any).user = {
+            id: decodedToken.uid,
+            email: decodedToken.email,
+            name: decodedToken.name,
+          };
+          
           return true;
         } catch (error) {
           if (error.code === 'auth/id-token-expired') {
@@ -118,9 +127,7 @@ export class AuthService {
 
         await this.userRepository.update(UserEntity.create({
             ...user,
-            otpVerified: true,
-            otp: '',
-            otpExpiresAt: new Date(),
+            updatedAt: new Date(),
         }))
 
         // delete otp from store
@@ -148,9 +155,7 @@ export class AuthService {
         // Mettre à jour l'utilisateur dans la base de données
         await this.userRepository.update(UserEntity.create({
             ...user,
-            otp: otp,
-            otpExpiresAt: expiresAt,
-            otpVerified: false, // Réinitialiser le statut de vérification
+            updatedAt: new Date(),
         }));
 
         // Envoyer l'OTP par email
@@ -175,14 +180,11 @@ export class AuthService {
     async login(email: string, password: string) {
         const user = await this.validateUser(email, password);
         if (!user) throw new UnauthorizedException('Invalid credentials');
-        if (!user.otpVerified) throw new UnauthorizedException('OTP not verified, please verify your otp');
+        // if (!user.otpVerified) throw new UnauthorizedException('OTP not verified, please verify your otp');
         
         const payload = {
             email: user.email, 
             sub: user.id, 
-            role: user.role,
-            teamId: user.teamId || '', // Correction: teamId au lieu de teamIds
-            otpVerified: user.otpVerified,
         };
         
         return { access_token: this.jwtService.sign(payload, { expiresIn: '1h' }) };
@@ -201,12 +203,7 @@ export class AuthService {
                 name: user.name,
                 email: user.email,
                 password: hashedPassword,
-                role: Role.OWNER,
-                teamId: user.teamId || '', // S'assurer que teamId est défini
                 createdBy: user.createdBy || '', // S'assurer que createdBy est défini
-                otp: otp,
-                otpExpiresAt: expiresAt,
-                otpVerified: false,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             })
@@ -216,8 +213,8 @@ export class AuthService {
         const payload = {
             email: newUser.email, 
             sub: newUser.id, 
-            role: newUser.role,
-            teamId: newUser.teamId,
+            // role: newUser.createdBy,
+            // teamId: newUser.createdBy,
         };
         const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
         

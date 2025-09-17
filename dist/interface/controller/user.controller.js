@@ -18,7 +18,7 @@ const user_service_1 = require("../../interface/service/user.service");
 const formatRespons_1 = require("../../utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
 const constance_role_1 = require("../../utils/constance/constance.role");
-const jwtAuth_guard_1 = require("../../config/jwt/jwtAuth.guard");
+const firebase_auth_guard_1 = require("../../config/jwt/firebase-auth.guard");
 let UserController = class UserController {
     constructor(userService, jwtService) {
         this.userService = userService;
@@ -186,7 +186,7 @@ __decorate([
 ], UserController.prototype, "verifyInvite", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)("users"),
-    (0, common_1.UseGuards)(jwtAuth_guard_1.AuthGuardFirebase),
+    (0, common_1.UseGuards)(firebase_auth_guard_1.FirebaseAuthGuard),
     __metadata("design:paramtypes", [user_service_1.UserService,
         jwt_1.JwtService])
 ], UserController);
