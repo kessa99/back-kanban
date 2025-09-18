@@ -41,11 +41,35 @@ let BoardsService = class BoardsService {
         if (!team)
             throw new common_1.NotFoundException(`Team with ID ${teamId} not found`);
         const boards = await this.boardRepository.findAllByTeamId(teamId);
-        return boards.filter(board => board.teamId === teamId && (board.userId === userId || team.members.includes(userId)));
+        const filteredBoards = boards.filter(board => board.teamId === teamId && (board.userId === userId || team.members.includes(userId)));
+        console.log('------------------------------------------------------------------');
+        console.log('Filtered boards:', filteredBoards);
+        console.log('------------------------------------------------------------------');
+        const boardsWithColumns = await Promise.all(filteredBoards.map(async (board) => {
+            const columns = await this.columnRepository.findAllByBoardId(board.id);
+            return {
+                ...board,
+                columns: columns
+            };
+        }));
+        return boardsWithColumns;
     }
     async findAllBoardUser(userId) {
         const boards = await this.boardRepository.findAllBoardUser(userId);
-        return boards.filter(board => board.userId === userId);
+        console.log('------------------------------------------------------------------');
+        console.log('Boards:', boards);
+        console.log('------------------------------------------------------------------');
+        const filteredBoards = boards.filter(board => board.userId === userId);
+        console.log('Filtered boards:', filteredBoards);
+        console.log('------------------------------------------------------------------');
+        const boardsWithColumns = await Promise.all(filteredBoards.map(async (board) => {
+            const columns = await this.columnRepository.findAllByBoardId(board.id);
+            return {
+                ...board,
+                columns: columns
+            };
+        }));
+        return boardsWithColumns;
     }
     async create(teamId, userId, createData) {
         const team = await this.teamService.findById(teamId, userId);
@@ -148,10 +172,17 @@ let BoardsService = class BoardsService {
         if (!board)
             throw new common_1.NotFoundException(`Board with ID ${id} not found`);
         const team = await this.teamService.findById(board.teamId, userId);
+        console.log('------------------------------------------------------------------');
+        console.log('Team:', team);
+        console.log('------------------------------------------------------------------');
         if (!team) {
             throw new common_1.UnauthorizedException('Access denied: Not a member of this team');
         }
-        return board;
+        const columns = await this.columnRepository.findAllByBoardId(id);
+        return {
+            ...board,
+            columns: columns
+        };
     }
     async update(id, updates, userId) {
         const board = await this.boardRepository.findById(id);

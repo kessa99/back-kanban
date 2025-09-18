@@ -68,6 +68,7 @@ export class FirebaseBoardRepository implements IBoardRepository {
         });
     }
 
+
     async update(board: KanbanBoardEntity): Promise<KanbanBoardEntity> {
         const id = board.id;
         await this.collection.doc(id).update({

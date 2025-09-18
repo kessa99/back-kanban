@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BoardController = void 0;
 const common_1 = require("@nestjs/common");
 const board_service_1 = require("../../../interface/service/board.service");
-const passport_1 = require("@nestjs/passport");
 const create_board_dto_1 = require("../../../utils/dto/boad/create-board.dto");
 const update_board_dto_1 = require("../../../utils/dto/boad/update-board.dto");
 const kanban_task_entity_1 = require("../../../domain/entities/kanban/kanban.task.entity");
@@ -26,6 +25,7 @@ const user_service_1 = require("../../../interface/service/user.service");
 const constance_status_1 = require("../../../utils/constance/constance.status");
 const constance_priority_1 = require("../../../utils/constance/constance.priority");
 const kanban_checkList_entity_1 = require("../../../domain/entities/kanban/kanban.checkList.entity");
+const firebase_auth_guard_1 = require("../../../config/jwt/firebase-auth.guard");
 let BoardController = class BoardController {
     constructor(taskRepository, userRepository, boardsService, userService) {
         this.taskRepository = taskRepository;
@@ -35,10 +35,9 @@ let BoardController = class BoardController {
     }
     async findAllBoardUser(req, res) {
         try {
-            console.log('=== FIND ALL BOARD USER ===');
             console.log('User ID:', req.user.id);
-            console.log('=== FIND ALL BOARD USER ===');
             const boards = await this.boardsService.findAllBoardUser(req.user.id);
+            console.log('------------------------------------------------------------------');
             console.log('Boards:', boards);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Boards fetched successfully", boards);
         }
@@ -279,7 +278,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BoardController.prototype, "findAllBoardUser", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('teamBoard'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -421,7 +420,8 @@ __decorate([
 ], BoardController.prototype, "getColumns", null);
 exports.BoardController = BoardController = __decorate([
     (0, common_1.Controller)('boards'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)(firebase_auth_guard_1.FirebaseAuthGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     __metadata("design:paramtypes", [firebase_task_repository_1.FirebaseTaskRepository,
         firebase_user_repository_1.FirebaseUserRepository,
         board_service_1.BoardsService,

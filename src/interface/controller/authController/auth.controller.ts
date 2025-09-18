@@ -15,7 +15,7 @@ export class AuthController {
         private readonly userService: UserService
     ) {}
 
-    @Post('register')
+    @Post('register-test')
     @UsePipes(new ValidationPipe({ transform: true }))
     async registerUser(@Body() registerUserDTo: RegisterUserDto, @Res() res: Response) {
       const newUser = await this.userService.registerUser(registerUserDTo);

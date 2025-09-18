@@ -169,6 +169,17 @@ let TeamService = class TeamService {
         console.log('Team found:', team);
         console.log('Team members before:', team.members);
         console.log('Team ownerId:', team.ownerId);
+        const getUser = await this.userService.findUserById(memberId);
+        if (!getUser)
+            throw new common_1.NotFoundException(`User not found`);
+        if (getUser.id === ownerId)
+            throw new common_1.UnauthorizedException('You cannot add yourself as a member');
+        if (team.members.includes(memberId))
+            throw new common_1.UnauthorizedException('User already in team');
+        if (team.ownerId === memberId)
+            throw new common_1.UnauthorizedException('You cannot add the owner as a member');
+        if (team.members.includes(ownerId))
+            throw new common_1.UnauthorizedException('Owner already in team');
         if (team.ownerId !== ownerId) {
             console.log('Unauthorized: ownerId mismatch');
             throw new common_1.UnauthorizedException('Only the owner can add members to this team');

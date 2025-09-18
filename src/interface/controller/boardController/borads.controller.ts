@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request, Res } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request, Res, ValidationPipe, UsePipes } from '@nestjs/common';
 import { BoardsService } from '../../../interface/service/board.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateBoardDto } from '../../../utils/dto/boad/create-board.dto';
@@ -17,10 +17,12 @@ import { UserService } from '../../../interface/service/user.service';
 import { Status } from '../../../utils/constance/constance.status';
 import { Priority } from '../../../utils/constance/constance.priority';
 import { KanbanChecklistEntity } from '../../../domain/entities/kanban/kanban.checkList.entity'; 
+import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
 
 
 @Controller('boards')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(FirebaseAuthGuard)
+@UsePipes(new ValidationPipe({ transform: true }))
 export class BoardController {
   constructor(
     private readonly taskRepository: FirebaseTaskRepository,
@@ -33,10 +35,9 @@ export class BoardController {
   @Get('user')
   async findAllBoardUser(@Request() req, @Res() res: Response) {
     try {
-      console.log('=== FIND ALL BOARD USER ===');
       console.log('User ID:', req.user.id);
-      console.log('=== FIND ALL BOARD USER ===');
       const boards = await this.boardsService.findAllBoardUser(req.user.id);
+      console.log('------------------------------------------------------------------');
       console.log('Boards:', boards);
       return formatResponse(res, 200, "success", "Boards fetched successfully", boards);
     } catch (error) {
@@ -44,7 +45,7 @@ export class BoardController {
     }
   }
   
-  @Get()
+  @Get('teamBoard')
   async findAll(@Request() req, @Res() res: Response) {
     try {
       const boards = await this.boardsService.findAll(req.query.teamId || req.user.teamId, req.user.id);

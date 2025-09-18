@@ -30,16 +30,51 @@ export class BoardsService {
     private readonly userRepository: FirebaseUserRepository,
   ) {}
 
-  async findAll(teamId: string, userId: string): Promise<KanbanBoardEntity[]> {
+  async findAll(teamId: string, userId: string): Promise<(KanbanBoardEntity & { columns: KanbanColumnEntity[] })[]> {
     const team = await this.teamService.findById(teamId, userId);
     if (!team) throw new NotFoundException(`Team with ID ${teamId} not found`);
+    
     const boards = await this.boardRepository.findAllByTeamId(teamId);
-    return boards.filter(board => board.teamId === teamId && (board.userId === userId || team.members.includes(userId)));
+    const filteredBoards = boards.filter(board => board.teamId === teamId && (board.userId === userId || team.members.includes(userId)));
+    
+    console.log('------------------------------------------------------------------');
+    console.log('Filtered boards:', filteredBoards);
+    console.log('------------------------------------------------------------------');
+    // Récupérer les colonnes pour chaque board
+    const boardsWithColumns = await Promise.all(
+      filteredBoards.map(async (board) => {
+        const columns = await this.columnRepository.findAllByBoardId(board.id);
+        return {
+          ...board,
+          columns: columns
+        };
+      })
+    );
+    
+    return boardsWithColumns;
   }
 
-  async findAllBoardUser(userId: string): Promise<KanbanBoardEntity[]> {
+  async findAllBoardUser(userId: string): Promise<(KanbanBoardEntity & { columns: KanbanColumnEntity[] })[]> {
     const boards = await this.boardRepository.findAllBoardUser(userId);
-    return boards.filter(board => board.userId === userId);
+    console.log('------------------------------------------------------------------');
+    console.log('Boards:', boards);
+    console.log('------------------------------------------------------------------');
+    const filteredBoards = boards.filter(board => board.userId === userId);
+    console.log('Filtered boards:', filteredBoards);
+    console.log('------------------------------------------------------------------');
+    
+    // Récupérer les colonnes pour chaque board
+    const boardsWithColumns = await Promise.all(
+      filteredBoards.map(async (board) => {
+        const columns = await this.columnRepository.findAllByBoardId(board.id);
+        return {
+          ...board,
+          columns: columns
+        };
+      })
+    );
+    
+    return boardsWithColumns;
   }
 
   async create(teamId: string, userId: string, createData: { name: string; description: string }): Promise<KanbanBoardEntity> {
@@ -182,14 +217,24 @@ export class BoardsService {
     return this.taskRepository.findAllByAssignedTo(boardId);
   }
 
-  async findById(id: string, userId: string): Promise<KanbanBoardEntity> {
+  async findById(id: string, userId: string): Promise<KanbanBoardEntity & { columns: KanbanColumnEntity[] }> {
     const board = await this.boardRepository.findById(id);
     if (!board) throw new NotFoundException(`Board with ID ${id} not found`);
     const team = await this.teamService.findById(board.teamId, userId);
+    console.log('------------------------------------------------------------------');
+    console.log('Team:', team);
+    console.log('------------------------------------------------------------------');
     if (!team) {
-        throw new UnauthorizedException('Access denied: Not a member of this team');
+      throw new UnauthorizedException('Access denied: Not a member of this team');
     }
-    return board;
+    
+    // Récupérer les colonnes du board
+    const columns = await this.columnRepository.findAllByBoardId(id);
+    
+    return {
+      ...board,
+      columns: columns
+    };
   }
 
   async update(id: string, updates: { name?: string; description?: string }, userId: string): Promise<KanbanBoardEntity> {

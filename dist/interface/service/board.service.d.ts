@@ -23,8 +23,12 @@ export declare class BoardsService {
     private readonly taskViewRepository;
     private readonly userRepository;
     constructor(boardRepository: FirebaseBoardRepository, teamService: TeamService, columnRepository: FirebaseColumnRepository, taskRepository: FirebaseTaskRepository, commentRepository: FirebaseCommentRepository, fileRepository: FirebaseFileRepository, taskViewRepository: FirebaseTaskViewRepository, userRepository: FirebaseUserRepository);
-    findAll(teamId: string, userId: string): Promise<KanbanBoardEntity[]>;
-    findAllBoardUser(userId: string): Promise<KanbanBoardEntity[]>;
+    findAll(teamId: string, userId: string): Promise<(KanbanBoardEntity & {
+        columns: KanbanColumnEntity[];
+    })[]>;
+    findAllBoardUser(userId: string): Promise<(KanbanBoardEntity & {
+        columns: KanbanColumnEntity[];
+    })[]>;
     create(teamId: string, userId: string, createData: {
         name: string;
         description: string;
@@ -43,7 +47,9 @@ export declare class BoardsService {
     }): Promise<KanbanTaskEntity>;
     getAllTask(boardId: string, userId: string): Promise<KanbanTaskEntity[]>;
     getAllTaskAssignedTo(boardId: string, userId: string): Promise<KanbanTaskEntity[]>;
-    findById(id: string, userId: string): Promise<KanbanBoardEntity>;
+    findById(id: string, userId: string): Promise<KanbanBoardEntity & {
+        columns: KanbanColumnEntity[];
+    }>;
     update(id: string, updates: {
         name?: string;
         description?: string;
