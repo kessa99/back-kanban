@@ -4,6 +4,7 @@ import { FirebaseTeamRepository } from "../../infrastructure/repositories/fireba
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
 import * as firebaseAdmin from 'firebase-admin';
+import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
 export declare class UserService {
     private readonly userRepository;
     private readonly teamRepository;
@@ -30,6 +31,10 @@ export declare class UserService {
     inviteUser(teamId: string, inviteData: {
         email: string;
     }, ownerId: string, role: string): Promise<{
+        message: string;
+    }>;
+    updateFcmToken(userId: string, updateFcmDto: UpdateFcmDto): Promise<{
+        status: string;
         message: string;
     }>;
 }

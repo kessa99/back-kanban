@@ -191,10 +191,8 @@ export class BoardsService {
       description: createData.description,
       columnId: createData.columnId,
       boardId,
-      dueDate: createData.dueDate,
       status: createData.status,
-      assignTo: assignToArray.length > 0 ? assignToArray : [{ id: userId, name: '', email: '' }],
-      createdBy: userId, // Toujours l'ID de celui qui crée
+      createdBy: userId,
       priority: createData.priority,
       checklistIds: createData.checklistIds,
       createdAt: new Date(),

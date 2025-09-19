@@ -19,42 +19,45 @@ import { sendOTPEmail } from '../../utils/mailer/otpMailer';
 import { LoginDto } from '../../utils/dto/users/login.dta';
 import axios from 'axios';
 import * as firebaseAdmin from 'firebase-admin';
+import { UpdateFcmDto } from '../../utils/dto/users/UpdateFcmDto';
 
 @Injectable()
 export class AuthService {
-    private otpStore = new Map<string, { otp: string, expiresAt: Date }>();
+  private otpStore = new Map<string, { otp: string, expiresAt: Date }>();
 
-    constructor(
-      private readonly jwtService: JwtService, 
-      private readonly userRepository: FirebaseUserRepository,
-    ) {}
+  constructor(
+    private readonly jwtService: JwtService, 
+    private readonly userRepository: FirebaseUserRepository,
+  ) {}
 
-    async loginUser(payload: LoginDto) {
-        const { email, password } = payload;
-        try {
-          const { idToken, refreshToken, expiresIn } =
-            await this.signInWithEmailAndPassword(email, password);
-          return { idToken, refreshToken, expiresIn };
-        } catch (error: any) {
-          if (error.message.includes('EMAIL_NOT_FOUND')) {
-            throw new Error('User not found.');
-          } else if (error.message.includes('INVALID_PASSWORD')) {
-            throw new Error('Invalid password.');
-          } else {
-            throw new Error(error.message);
-          }
-        }
+
+  async loginUser(payload: LoginDto) {
+    const { email, password } = payload;
+    try {
+      const { idToken, refreshToken, expiresIn } = await this.signInWithEmailAndPassword(email, password);
+      return { idToken, refreshToken, expiresIn };
+    } catch (error: any) {
+      if (error.message.includes('EMAIL_NOT_FOUND')) {
+        throw new Error('User not found.');
+      } else if (error.message.includes('INVALID_PASSWORD')) {
+        throw new Error('Invalid password.');
+      } else {
+        throw new Error(error.message);
       }
-      private async signInWithEmailAndPassword(email: string, password: string) {
-        const apiKey = process.env.FIREBASE_WEB_API_KEY; // Make sure this is set in your .env
-        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBNd9QVXQ6AoNqY5U0HxdTWqlC3gIn6hG4`;
+     }
+  }
+      
+  private async signInWithEmailAndPassword(email: string, password: string) {
+  const apiKey = process.env.FIREBASE_WEB_API_KEY; // Make sure this is set in your .env
+  const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBNd9QVXQ6AoNqY5U0HxdTWqlC3gIn6hG4`;
         
-        return await this.sendPostRequest(url, {
-          email,
-          password,
-          returnSecureToken: true,
-        });
-      }
+  return await this.sendPostRequest(url,
+    {
+      email,
+      password,
+      returnSecureToken: true,
+    }); 
+    }
       private async sendPostRequest(url: string, data: any) {
         try {
           const response = await axios.post(url, data, {
@@ -220,4 +223,6 @@ export class AuthService {
         
         return { user: newUser, access_token };
     }
+
+
 }

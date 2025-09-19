@@ -1,4 +1,3 @@
-// src/modules/tasks/entities/kanban-task.entity.ts
 import { Status } from "../../../utils/constance/constance.status";
 import { Priority } from "../../../utils/constance/constance.priority";
 
@@ -9,9 +8,9 @@ export class KanbanTaskEntity {
   boardId: string;
   title: string;
   description: string;
-  dueDate: Date;
+  startDate: Date;
+  endDate: Date;
   status: Status;
-  assignTo: { id: string; name: string; email: string }[];
   createdBy: string;
   priority: Priority;
   checklistIds: string[];
@@ -25,10 +24,10 @@ export class KanbanTaskEntity {
     boardId: string;
     title: string;
     description?: string;
-    dueDate?: Date;
+    startDate?: Date;
+    endDate?: Date;
     status?: Status;
-    assignTo?: { id: string; name: string; email: string }[];
-    createdBy: string;
+    createdBy?: string;
     priority?: Priority;
     checklistIds?: string[];
     createdAt?: Date;
@@ -40,9 +39,10 @@ export class KanbanTaskEntity {
     this.boardId = props.boardId;
     this.title = props.title;
     this.description = props.description || "";
-    this.dueDate = props.dueDate || new Date();
+    this.startDate = props.startDate || new Date();
+    this.endDate = props.endDate || new Date();
     this.status = props.status || Status.PENDING;
-    this.assignTo = props.assignTo || [{ id: props.createdBy, name: "", email: "" }];    this.createdBy = props.createdBy;
+    this.createdBy = props.createdBy || "unknown";
     this.priority = props.priority || Priority.MEDIUM;
     this.checklistIds = props.checklistIds || [];
     this.createdAt = props.createdAt || new Date();
@@ -56,10 +56,10 @@ export class KanbanTaskEntity {
     boardId: string;
     title: string;
     description?: string;
-    dueDate?: Date;
+    startDate?: Date;
+    endDate?: Date;
     status?: Status;
-    assignTo?: { id: string; name: string; email: string }[];
-    createdBy: string;
+    createdBy?: string;
     priority?: Priority;
     checklistIds?: string[];
     createdAt?: Date;

@@ -52,6 +52,7 @@ export class FirebaseBoardRepository implements IBoardRepository {
             });
         });
     }
+    
 
     async findById(id: string): Promise<KanbanBoardEntity | null> {
         const doc = await this.collection.doc(id).get();

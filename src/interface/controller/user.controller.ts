@@ -18,6 +18,7 @@ import { FirebaseAuthGuard } from "../../config/jwt/firebase-auth.guard";
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
 import * as firebaseAdmin from 'firebase-admin';
 import { firestore } from "../../config/firebase/firebase.config";
+import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
 
 
 
@@ -31,6 +32,24 @@ export class UserController {
     private readonly jwtService: JwtService
   ) {}
 
+  @Patch('fcm')
+  async updateFcmToken(
+    @Body() updateFcmDto: UpdateFcmDto,
+    @Request() req: any,
+    @Res() res: Response
+  ) {
+    try {
+      const userId = req.user?.id;
+      console.log('-------------------------------------------------------------------');
+      console.log('User ID from token:', req.user?.id);
+      console.log('-------------------------------------------------------------------');
+      const token = this.userService.updateFcmToken(userId, updateFcmDto);
+      return formatResponse(res, 200, "success", "Token FCM mis à jour", token);
+    } catch (error) {
+      console.error('Update fcm token error:', error);
+      return formatResponse(res, 400, "failed", "Failed to update fcm token", error);
+    }
+  }
 
   @Post()
   async createUser(

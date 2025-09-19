@@ -16,6 +16,7 @@ const firebase_module_1 = require("./config/module/firebase.module");
 const boards_module_1 = require("./config/module/boards.module");
 const heath_controller_1 = require("./interface/controller/heath.controller");
 const jwtAuth_guard_1 = require("./config/jwt/jwtAuth.guard");
+const task_module_1 = require("./config/module/task.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -28,6 +29,7 @@ exports.AppModule = AppModule = __decorate([
             users_module_1.UsersModule,
             team_module_1.TeamModule,
             boards_module_1.BoardModule,
+            task_module_1.TaskModule,
         ],
         controllers: [heath_controller_1.HealthController],
         providers: [jwtAuth_guard_1.AuthGuardFirebase],

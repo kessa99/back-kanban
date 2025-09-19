@@ -15,6 +15,7 @@ import { sendOTPEmail } from "../../utils/mailer/invitMail";
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
 import * as firebaseAdmin from 'firebase-admin';
 import { firestore } from "../../config/firebase/firebase.config";
+import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
 
 @Injectable()
 export class UserService {
@@ -184,5 +185,15 @@ export class UserService {
     await sendOTPEmail(inviteData.email, verificationLink);
 
     return { message: 'User invited successfully' };
+  }
+
+  async updateFcmToken(userId: string, updateFcmDto: UpdateFcmDto) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    await this.userRepository.updateFcmToken(userId, updateFcmDto.fcmToken);
+    return { status: 'success', message: 'Token FCM mis à jour' };
   }
 }

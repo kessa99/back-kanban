@@ -1,11 +1,11 @@
-import { FirebaseTaskRepository } from '../../../infrastructure/repositories/firebase-task.repository';
-import { BoardsService } from '../../../interface/service/board.service';
-import { UserService } from '../../../interface/service/user.service';
-import { FirebaseUserRepository } from '../../../infrastructure/repositories/firebase-user.repository';
+import type { Response } from 'express';
+import { TasksService } from '../../service/task.service';
+import { CreateTaskDto } from '../../../utils/dto/task.dto';
 export declare class TasksController {
-    private readonly taskRepository;
-    private readonly userRepository;
-    private readonly boardsService;
-    private readonly userService;
-    constructor(taskRepository: FirebaseTaskRepository, userRepository: FirebaseUserRepository, boardsService: BoardsService, userService: UserService);
+    private readonly tasksService;
+    constructor(tasksService: TasksService);
+    createTask(req: any, res: Response, boardId: string, createTaskDto: CreateTaskDto): Promise<Response<any, Record<string, any>>>;
+    getTaskById(res: Response, taskId: string): Promise<Response<any, Record<string, any>>>;
+    addAssignedToChecklist(res: Response, checklistId: string, assignedTo: string): Promise<Response<any, Record<string, any>>>;
+    removeAssignedToChecklist(checklistId: string, res: Response): Promise<Response<any, Record<string, any>>>;
 }

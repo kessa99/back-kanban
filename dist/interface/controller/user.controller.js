@@ -19,10 +19,25 @@ const formatRespons_1 = require("../../utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
 const firebase_auth_guard_1 = require("../../config/jwt/firebase-auth.guard");
 const register_dto_1 = require("../../utils/dto/users/register.dto");
+const UpdateFcmDto_1 = require("../../utils/dto/users/UpdateFcmDto");
 let UserController = class UserController {
     constructor(userService, jwtService) {
         this.userService = userService;
         this.jwtService = jwtService;
+    }
+    async updateFcmToken(updateFcmDto, req, res) {
+        try {
+            const userId = req.user?.id;
+            console.log('-------------------------------------------------------------------');
+            console.log('User ID from token:', req.user?.id);
+            console.log('-------------------------------------------------------------------');
+            const token = this.userService.updateFcmToken(userId, updateFcmDto);
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Token FCM mis à jour", token);
+        }
+        catch (error) {
+            console.error('Update fcm token error:', error);
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to update fcm token", error);
+        }
     }
     async createUser(registerUserDto, req, res) {
         try {
@@ -130,6 +145,15 @@ let UserController = class UserController {
     }
 };
 exports.UserController = UserController;
+__decorate([
+    (0, common_1.Patch)('fcm'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [UpdateFcmDto_1.UpdateFcmDto, Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateFcmToken", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

@@ -10,6 +10,7 @@ class UserEntity {
         this.createdBy = props.createdBy;
         this.createdAt = props.createdAt || new Date();
         this.updatedAt = props.updatedAt || new Date();
+        this.fcmToken = props.fcmToken;
     }
     static create(props) {
         return new UserEntity({ ...props });

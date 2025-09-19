@@ -11,10 +11,10 @@ class KanbanTaskEntity {
         this.boardId = props.boardId;
         this.title = props.title;
         this.description = props.description || "";
-        this.dueDate = props.dueDate || new Date();
+        this.startDate = props.startDate || new Date();
+        this.endDate = props.endDate || new Date();
         this.status = props.status || constance_status_1.Status.PENDING;
-        this.assignTo = props.assignTo || [{ id: props.createdBy, name: "", email: "" }];
-        this.createdBy = props.createdBy;
+        this.createdBy = props.createdBy || "unknown";
         this.priority = props.priority || constance_priority_1.Priority.MEDIUM;
         this.checklistIds = props.checklistIds || [];
         this.createdAt = props.createdAt || new Date();

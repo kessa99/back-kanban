@@ -3,6 +3,8 @@ import { IUserRepository } from "../../domain/repositories/user.repositories";
 import { Injectable, Inject } from "@nestjs/common";
 import { firestore } from "firebase-admin";
 import * as bcrypt from 'bcryptjs';
+import * as admin from 'firebase-admin';
+import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
 
 @Injectable()
 export class FirebaseUserRepository implements IUserRepository {
@@ -14,6 +16,12 @@ export class FirebaseUserRepository implements IUserRepository {
     this.userCollection = this.firestore.collection("users");
   }
 
+  async updateFcmToken(userId: string, fcmToken:string ): Promise<void> {
+    await this.userCollection.doc(userId).update({
+      fcmToken,
+      updatedAt: new Date(),
+    });
+  }
   async create(user: UserEntity): Promise<UserEntity> {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const docRef = await this.userCollection.add({

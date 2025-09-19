@@ -2,10 +2,12 @@ import type { Response } from "express";
 import { UserService } from "../../interface/service/user.service";
 import { JwtService } from "@nestjs/jwt";
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
+import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
 export declare class UserController {
     private readonly userService;
     private readonly jwtService;
     constructor(userService: UserService, jwtService: JwtService);
+    updateFcmToken(updateFcmDto: UpdateFcmDto, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     createUser(registerUserDto: RegisterUserDto, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     findAllUsers(req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     findOneUser(id: string, req: any, res: Response): Promise<Response<any, Record<string, any>>>;

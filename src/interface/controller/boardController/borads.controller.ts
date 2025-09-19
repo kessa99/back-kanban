@@ -16,7 +16,6 @@ import { FirebaseUserRepository } from '../../../infrastructure/repositories/fir
 import { UserService } from '../../../interface/service/user.service';
 import { Status } from '../../../utils/constance/constance.status';
 import { Priority } from '../../../utils/constance/constance.priority';
-import { KanbanChecklistEntity } from '../../../domain/entities/kanban/kanban.checkList.entity'; 
 import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
 
 
@@ -133,120 +132,121 @@ export class BoardController {
     }
   }
   
-  @Post(':boardId/tasks')
-async createTask(
-  @Param('boardId') boardId: string,
-  @Body() createData: {
-    title: string;
-    description?: string;
-    columnId: string;
-    dueDate?: Date | string;
-    status?: Status;
-    priority?: Priority;
-    assignTo?: string[];
-    checklists?: { title: string; assignTo?: string[]; dueDate?: Date | string }[];
-  },
-  @Request() req: any,
-  @Res() res: Response,
-) {
-  try {
-    const user = req.user as UserEntity;
-    console.log('Creating task for board:', boardId);
-    console.log('User:', user);
-    console.log('Task data:', createData);
+  //
+//   @Post(':boardId/tasks')
+// async createTask(
+//   @Param('boardId') boardId: string,
+//   @Body() createData: {
+//     title: string;
+//     description?: string;
+//     columnId: string;
+//     dueDate?: Date | string;
+//     status?: Status;
+//     priority?: Priority;
+//     assignTo?: string[];
+//     checklists?: { title: string; assignTo?: string[]; dueDate?: Date | string }[];
+//   },
+//   @Request() req: any,
+//   @Res() res: Response,
+// ) {
+//   try {
+//     const user = req.user as UserEntity;
+//     console.log('Creating task for board:', boardId);
+//     console.log('User:', user);
+//     console.log('Task data:', createData);
 
-    // if (!user.otpVerified) {
-    //   return formatResponse(res, 400, 'failed', 'Vous devez vérifier votre email pour accéder à cette fonctionnalité', null);
-    // }
+//     // if (!user.otpVerified) {
+//     //   return formatResponse(res, 400, 'failed', 'Vous devez vérifier votre email pour accéder à cette fonctionnalité', null);
+//     // }
 
-    // Convertir dueDate si c'est une string ISO
-    const dueDate = createData.dueDate
-      ? typeof createData.dueDate === 'string'
-        ? new Date(createData.dueDate)
-        : createData.dueDate
-      : new Date();
+//     // Convertir dueDate si c'est une string ISO
+//     const dueDate = createData.dueDate
+//       ? typeof createData.dueDate === 'string'
+//         ? new Date(createData.dueDate)
+//         : createData.dueDate
+//       : new Date();
 
-    // Récupérer les utilisateurs assignés depuis les checklists
-    let taskAssignTo = [{ id: user.id, name: user.name || 'Utilisateur sans nom', email: user.email || '' }];
+//     // Récupérer les utilisateurs assignés depuis les checklists
+//     let taskAssignTo = [{ id: user.id, name: user.name || 'Utilisateur sans nom', email: user.email || '' }];
     
-    // Si assignTo est fourni au niveau de la tâche
-    if (createData.assignTo && createData.assignTo.length === 1) {
-      const assignToId = createData.assignTo[0];
-      const assignToDetails = await this.userRepository.findById(assignToId);
-      if (!assignToDetails) {
-        throw new Error(`Utilisateur avec l'ID ${assignToId} non trouvé pour la tâche`);
-      }
-      taskAssignTo = [{ id: assignToDetails.id, name: assignToDetails.name || 'Utilisateur sans nom', email: assignToDetails.email || '' }];
-    }
-    // Sinon, utiliser l'assignation des checklists
-    else if (createData.checklists && createData.checklists.length > 0) {
-      // Prendre le premier utilisateur assigné dans les checklists
-      const firstChecklistAssignee = createData.checklists.find(checklist => checklist.assignTo && checklist.assignTo.length > 0);
-      if (firstChecklistAssignee && firstChecklistAssignee.assignTo && firstChecklistAssignee.assignTo.length > 0) {
-        const assignToId = firstChecklistAssignee.assignTo[0];
-        const assignToDetails = await this.userRepository.findById(assignToId);
-        if (assignToDetails) {
-          taskAssignTo = [{ id: assignToDetails.id, name: assignToDetails.name || 'Utilisateur sans nom', email: assignToDetails.email || '' }];
-        }
-      }
-    }
+//     // Si assignTo est fourni au niveau de la tâche
+//     if (createData.assignTo && createData.assignTo.length === 1) {
+//       const assignToId = createData.assignTo[0];
+//       const assignToDetails = await this.userRepository.findById(assignToId);
+//       if (!assignToDetails) {
+//         throw new Error(`Utilisateur avec l'ID ${assignToId} non trouvé pour la tâche`);
+//       }
+//       taskAssignTo = [{ id: assignToDetails.id, name: assignToDetails.name || 'Utilisateur sans nom', email: assignToDetails.email || '' }];
+//     }
+//     // Sinon, utiliser l'assignation des checklists
+//     else if (createData.checklists && createData.checklists.length > 0) {
+//       // Prendre le premier utilisateur assigné dans les checklists
+//       const firstChecklistAssignee = createData.checklists.find(checklist => checklist.assignTo && checklist.assignTo.length > 0);
+//       if (firstChecklistAssignee && firstChecklistAssignee.assignTo && firstChecklistAssignee.assignTo.length > 0) {
+//         const assignToId = firstChecklistAssignee.assignTo[0];
+//         const assignToDetails = await this.userRepository.findById(assignToId);
+//         if (assignToDetails) {
+//           taskAssignTo = [{ id: assignToDetails.id, name: assignToDetails.name || 'Utilisateur sans nom', email: assignToDetails.email || '' }];
+//         }
+//       }
+//     }
 
-    // Créer la tâche avec assignation basée sur les checklists
-    const task = KanbanTaskEntity.create({
-      boardId,
-      columnId: createData.columnId,
-      title: createData.title,
-      description: createData.description,
-      dueDate,
-      status: createData.status || Status.PENDING,
-      assignTo: taskAssignTo,
-      createdBy: user.id,
-      priority: createData.priority || Priority.MEDIUM,
-    });
+//     // Créer la tâche avec assignation basée sur les checklists
+//     const task = KanbanTaskEntity.create({
+//       boardId,
+//       columnId: createData.columnId,
+//       title: createData.title,
+//       description: createData.description,
+//       dueDate,
+//       status: createData.status || Status.PENDING,
+//       assignTo: taskAssignTo,
+//       createdBy: user.id,
+//       priority: createData.priority || Priority.MEDIUM,
+//     });
 
-    const savedTask = await this.taskRepository.create(task);
+//     const savedTask = await this.taskRepository.create(task);
 
-    // Gérer les checklists avec assignation individuelle
-    if (createData.checklists && createData.checklists.length > 0) {
-      const checklists = await Promise.all(
-        createData.checklists.map(async (checklist) => {
-          // Valider qu'il n'y a qu'un seul utilisateur dans assignTo
-          if (!checklist.assignTo || checklist.assignTo.length !== 1) {
-            throw new Error('Chaque checklist doit être assignée à exactement un utilisateur');
-          }
+//     // Gérer les checklists avec assignation individuelle
+//     if (createData.checklists && createData.checklists.length > 0) {
+//       const checklists = await Promise.all(
+//         createData.checklists.map(async (checklist) => {
+//           // Valider qu'il n'y a qu'un seul utilisateur dans assignTo
+//           if (!checklist.assignTo || checklist.assignTo.length !== 1) {
+//             throw new Error('Chaque checklist doit être assignée à exactement un utilisateur');
+//           }
 
-          const assignToId = checklist.assignTo[0];
-          // Récupérer les détails de l'utilisateur assigné
-          const assignToDetails = await this.userRepository.findById(assignToId);
+//           const assignToId = checklist.assignTo[0];
+//           // Récupérer les détails de l'utilisateur assigné
+//           const assignToDetails = await this.userRepository.findById(assignToId);
 
-          if (!assignToDetails) {
-            throw new Error(`Utilisateur avec l'ID ${assignToId} non trouvé`);
-          }
+//           if (!assignToDetails) {
+//             throw new Error(`Utilisateur avec l'ID ${assignToId} non trouvé`);
+//           }
 
-          return KanbanChecklistEntity.create({
-            id: '',
-            taskId: savedTask.id,
-            title: checklist.title,
-            assignToId: assignToDetails.id,
-            assignToName: assignToDetails.name || '',
-            assignToEmail: assignToDetails.email || '',
-          });
-        }),
-      );
+//           return KanbanChecklistEntity.create({
+//             id: '',
+//             taskId: savedTask.id,
+//             title: checklist.title,
+//             assignToId: assignToDetails.id,
+//             assignToName: assignToDetails.name || '',
+//             assignToEmail: assignToDetails.email || '',
+//           });
+//         }),
+//       );
 
-      const savedChecklists = await Promise.all(
-        checklists.map((checklist) => this.taskRepository.createChecklist(checklist, user.id)),
-      );
-      savedTask.checklistIds = savedChecklists.map((c) => c.id);
-      await this.taskRepository.update(savedTask);
-    }
+//       const savedChecklists = await Promise.all(
+//         checklists.map((checklist) => this.taskRepository.createChecklist(checklist, user.id)),
+//       );
+//       savedTask.checklistIds = savedChecklists.map((c) => c.id);
+//       await this.taskRepository.update(savedTask);
+//     }
 
-    return formatResponse(res, 201, 'success', 'Tâche créée avec succès', savedTask);
-  } catch (error) {
-    console.error('Erreur lors de la création de la tâche:', error);
-    return formatResponse(res, 400, 'failed', 'Échec de la création de la tâche', error.message);
-  }
-}
+//     return formatResponse(res, 201, 'success', 'Tâche créée avec succès', savedTask);
+//   } catch (error) {
+//     console.error('Erreur lors de la création de la tâche:', error);
+//     return formatResponse(res, 400, 'failed', 'Échec de la création de la tâche', error.message);
+//   }
+// }
 
   // @Get('tasks/assigned-to')
   // async getAllTaskAssignedTo(@Param('boardId') boardId: string, @Request() req, @Res() res: Response) {

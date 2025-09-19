@@ -55,6 +55,12 @@ let FirebaseUserRepository = class FirebaseUserRepository {
         this.firestore = firestore;
         this.userCollection = this.firestore.collection("users");
     }
+    async updateFcmToken(userId, fcmToken) {
+        await this.userCollection.doc(userId).update({
+            fcmToken,
+            updatedAt: new Date(),
+        });
+    }
     async create(user) {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         const docRef = await this.userCollection.add({

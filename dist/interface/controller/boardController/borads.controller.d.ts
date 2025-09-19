@@ -5,8 +5,6 @@ import type { Response } from 'express';
 import { FirebaseTaskRepository } from '../../../infrastructure/repositories/firebase-task.repository';
 import { FirebaseUserRepository } from '../../../infrastructure/repositories/firebase-user.repository';
 import { UserService } from '../../../interface/service/user.service';
-import { Status } from '../../../utils/constance/constance.status';
-import { Priority } from '../../../utils/constance/constance.priority';
 export declare class BoardController {
     private readonly taskRepository;
     private readonly userRepository;
@@ -21,20 +19,6 @@ export declare class BoardController {
     create(createData: CreateBoardDto, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     update(id: string, updates: UpdateBoardDto, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     delete(id: string, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
-    createTask(boardId: string, createData: {
-        title: string;
-        description?: string;
-        columnId: string;
-        dueDate?: Date | string;
-        status?: Status;
-        priority?: Priority;
-        assignTo?: string[];
-        checklists?: {
-            title: string;
-            assignTo?: string[];
-            dueDate?: Date | string;
-        }[];
-    }, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     getAllTask(boardId: string, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     moveTask(boardId: string, taskId: string, newColumnId: string, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     createComment(boardId: string, taskId: string, createData: {

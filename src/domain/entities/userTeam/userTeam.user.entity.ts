@@ -6,6 +6,7 @@ export class UserEntity {
   createdBy?: string;
   createdAt: Date;
   updatedAt: Date;
+  fcmToken?: string;
 
   private constructor(props: {
     id: string;
@@ -15,6 +16,7 @@ export class UserEntity {
     createdBy?: string;
     createdAt?: Date;
     updatedAt?: Date;
+    fcmToken?: string;
   }) {
     this.id = props.id;
     this.name = props.name;
@@ -23,6 +25,7 @@ export class UserEntity {
     this.createdBy = props.createdBy;
     this.createdAt = props.createdAt || new Date();
     this.updatedAt = props.updatedAt || new Date();
+    this.fcmToken = props.fcmToken;
   }
 
   static create(props: {
@@ -33,6 +36,7 @@ export class UserEntity {
     createdBy?: string;
     createdAt?: Date;
     updatedAt?: Date;
+    fcmToken?: string;
   }): UserEntity {
     return new UserEntity({ ...props });
   }

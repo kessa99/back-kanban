@@ -6,6 +6,7 @@ export declare class UserEntity {
     createdBy?: string;
     createdAt: Date;
     updatedAt: Date;
+    fcmToken?: string;
     private constructor();
     static create(props: {
         id: string;
@@ -15,5 +16,6 @@ export declare class UserEntity {
         createdBy?: string;
         createdAt?: Date;
         updatedAt?: Date;
+        fcmToken?: string;
     }): UserEntity;
 }

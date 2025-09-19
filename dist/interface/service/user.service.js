@@ -182,6 +182,14 @@ let UserService = class UserService {
         await (0, invitMail_1.sendOTPEmail)(inviteData.email, verificationLink);
         return { message: 'User invited successfully' };
     }
+    async updateFcmToken(userId, updateFcmDto) {
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new Error('Utilisateur non trouvé');
+        }
+        await this.userRepository.updateFcmToken(userId, updateFcmDto.fcmToken);
+        return { status: 'success', message: 'Token FCM mis à jour' };
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
