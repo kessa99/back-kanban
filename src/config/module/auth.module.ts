@@ -10,6 +10,7 @@ import { AuthService } from '../../interface/service/auth.service';
 import { AuthController } from '../../interface/controller/authController/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from '../../config/jwt/jwt.config';
+import { FirebaseStrategy } from '../../config/jwt/jwt.config.firebase';
 import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -30,7 +31,7 @@ import { UsersModule } from './users.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtConfigService, FirebaseUserRepository],
+  providers: [AuthService, JwtConfigService, FirebaseStrategy, FirebaseUserRepository],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

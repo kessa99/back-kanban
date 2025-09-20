@@ -5,6 +5,7 @@ export declare class FirebaseUserRepository implements IUserRepository {
     private readonly firestore;
     private readonly userCollection;
     constructor(firestore: firestore.Firestore);
+    updateFcmToken(userId: string, fcmToken: string): Promise<void>;
     create(user: UserEntity): Promise<UserEntity>;
     findByEmail(email: string): Promise<UserEntity | null>;
     findUsers(): Promise<UserEntity[]>;
@@ -14,11 +15,6 @@ export declare class FirebaseUserRepository implements IUserRepository {
         name: string;
         email: string;
     } | null>;
-    getUsersDetails(userIds: string[]): Promise<{
-        id: string;
-        name: string;
-        email: string;
-    }[]>;
     findById(id: string): Promise<UserEntity | null>;
     findAll(): Promise<UserEntity[]>;
     update(user: UserEntity): Promise<UserEntity>;

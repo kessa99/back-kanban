@@ -17,9 +17,9 @@ const common_1 = require("@nestjs/common");
 const team_service_1 = require("../../../interface/service/team.service");
 const create_team_dto_1 = require("../../../utils/dto/team/create-team.dto");
 const update_team_dto_1 = require("../../../utils/dto/team/update-team.dto");
-const passport_1 = require("@nestjs/passport");
 const formatRespons_1 = require("../../../utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
+const firebase_auth_guard_1 = require("../../../config/jwt/firebase-auth.guard");
 let TeamController = class TeamController {
     constructor(teamService, jwtService) {
         this.teamService = teamService;
@@ -27,11 +27,14 @@ let TeamController = class TeamController {
     }
     async createTeam(createTeamDto, req, res) {
         try {
-            const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
-            const team = await this.teamService.createTeam(createTeamDto, user.id);
+            const user = req.user?.id;
+            console.log('------------------------------------------------------------------');
+            console.log('=====> team: User ID:', user);
+            console.log('------------------------------------------------------------------');
+            const team = await this.teamService.createTeam(createTeamDto, user);
+            console.log('------------------------------------------------------------------');
+            console.log('Team created successfully', team);
+            console.log('------------------------------------------------------------------');
             return (0, formatRespons_1.formatResponse)(res, 201, "success", "Team created successfully", team);
         }
         catch (error) {
@@ -42,9 +45,6 @@ let TeamController = class TeamController {
         try {
             const user = req.user;
             console.log('User:', user);
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const teams = await this.teamService.findAll(user.id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Teams fetched successfully", teams);
         }
@@ -56,9 +56,6 @@ let TeamController = class TeamController {
     async getTeamDetails(id, req, res) {
         try {
             const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const team = await this.teamService.getTeamWithMembers(id, user.id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Team details fetched successfully", team);
         }
@@ -70,9 +67,6 @@ let TeamController = class TeamController {
     async updateTeam(id, updateTeamDto, req, res) {
         try {
             const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const team = await this.teamService.update(id, updateTeamDto, user.id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Team updated successfully", team);
         }
@@ -83,9 +77,6 @@ let TeamController = class TeamController {
     async deleteTeam(id, req, res) {
         try {
             const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const team = await this.teamService.delete(id, user.id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Team deleted successfully", team);
         }
@@ -96,10 +87,7 @@ let TeamController = class TeamController {
     async addMember(id, body, req, res) {
         try {
             const user = req.user;
-            console.log('Adding member to team:', id, 'Member ID:', body.memberId);
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            console.log('Adding member to team:', id, 'Member ID:', body.memberId, 'User ID:', user.id);
             await this.teamService.addMember(id, body.memberId, user.id);
             const updatedTeam = await this.teamService.findById(id, user.id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Member added successfully", updatedTeam);
@@ -113,9 +101,6 @@ let TeamController = class TeamController {
         try {
             const user = req.user;
             console.log('Removing member from team:', id, 'Member ID:', memberId);
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             await this.teamService.removeMember(id, memberId, user.id);
             const updatedTeam = await this.teamService.findById(id, user.id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Member removed successfully", updatedTeam);
@@ -128,9 +113,6 @@ let TeamController = class TeamController {
     async getMembers(id, req, res) {
         try {
             const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const members = await this.teamService.getMembers(id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Members fetched successfully", members);
         }
@@ -146,9 +128,6 @@ let TeamController = class TeamController {
             console.log('Member ID:', memberId);
             console.log('New Role:', body.role);
             console.log('User ID:', user.id);
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             await this.teamService.changeMemberRole(id, memberId, body.role, user.id);
             const updatedTeam = await this.teamService.getTeamWithMembers(id, user.id);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Member role updated successfully", updatedTeam);
@@ -247,7 +226,8 @@ __decorate([
 ], TeamController.prototype, "changeMemberRole", null);
 exports.TeamController = TeamController = __decorate([
     (0, common_1.Controller)('teams'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)(firebase_auth_guard_1.FirebaseAuthGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     __metadata("design:paramtypes", [team_service_1.TeamService,
         jwt_1.JwtService])
 ], TeamController);

@@ -12,6 +12,7 @@ const auth_service_1 = require("../../interface/service/auth.service");
 const auth_controller_1 = require("../../interface/controller/authController/auth.controller");
 const jwt_1 = require("@nestjs/jwt");
 const jwt_config_1 = require("../../config/jwt/jwt.config");
+const jwt_config_firebase_1 = require("../../config/jwt/jwt.config.firebase");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
 const passport_1 = require("@nestjs/passport");
 const config_1 = require("@nestjs/config");
@@ -35,7 +36,7 @@ exports.AuthModule = AuthModule = __decorate([
             }),
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, jwt_config_1.JwtConfigService, firebase_user_repository_1.FirebaseUserRepository],
+        providers: [auth_service_1.AuthService, jwt_config_1.JwtConfigService, jwt_config_firebase_1.FirebaseStrategy, firebase_user_repository_1.FirebaseUserRepository],
         exports: [auth_service_1.AuthService, jwt_1.JwtModule],
     })
 ], AuthModule);

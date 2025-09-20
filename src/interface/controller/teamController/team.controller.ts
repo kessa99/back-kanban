@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Delete, Param, Body, UseGuards, Request, Res } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Param, Body, UseGuards, Request, Res, ValidationPipe, UsePipes } from '@nestjs/common';
 import type { Response } from 'express';
 import { TeamService } from '../../../interface/service/team.service';
 import { CreateTeamDto } from '../../../utils/dto/team/create-team.dto';
@@ -7,9 +7,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
 import { formatResponse } from '../../../utils/formatResponse/formatRespons';
 import { JwtService } from '@nestjs/jwt';
+import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
 
 @Controller('teams')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(FirebaseAuthGuard)
+@UsePipes(new ValidationPipe({ transform: true }))
 export class TeamController {
     constructor(
         private readonly teamService: TeamService,
@@ -17,13 +19,24 @@ export class TeamController {
     ) {}
 
     @Post('create')
-    async createTeam(@Body() createTeamDto: CreateTeamDto, @Request() req: any, @Res() res: Response) {
+    async createTeam(
+        @Body() createTeamDto: CreateTeamDto,
+        @Request() req: any,
+        @Res() res: Response
+    ) {
         try {
-            const user = req.user as UserEntity;
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
-            const team = await this.teamService.createTeam(createTeamDto, user.id);
+            const user = req.user?.id;
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
+
+            console.log('------------------------------------------------------------------')
+            console.log('=====> team: User ID:', user);
+            console.log('------------------------------------------------------------------');
+            const team = await this.teamService.createTeam(createTeamDto, user);
+            console.log('------------------------------------------------------------------');
+            console.log('Team created successfully', team);
+            console.log('------------------------------------------------------------------');
             return formatResponse(res, 201, "success", "Team created successfully", team);
         } catch (error) {
             return formatResponse(res, 400, "failed", "Error creating team", error.message);
@@ -36,9 +49,9 @@ export class TeamController {
             const user = req.user as UserEntity;
             console.log('User:', user);
             
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
             
             // Rechercher toutes les équipes où l'utilisateur est le propriétaire
             const teams = await this.teamService.findAll(user.id);
@@ -54,9 +67,9 @@ export class TeamController {
         try {
             const user = req.user as UserEntity;
             
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
             
             const team = await this.teamService.getTeamWithMembers(id, user.id);
             return formatResponse(res, 200, "success", "Team details fetched successfully", team);
@@ -70,9 +83,9 @@ export class TeamController {
     async updateTeam(@Param('id') id: string, @Body() updateTeamDto: UpdateTeamDto, @Request() req: any, @Res() res: Response) {
         try {
             const user = req.user as UserEntity;
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
             const team = await this.teamService.update(id, updateTeamDto, user.id);
             return formatResponse(res, 200, "success", "Team updated successfully", team);
         } catch (error) {
@@ -84,9 +97,9 @@ export class TeamController {
     async deleteTeam(@Param('id') id: string, @Request() req: any, @Res() res: Response) {
         try {
             const user = req.user as UserEntity;
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
             const team = await this.teamService.delete(id, user.id);
             return formatResponse(res, 200, "success", "Team deleted successfully", team);
         } catch (error) {
@@ -103,11 +116,11 @@ export class TeamController {
     ) {
         try {
             const user = req.user as UserEntity;
-            console.log('Adding member to team:', id, 'Member ID:', body.memberId);
+            console.log('Adding member to team:', id, 'Member ID:', body.memberId, 'User ID:', user.id);
             
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
             
             await this.teamService.addMember(id, body.memberId, user.id);
             
@@ -132,9 +145,9 @@ export class TeamController {
             const user = req.user as UserEntity;
             console.log('Removing member from team:', id, 'Member ID:', memberId);
             
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
             
             await this.teamService.removeMember(id, memberId, user.id);
             
@@ -152,9 +165,9 @@ export class TeamController {
     async getMembers(@Param('id') id: string, @Request() req: any, @Res() res: Response) {
         try {
             const user = req.user as UserEntity;
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
             const members = await this.teamService.getMembers(id);
             return formatResponse(res, 200, "success", "Members fetched successfully", members);
         } catch (error) {
@@ -178,9 +191,9 @@ export class TeamController {
             console.log('New Role:', body.role);
             console.log('User ID:', user.id);
             
-            if (!user.otpVerified) {
-                return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
+            // if (!user.otpVerified) {
+            //     return formatResponse(res, 400, "failed", "You can access this feature after verifying your email", null);
+            // }
             
             await this.teamService.changeMemberRole(id, memberId, body.role, user.id);
             

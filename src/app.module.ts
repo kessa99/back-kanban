@@ -21,6 +21,7 @@ import { FirebaseModule } from './config/module/firebase.module';
 import { BoardModule } from './config/module/boards.module';
 import { HealthController } from './interface/controller/heath.controller';
 import { AuthGuardFirebase } from './config/jwt/jwtAuth.guard';
+import { TaskModule } from './config/module/task.module';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { AuthGuardFirebase } from './config/jwt/jwtAuth.guard';
     UsersModule, // User management operations
     TeamModule, // Team management operations
     BoardModule, // Board management operations
-    
+    TaskModule, // Task management operations
   ],
   controllers: [HealthController],
   providers: [AuthGuardFirebase],

@@ -7,14 +7,10 @@ class UserEntity {
         this.name = props.name;
         this.email = props.email;
         this.password = props.password;
-        this.role = props.role;
-        this.teamId = props.teamId;
         this.createdBy = props.createdBy;
-        this.otp = props.otp;
-        this.otpExpiresAt = props.otpExpiresAt;
-        this.otpVerified = props.otpVerified ?? false;
         this.createdAt = props.createdAt || new Date();
         this.updatedAt = props.updatedAt || new Date();
+        this.fcmToken = props.fcmToken;
     }
     static create(props) {
         return new UserEntity({ ...props });

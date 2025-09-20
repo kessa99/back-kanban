@@ -15,17 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BoardController = void 0;
 const common_1 = require("@nestjs/common");
 const board_service_1 = require("../../../interface/service/board.service");
-const passport_1 = require("@nestjs/passport");
 const create_board_dto_1 = require("../../../utils/dto/boad/create-board.dto");
 const update_board_dto_1 = require("../../../utils/dto/boad/update-board.dto");
-const kanban_task_entity_1 = require("../../../domain/entities/kanban/kanban.task.entity");
 const formatRespons_1 = require("../../../utils/formatResponse/formatRespons");
 const firebase_task_repository_1 = require("../../../infrastructure/repositories/firebase-task.repository");
 const firebase_user_repository_1 = require("../../../infrastructure/repositories/firebase-user.repository");
 const user_service_1 = require("../../../interface/service/user.service");
-const constance_status_1 = require("../../../utils/constance/constance.status");
-const constance_priority_1 = require("../../../utils/constance/constance.priority");
-const kanban_checkList_entity_1 = require("../../../domain/entities/kanban/kanban.checkList.entity");
+const firebase_auth_guard_1 = require("../../../config/jwt/firebase-auth.guard");
 let BoardController = class BoardController {
     constructor(taskRepository, userRepository, boardsService, userService) {
         this.taskRepository = taskRepository;
@@ -35,10 +31,9 @@ let BoardController = class BoardController {
     }
     async findAllBoardUser(req, res) {
         try {
-            console.log('=== FIND ALL BOARD USER ===');
             console.log('User ID:', req.user.id);
-            console.log('=== FIND ALL BOARD USER ===');
             const boards = await this.boardsService.findAllBoardUser(req.user.id);
+            console.log('------------------------------------------------------------------');
             console.log('Boards:', boards);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Boards fetched successfully", boards);
         }
@@ -76,9 +71,6 @@ let BoardController = class BoardController {
     async getColm(boardId, req, res) {
         try {
             const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const columns = await this.boardsService.getColumns(boardId);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Columns fetched successfully", columns);
         }
@@ -111,81 +103,6 @@ let BoardController = class BoardController {
         }
         catch (error) {
             return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Board deletion failed", error);
-        }
-    }
-    async createTask(boardId, createData, req, res) {
-        try {
-            const user = req.user;
-            console.log('Creating task for board:', boardId);
-            console.log('User:', user);
-            console.log('Task data:', createData);
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, 'failed', 'Vous devez vérifier votre email pour accéder à cette fonctionnalité', null);
-            }
-            const dueDate = createData.dueDate
-                ? typeof createData.dueDate === 'string'
-                    ? new Date(createData.dueDate)
-                    : createData.dueDate
-                : new Date();
-            let taskAssignTo = [{ id: user.id, name: user.name || 'Utilisateur sans nom', email: user.email || '' }];
-            if (createData.assignTo && createData.assignTo.length === 1) {
-                const assignToId = createData.assignTo[0];
-                const assignToDetails = await this.userRepository.findById(assignToId);
-                if (!assignToDetails) {
-                    throw new Error(`Utilisateur avec l'ID ${assignToId} non trouvé pour la tâche`);
-                }
-                taskAssignTo = [{ id: assignToDetails.id, name: assignToDetails.name || 'Utilisateur sans nom', email: assignToDetails.email || '' }];
-            }
-            else if (createData.checklists && createData.checklists.length > 0) {
-                const firstChecklistAssignee = createData.checklists.find(checklist => checklist.assignTo && checklist.assignTo.length > 0);
-                if (firstChecklistAssignee && firstChecklistAssignee.assignTo && firstChecklistAssignee.assignTo.length > 0) {
-                    const assignToId = firstChecklistAssignee.assignTo[0];
-                    const assignToDetails = await this.userRepository.findById(assignToId);
-                    if (assignToDetails) {
-                        taskAssignTo = [{ id: assignToDetails.id, name: assignToDetails.name || 'Utilisateur sans nom', email: assignToDetails.email || '' }];
-                    }
-                }
-            }
-            const task = kanban_task_entity_1.KanbanTaskEntity.create({
-                boardId,
-                columnId: createData.columnId,
-                title: createData.title,
-                description: createData.description,
-                dueDate,
-                status: createData.status || constance_status_1.Status.PENDING,
-                assignTo: taskAssignTo,
-                createdBy: user.id,
-                priority: createData.priority || constance_priority_1.Priority.MEDIUM,
-            });
-            const savedTask = await this.taskRepository.create(task);
-            if (createData.checklists && createData.checklists.length > 0) {
-                const checklists = await Promise.all(createData.checklists.map(async (checklist) => {
-                    if (!checklist.assignTo || checklist.assignTo.length !== 1) {
-                        throw new Error('Chaque checklist doit être assignée à exactement un utilisateur');
-                    }
-                    const assignToId = checklist.assignTo[0];
-                    const assignToDetails = await this.userRepository.findById(assignToId);
-                    if (!assignToDetails) {
-                        throw new Error(`Utilisateur avec l'ID ${assignToId} non trouvé`);
-                    }
-                    return kanban_checkList_entity_1.KanbanChecklistEntity.create({
-                        id: '',
-                        taskId: savedTask.id,
-                        title: checklist.title,
-                        assignToId: assignToDetails.id,
-                        assignToName: assignToDetails.name || '',
-                        assignToEmail: assignToDetails.email || '',
-                    });
-                }));
-                const savedChecklists = await Promise.all(checklists.map((checklist) => this.taskRepository.createChecklist(checklist, user.id)));
-                savedTask.checklistIds = savedChecklists.map((c) => c.id);
-                await this.taskRepository.update(savedTask);
-            }
-            return (0, formatRespons_1.formatResponse)(res, 201, 'success', 'Tâche créée avec succès', savedTask);
-        }
-        catch (error) {
-            console.error('Erreur lors de la création de la tâche:', error);
-            return (0, formatRespons_1.formatResponse)(res, 400, 'failed', 'Échec de la création de la tâche', error.message);
         }
     }
     async getAllTask(boardId, req, res) {
@@ -267,9 +184,6 @@ let BoardController = class BoardController {
     async getColumns(boardId, req, res) {
         try {
             const user = req.user;
-            if (!user.otpVerified) {
-                return (0, formatRespons_1.formatResponse)(res, 400, "failed", "You can access this feature after verifying your email", null);
-            }
             const columns = await this.boardsService.getColumns(boardId);
             return (0, formatRespons_1.formatResponse)(res, 200, "success", "Columns fetched successfully", columns);
         }
@@ -288,7 +202,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BoardController.prototype, "findAllBoardUser", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('teamBoard'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -350,16 +264,6 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BoardController.prototype, "delete", null);
-__decorate([
-    (0, common_1.Post)(':boardId/tasks'),
-    __param(0, (0, common_1.Param)('boardId')),
-    __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Request)()),
-    __param(3, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object, Object]),
-    __metadata("design:returntype", Promise)
-], BoardController.prototype, "createTask", null);
 __decorate([
     (0, common_1.Get)(':boardId/tasks'),
     __param(0, (0, common_1.Param)('boardId')),
@@ -430,7 +334,8 @@ __decorate([
 ], BoardController.prototype, "getColumns", null);
 exports.BoardController = BoardController = __decorate([
     (0, common_1.Controller)('boards'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)(firebase_auth_guard_1.FirebaseAuthGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     __metadata("design:paramtypes", [firebase_task_repository_1.FirebaseTaskRepository,
         firebase_user_repository_1.FirebaseUserRepository,
         board_service_1.BoardsService,

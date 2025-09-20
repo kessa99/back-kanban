@@ -7,13 +7,9 @@ export declare class KanbanTaskEntity {
     boardId: string;
     title: string;
     description: string;
-    dueDate: Date;
+    startDate: Date;
+    endDate: Date;
     status: Status;
-    assignTo: {
-        id: string;
-        name: string;
-        email: string;
-    }[];
     createdBy: string;
     priority: Priority;
     checklistIds: string[];
@@ -26,14 +22,10 @@ export declare class KanbanTaskEntity {
         boardId: string;
         title: string;
         description?: string;
-        dueDate?: Date;
+        startDate?: Date;
+        endDate?: Date;
         status?: Status;
-        assignTo?: {
-            id: string;
-            name: string;
-            email: string;
-        }[];
-        createdBy: string;
+        createdBy?: string;
         priority?: Priority;
         checklistIds?: string[];
         createdAt?: Date;
@@ -46,14 +38,10 @@ export declare class KanbanTaskEntity {
         boardId: string;
         title: string;
         description?: string;
-        dueDate?: Date;
+        startDate?: Date;
+        endDate?: Date;
         status?: Status;
-        assignTo?: {
-            id: string;
-            name: string;
-            email: string;
-        }[];
-        createdBy: string;
+        createdBy?: string;
         priority?: Priority;
         checklistIds?: string[];
         createdAt?: Date;

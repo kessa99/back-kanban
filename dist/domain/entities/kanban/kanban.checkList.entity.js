@@ -1,21 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KanbanChecklistEntity = void 0;
-class KanbanChecklistEntity {
+exports.ChecklistItemEntity = void 0;
+class ChecklistItemEntity {
     constructor(props) {
         this.id = props.id;
         this.taskId = props.taskId;
         this.title = props.title;
-        this.assignToId = props.assignToId;
-        this.assignToName = props.assignToName;
-        this.assignToEmail = props.assignToEmail;
         this.completed = props.completed || false;
+        this.assignedTo = props.assignedTo;
+        this.startDate = props.startDate;
+        this.endedAt = props.endedAt;
         this.createdAt = props.createdAt || new Date();
         this.updatedAt = props.updatedAt || new Date();
     }
     static create(props) {
-        return new KanbanChecklistEntity(props);
+        const id = props.id || crypto.randomUUID();
+        return new ChecklistItemEntity({ ...props, id });
     }
 }
-exports.KanbanChecklistEntity = KanbanChecklistEntity;
+exports.ChecklistItemEntity = ChecklistItemEntity;
 //# sourceMappingURL=kanban.checkList.entity.js.map

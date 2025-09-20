@@ -14,18 +14,14 @@ export class UserDto {
   password: string;
 
   @IsString()
-  @IsNotEmpty()
-  role?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  otp?: string;
+  @IsOptional()
+  createdBy?: string;
 
   @IsDate()
-  @IsNotEmpty()
-  otpExpiresAt?: Date;
+  @IsOptional()
+  createdAt?: Date;
 
-  @IsBoolean()
-  @IsNotEmpty()
-  otpVerified?: boolean;
+  @IsDate()
+  @IsOptional()
+  updatedAt?: Date;
 }

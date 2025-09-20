@@ -14,6 +14,8 @@ import { JwtService } from '@nestjs/jwt';
 import { sendOTPEmail } from "../../utils/mailer/invitMail";
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
 import * as firebaseAdmin from 'firebase-admin';
+import { firestore } from "../../config/firebase/firebase.config";
+import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
 
 @Injectable()
 export class UserService {
@@ -24,43 +26,72 @@ export class UserService {
   ) {}
 
   async registerUser(registerUser: RegisterUserDto) {
-    console.log(registerUser);
     try {
+
+      // Création dans Firebase Auth
       const userRecord = await firebaseAdmin.auth().createUser({
         displayName: registerUser.name,
         email: registerUser.email,
-        password: registerUser.password,        
+        password: registerUser.password,
       });
-      console.log('User Record:', userRecord);
-      return userRecord;
+
+  
+      // Création dans Firestore
+      const newUser = await firestore.collection('users').doc(userRecord.uid).set({
+        name: registerUser.name,
+        email: registerUser.email,
+        password: registerUser.password,
+        createdBy: '',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      console.log('-------------------------------------------------------------------');
+      console.log('User enregistrer avec succès dans le service');
+  
+      // Retour simplifié
+      return newUser;
     } catch (error) {
       console.error('Error creating user:', error);
-      throw new Error('User registration failed'); // Handle errors gracefully
+      throw new Error(`User registration failed: ${error.message}`);
     }
   }
   
-  async createUser(name: string, email: string, password: string, createdBy: string): Promise<UserEntity> {
-    console.log('Creating user with createdBy:', createdBy); // Debug log
+  
+  async createUser(createUserDto: RegisterUserDto, createdBy: string): Promise<UserEntity> {
+    console.log('Creating user with createdBy:', createdBy);
     
-    const existingUser = await this.userRepository.findByEmail(email);
+    const existingUser = await this.userRepository.findByEmail(createUserDto.email);
     if (existingUser) throw new HttpException('Email already registered', HttpStatus.BAD_REQUEST);
     
-    const newUser = await this.userRepository.create(
-      UserEntity.create({
-        id: '',
-        name,
-        email,
-        password,
-        role: Role.MEMBER,
-        createdBy: createdBy,
-        teamId: '',
-        otp: '',
-        otpExpiresAt: new Date(),
-        otpVerified: false,
-      })
-    );
+    const userRecord = await firebaseAdmin.auth().createUser({
+      displayName: createUserDto.name,
+      email: createUserDto.email,
+      password: createUserDto.password,
+    });
+
+    await firestore.collection('users').doc(userRecord.uid).set({
+      name: createUserDto.name,
+      email: createUserDto.email,
+      password: createUserDto.password,
+      createdBy: createdBy,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     
-    console.log('Created user:', newUser); // Debug log
+    // Create and return a UserEntity object
+    const newUser = UserEntity.create({
+      id: userRecord.uid,
+      name: createUserDto.name,
+      email: createUserDto.email,
+      password: createUserDto.password,
+      createdBy: createdBy,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    
+    console.log('-------------------------------------------------------------------');
+    console.log('User created with succès dans le service');
     return newUser;
   }
 
@@ -73,15 +104,12 @@ export class UserService {
     const newUser = await this.userRepository.create(
       UserEntity.create({
         id: '',
-      name: userData.name,
-      email,
-      password: userData.password,
-      role: role as Role,
+        name: userData.name,
+        email,
+        password: userData.password,
         createdBy: ownerId,
-      teamId,
-      otp: '',
-      otpExpiresAt: new Date(),
-      otpVerified: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
     );
     return newUser;
@@ -91,7 +119,7 @@ export class UserService {
   async addUserToTeam(userId: string, teamId: string): Promise<void> {
     const user = await this.userRepository.findById(userId);
     if (!user) throw new NotFoundException(`User with ID ${userId} not found`);
-    user.teamId = teamId;
+    user.createdBy = teamId;
     await this.userRepository.update(user);
   }
 
@@ -115,26 +143,32 @@ export class UserService {
     return this.userRepository.findUsersByCreatedBy(createdBy);
   }
 
-  async updateUser(id: string, name: string, email: string, password: string): Promise<UserEntity> {
+  async updateUser(id: string, updateData: { name?: string, email?: string, password?: string }): Promise<UserEntity> {
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException("User not found");
     }
-    user.name = name;
-    user.email = email;
-    user.password = password;
+    user.name = updateData.name || user.name;
+    user.email = updateData.email || user.email;
+    user.password = updateData.password || user.password;
 
-    return this.userRepository.update(user);
+    const updatedUser = await this.userRepository.update(user);
+    console.log('-------------------------------------------------------------------');
+    console.log('User updated with succès dans le service');
+    console.log('-------------------------------------------------------------------')
+    return updatedUser;
   }
 
   async deleteUser(id: string): Promise<void> {
+    // firebaseAdmin delete
+    await firebaseAdmin.auth().deleteUser(id);
     await this.userRepository.delete(id);
   }
 
   async inviteUser(teamId: string, inviteData: { email: string }, ownerId: string, role: string): Promise<{ message: string }> {
     const owner = await this.userRepository.findById(ownerId);
     if (!owner) throw new NotFoundException(`Owner with ID ${ownerId} not found`);
-    if (owner.role !== Role.OWNER) throw new UnauthorizedException('Only owners can invite users');
+    // if (owner.role !== Role.OWNER) throw new UnauthorizedException('Only owners can invite users');
 
     // Vérifie si l'équipe existe
     const team = await this.teamRepository.findById(teamId);
@@ -151,5 +185,15 @@ export class UserService {
     await sendOTPEmail(inviteData.email, verificationLink);
 
     return { message: 'User invited successfully' };
+  }
+
+  async updateFcmToken(userId: string, updateFcmDto: UpdateFcmDto) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new Error('Utilisateur non trouvé');
+    }
+
+    await this.userRepository.updateFcmToken(userId, updateFcmDto.fcmToken);
+    return { status: 'success', message: 'Token FCM mis à jour' };
   }
 }

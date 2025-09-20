@@ -16,7 +16,7 @@ export class TeamService {
         const team = TeamEntity.create({
             id: '',
             name: createTeamDto.name,
-            ownerId: ownerId, // L'utilisateur devient automatiquement le propriétaire
+            ownerId: ownerId,
             members: [],
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -184,6 +184,15 @@ export class TeamService {
         console.log('Team found:', team);
         console.log('Team members before:', team.members);
         console.log('Team ownerId:', team.ownerId);
+
+        //members existing
+        const getUser = await this.userService.findUserById(memberId);
+        if (!getUser) throw new NotFoundException(`User not found`);
+        if (getUser.id === ownerId) throw new UnauthorizedException('You cannot add yourself as a member');
+        if (team.members.includes(memberId)) throw new UnauthorizedException('User already in team');
+        if (team.ownerId === memberId) throw new UnauthorizedException('You cannot add the owner as a member');
+        if (team.members.includes(ownerId)) throw new UnauthorizedException('Owner already in team');
+        // if (team.ownerId === ownerId) throw new UnauthorizedException('You cannot add the owner as a member');
         
         if (team.ownerId !== ownerId) {
             console.log('Unauthorized: ownerId mismatch');

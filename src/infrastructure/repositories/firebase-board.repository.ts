@@ -52,6 +52,7 @@ export class FirebaseBoardRepository implements IBoardRepository {
             });
         });
     }
+    
 
     async findById(id: string): Promise<KanbanBoardEntity | null> {
         const doc = await this.collection.doc(id).get();
@@ -67,6 +68,7 @@ export class FirebaseBoardRepository implements IBoardRepository {
           updatedAt: data?.updatedAt.toDate(),
         });
     }
+
 
     async update(board: KanbanBoardEntity): Promise<KanbanBoardEntity> {
         const id = board.id;

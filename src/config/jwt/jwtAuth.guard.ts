@@ -9,6 +9,7 @@
  * elle est utilisée pour vérifier si l'utilisateur est autorisé à accéder à la route
  */
 
+// src/config/jwt/jwtAuth.guard.ts
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
