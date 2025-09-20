@@ -36,6 +36,9 @@ RUN addgroup -g 1001 -S nodejs && \
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
 
+# Copy Firebase service account key if it exists (fallback)
+COPY --chown=nestjs:nodejs kanban-5a370-firebase-adminsdk-fbsvc-b60c1950fd.json* ./
+
 # Install only production dependencies
 RUN npm install --only=production --legacy-peer-deps && npm cache clean --force
 
