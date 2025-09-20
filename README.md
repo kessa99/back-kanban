@@ -258,6 +258,45 @@ POST   /boards/:boardId/tasks/:taskId/files      # Upload file
 POST   /boards/:boardId/tasks/:taskId/views      # Record view
 ```
 
+#### Kanban Board Management (`/boards`)
+```bash
+GET    /boards                                   # Get all boards
+GET    /boards/:boardId                          # Get board details
+POST   /boards                                   # Create board
+PATCH  /boards/:boardId                          # Update board
+DELETE /boards/:boardId                          # Delete board
+```
+
+#### Team Management (`/teams`)
+```bash
+POST   /teams/create                             # Create team
+GET    /teams                                    # Get user teams
+GET    /teams/:teamId                            # Get team details
+PUT    /teams/:teamId                            # Update team
+DELETE /teams/:teamId                            # Delete team
+POST   /teams/:teamId/members                    # Add team member
+DELETE /teams/:teamId/members/:memberId          # Remove member
+GET    /teams/:teamId/members                    # Get team members
+PUT    /teams/:teamId/members/:memberId/role     # Change member role
+```
+
+#### Task Management (`/boards/:boardId/tasks`)
+```bash
+POST   /boards/:boardId/tasks                    # Create task
+GET    /boards/:boardId/tasks                    # Get board tasks
+PATCH  /boards/:boardId/tasks/:taskId/move       # Move task
+POST   /boards/:boardId/tasks/:taskId/comments   # Add comment
+POST   /boards/:boardId/tasks/:taskId/files      # Upload file
+POST   /boards/:boardId/tasks/:taskId/views      # Record view
+
+
+GET /teams/tasks/assigned - Récupère toutes les tâches assignées à l'utilisateur connecté
+GET /teams/boards/assigned - Récupère tous les boards où l'utilisateur a des tâches assignées
+GET /teams/:teamId/tasks - Récupère toutes les tâches d'une équipe spécifique
+GET /teams/:teamId/boards/:boardId/tasks/assigned - Récupère les tâches assignées d'un board spécifique   
+```
+
+
 ### Response Format
 All endpoints return responses in this format:
 ```json

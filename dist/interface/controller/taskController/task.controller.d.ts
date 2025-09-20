@@ -5,7 +5,7 @@ export declare class TasksController {
     private readonly tasksService;
     constructor(tasksService: TasksService);
     createTask(req: any, res: Response, boardId: string, createTaskDto: CreateTaskDto): Promise<Response<any, Record<string, any>>>;
-    getTaskById(res: Response, taskId: string): Promise<Response<any, Record<string, any>>>;
+    getTaskById(res: Response, boardId: string, taskId: string): Promise<Response<any, Record<string, any>>>;
     addAssignedToChecklist(res: Response, checklistId: string, assignedTo: string): Promise<Response<any, Record<string, any>>>;
     removeAssignedToChecklist(checklistId: string, res: Response): Promise<Response<any, Record<string, any>>>;
 }

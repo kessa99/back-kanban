@@ -66,20 +66,30 @@ async createTask(boardId: string, columnId: string, createTaskDto: CreateTaskDto
       // Préparer la checklist si présente
       const checklistEntities: ChecklistItemEntity[] = [];
       if (createTaskDto.checklist?.length > 0) {
+        console.log('----------------------------------------------------------------');
+        console.log('Processing checklists:', createTaskDto.checklist);
+        console.log('----------------------------------------------------------------');
+        
         for (const item of createTaskDto.checklist) {
+          console.log('----------------------------------------------------------------');
+          console.log('Checklist item:', item);
+          console.log('assignedTo value:', item.assignedTo);
+          console.log('assignedTo type:', typeof item.assignedTo);
+          console.log('----------------------------------------------------------------');
+          
           checklistEntities.push(
             ChecklistItemEntity.create({
               id: undefined,
               taskId: '',
               title: item.title,
-              assignedTo: item.assignedTo,
+              assignedTo: item.assignedTo || undefined,
               completed: false,
               startDate: item.startDate ? new Date(item.startDate) : undefined,
               endedAt: item.endDate ? new Date(item.endDate) : undefined,
             }),
           );
           console.log('----------------------------------------------------------------');
-          console.log('Checklist created:', checklistEntities[checklistEntities.length - 1]);
+          console.log('Checklist entity created:', checklistEntities[checklistEntities.length - 1]);
           console.log('----------------------------------------------------------------');
         }
       }

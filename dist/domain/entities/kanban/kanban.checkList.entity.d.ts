@@ -3,7 +3,7 @@ export declare class ChecklistItemEntity {
     taskId: string;
     title: string;
     completed: boolean;
-    assignedTo?: string;
+    assignedTo: string;
     startDate?: Date;
     endedAt?: Date;
     createdAt: Date;
@@ -13,7 +13,7 @@ export declare class ChecklistItemEntity {
         taskId: string;
         title: string;
         completed?: boolean;
-        assignedTo?: string;
+        assignedTo: string;
         startDate?: Date;
         endedAt?: Date;
         createdAt?: Date;
@@ -24,7 +24,7 @@ export declare class ChecklistItemEntity {
         taskId: string;
         title: string;
         completed?: boolean;
-        assignedTo?: string;
+        assignedTo: string;
         startDate?: Date;
         endedAt?: Date;
         createdAt?: Date;

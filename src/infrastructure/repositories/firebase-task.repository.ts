@@ -111,7 +111,13 @@ export class FirebaseTaskRepository implements ITaskRepository {
 
   // --- Checklists ---
   async createChecklist(checklist: ChecklistItemEntity, createdBy: string): Promise<ChecklistItemEntity> {
-    const docRef = await this.checklistCollection.add({
+    console.log('----------------------------------------------------------------');
+    console.log('Creating checklist in repository:', checklist);
+    console.log('assignedTo value:', checklist.assignedTo);
+    console.log('assignedTo type:', typeof checklist.assignedTo);
+    console.log('----------------------------------------------------------------');
+    
+    const checklistData = {
       title: checklist.title,
       taskId: checklist.taskId,
       createdBy,
@@ -120,7 +126,18 @@ export class FirebaseTaskRepository implements ITaskRepository {
       endDate: checklist.endedAt ?? null,
       createdAt: checklist.createdAt ?? new Date(),
       updatedAt: checklist.updatedAt ?? new Date(),
-    });
+    };
+
+    // Ajouter assignedTo seulement s'il n'est pas undefined
+    if (checklist.assignedTo !== undefined) {
+      checklistData['assignedTo'] = checklist.assignedTo;
+    }
+
+    console.log('----------------------------------------------------------------');
+    console.log('Checklist data to save:', checklistData);
+    console.log('----------------------------------------------------------------');
+
+    const docRef = await this.checklistCollection.add(checklistData);
     return { ...checklist, id: docRef.id };
   }
 

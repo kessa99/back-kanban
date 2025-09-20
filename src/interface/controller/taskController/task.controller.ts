@@ -58,10 +58,23 @@ export class TasksController {
   @Get(':taskId')
   async getTaskById(
     @Res() res: Response,
+    @Param('boardId') boardId: string,
     @Param('taskId') taskId: string,
   ) {
-    const task = await this.tasksService.findTaskById(taskId);
-    return formatResponse(res, 200, "success", "Task retrieved successfully", task);
+    try {
+      console.log('Getting task details for taskId:', taskId, 'boardId:', boardId);
+      const task = await this.tasksService.findTaskById(taskId);
+      
+      // Vérifier que la tâche appartient au board
+      if (task.boardId !== boardId) {
+        return formatResponse(res, 404, "error", "Task not found in this board", null);
+      }
+      
+      return formatResponse(res, 200, "success", "Task retrieved successfully", task);
+    } catch (error) {
+      console.error('Error getting task details:', error);
+      return formatResponse(res, 500, "error", "Failed to retrieve task", null);
+    }
   }
 
   @Patch('checklists/:checklistId/assign')

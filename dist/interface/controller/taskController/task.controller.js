@@ -33,9 +33,19 @@ let TasksController = class TasksController {
         console.log('----------------------------------------------------------------');
         return (0, formatRespons_1.formatResponse)(res, 201, "success", "Task created successfully", task);
     }
-    async getTaskById(res, taskId) {
-        const task = await this.tasksService.findTaskById(taskId);
-        return (0, formatRespons_1.formatResponse)(res, 200, "success", "Task retrieved successfully", task);
+    async getTaskById(res, boardId, taskId) {
+        try {
+            console.log('Getting task details for taskId:', taskId, 'boardId:', boardId);
+            const task = await this.tasksService.findTaskById(taskId);
+            if (task.boardId !== boardId) {
+                return (0, formatRespons_1.formatResponse)(res, 404, "error", "Task not found in this board", null);
+            }
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Task retrieved successfully", task);
+        }
+        catch (error) {
+            console.error('Error getting task details:', error);
+            return (0, formatRespons_1.formatResponse)(res, 500, "error", "Failed to retrieve task", null);
+        }
     }
     async addAssignedToChecklist(res, checklistId, assignedTo) {
         console.log('----------------------------------------------------------------');
@@ -67,9 +77,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)(':taskId'),
     __param(0, (0, common_1.Res)()),
-    __param(1, (0, common_1.Param)('taskId')),
+    __param(1, (0, common_1.Param)('boardId')),
+    __param(2, (0, common_1.Param)('taskId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], TasksController.prototype, "getTaskById", null);
 __decorate([

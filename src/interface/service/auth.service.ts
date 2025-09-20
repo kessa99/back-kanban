@@ -37,15 +37,21 @@ export class AuthService {
       const { idToken, refreshToken, expiresIn } = await this.signInWithEmailAndPassword(email, password);
       return { idToken, refreshToken, expiresIn };
     } catch (error: any) {
-      if (error.message.includes('EMAIL_NOT_FOUND')) {
-        throw new Error('User not found.');
-      } else if (error.message.includes('INVALID_PASSWORD')) {
-        throw new Error('Invalid password.');
-      } else {
-        throw new Error(error.message);
+      const firebaseError = error.response?.data?.error?.message;
+  
+      switch (firebaseError) {
+        case 'EMAIL_NOT_FOUND':
+          throw new Error('User not found.');
+        case 'INVALID_PASSWORD':
+          throw new Error('Invalid password.');
+        case 'USER_DISABLED':
+          throw new Error('This account has been disabled.');
+        default:
+          throw new Error(firebaseError || 'Authentication failed.');
       }
-     }
+    }
   }
+  
       
   private async signInWithEmailAndPassword(email: string, password: string) {
   const apiKey = process.env.FIREBASE_WEB_API_KEY; // Make sure this is set in your .env
