@@ -153,7 +153,7 @@ export class AuthService {
   }
 
     private async sendOTP(email: string, otp: string) {
-        await sendOTPEmailBrevo(email, otp);
+        await sendOTPEmail(email, otp);
     }
 
     async resendOtp(email: string) {
@@ -219,7 +219,7 @@ export class AuthService {
       const otp = this.generateOTP();
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
       this.otpStore.set(user.email, { otp, expiresAt });
-      await sendBrevoEmail(user.email, otp);
+      await this.sendOTP(user.email, otp);
 
       const newUser = await this.userRepository.create(
         UserEntity.create({

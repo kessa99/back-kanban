@@ -33,7 +33,8 @@ const sendOTPEmail = async (email, otp) => {
         <p style="text-align: center; color: #666;">Si vous n'avez pas demandé ce code, ignorez cet e-mail.</p>
       `,
         };
-        await gmail_smtp_1.transporter.sendMail(mailOptions);
+        const info = await gmail_smtp_1.transporter.sendMail(mailOptions);
+        console.log(`Email envoyé à ${email}, MessageId: ${info.messageId}`);
         console.log(`Mail envoyé à : ${email}`);
     }
     catch (error) {
@@ -69,10 +70,10 @@ const sendOTPEmailBrevo = async (email, otp) => {
       `,
         };
         const info = await brevo_smtp_1.transporterBrevo.sendMail(mailOptions);
-        console.log(`✅ Email envoyé à ${email}, MessageId: ${info.messageId}`);
+        console.log(`Email envoyé à ${email}, MessageId: ${info.messageId}`);
     }
     catch (error) {
-        console.error("❌ Erreur lors de l'envoi de l'email :", error);
+        console.error("Erreur lors de l'envoi de l'email :", error);
         throw new Error("Impossible d'envoyer l'email OTP.");
     }
 };

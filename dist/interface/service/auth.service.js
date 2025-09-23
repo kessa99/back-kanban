@@ -51,9 +51,9 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcryptjs"));
 const userTeam_user_entity_1 = require("../../domain/entities/userTeam/userTeam.user.entity");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
+const otpMailer_1 = require("../../utils/mailer/otpMailer");
 const axios_1 = __importDefault(require("axios"));
 const firebaseAdmin = __importStar(require("firebase-admin"));
-const otpMailer_1 = require("../../utils/mailer/otpMailer");
 let AuthService = class AuthService {
     constructor(jwtService, userRepository) {
         this.jwtService = jwtService;
@@ -166,7 +166,7 @@ let AuthService = class AuthService {
         return true;
     }
     async sendOTP(email, otp) {
-        await (0, otpMailer_1.sendOTPEmailBrevo)(email, otp);
+        await (0, otpMailer_1.sendOTPEmail)(email, otp);
     }
     async resendOtp(email) {
         const user = await this.userRepository.findByEmail(email);

@@ -32,7 +32,9 @@ export const sendOTPEmail = async (email: string, otp: string) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Email envoyé à ${email}, MessageId: ${info.messageId}`);
+
     console.log(`Mail envoyé à : ${email}`);
   } catch (error) {
     console.error("Erreur lors de l'envoi de l'email :", error);
@@ -71,10 +73,10 @@ export const sendOTPEmailBrevo = async (email: string, otp: string) => {
     };
     
 
-    const info = await transporterBrevo.sendMail(mailOptions);
-    console.log(`✅ Email envoyé à ${email}, MessageId: ${info.messageId}`);
+   const info = await transporterBrevo.sendMail(mailOptions);
+    console.log(`Email envoyé à ${email}, MessageId: ${info.messageId}`);
   } catch (error) {
-    console.error("❌ Erreur lors de l'envoi de l'email :", error);
+    console.error("Erreur lors de l'envoi de l'email :", error);
     throw new Error("Impossible d'envoyer l'email OTP.");
   }
 };
