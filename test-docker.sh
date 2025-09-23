@@ -75,3 +75,6 @@ docker rm kanban-test
 
 echo "✅ All tests passed! Your Docker setup is working correctly."
 echo "You can now run: docker-compose up --build"
+
+
+

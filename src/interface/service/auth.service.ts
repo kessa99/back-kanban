@@ -20,6 +20,10 @@ import { LoginDto } from '../../utils/dto/users/login.dta';
 import axios from 'axios';
 import * as firebaseAdmin from 'firebase-admin';
 import { UpdateFcmDto } from '../../utils/dto/users/UpdateFcmDto';
+import { sendOTPEmailBrevo } from '../../utils/mailer/otpMailer';
+import { sendOTPEmailEtheral } from '../../utils/mailer/otpMailer';
+import { BrevoMailer } from '../../config/configMail/brevoMailer';
+
 
 @Injectable()
 export class AuthService {
@@ -114,63 +118,68 @@ export class AuthService {
         }
     }
 
-    private generateOTP(): string {
-        return Math.floor(100000 + Math.random() * 900000).toString();
-    }
+  private generateOTP(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
 
-    async verifyOTP(email: string, otp: string): Promise<boolean> {
-        const storedOTP = this.otpStore.get(email);
-        if (!storedOTP) {
-            throw new UnauthorizedException('No otp found for this email, please resend otp');
-        };
-        if (storedOTP.expiresAt < new Date()) {
-            throw new UnauthorizedException('OTP expired, please resend otp');
-        };
-        if (storedOTP.otp !== otp) {
-            throw new UnauthorizedException('Invalid otp, please resend otp');
-        };
-        const user = await this.userRepository.findByEmail(email);
-        if (!user) {
-            throw new UnauthorizedException('User not found, please register');
-        };
+  async verifyOTP(email: string, otp: string): Promise<boolean> {
+    const storedOTP = this.otpStore.get(email);
+    console.log('storedOTP', storedOTP);
 
-        await this.userRepository.update(UserEntity.create({
-            ...user,
-            updatedAt: new Date(),
-        }))
+    if (!storedOTP) {
+      throw new UnauthorizedException('No otp found for this email, please resend otp');      };
+      if (storedOTP.expiresAt < new Date()) {
+        console.log('OTP expired, please resend otp');
+        throw new UnauthorizedException('OTP expired, please resend otp');
+      };
 
-        // delete otp from store
-        this.otpStore.delete(email);
-        return true;
-    }
+      if (storedOTP.otp !== otp) {
+        throw new UnauthorizedException('Invalid otp, please resend otp');
+      };
+
+      const user = await this.userRepository.findByEmail(email);
+      if (!user) {
+        throw new UnauthorizedException('User not found, please register');
+      };
+
+      await this.userRepository.update(UserEntity.create({
+        ...user,
+          updatedAt: new Date(),
+      }))
+
+      // delete otp from store
+      this.otpStore.delete(email);
+      return true;
+  }
 
     private async sendOTP(email: string, otp: string) {
-        await sendOTPEmail(email, otp);
+        await sendOTPEmailBrevo(email, otp);
     }
 
     async resendOtp(email: string) {
-        // Vérifier que l'utilisateur existe
-        const user = await this.userRepository.findByEmail(email);
-        if (!user) {
-            throw new UnauthorizedException('User not found, please register first');
-        }
+      // Vérifier que l'utilisateur existe
+      const user = await this.userRepository.findByEmail(email);
+      if (!user) {
+        throw new UnauthorizedException('User not found, please register first');
+      }
 
-        const otp = this.generateOTP();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
-        
-        // Stocker l'OTP en mémoire
-        this.otpStore.set(email, { otp, expiresAt });
-        
-        // Mettre à jour l'utilisateur dans la base de données
-        await this.userRepository.update(UserEntity.create({
-            ...user,
-            updatedAt: new Date(),
-        }));
 
-        // Envoyer l'OTP par email
-        await this.sendOTP(email, otp);
+      const otp = this.generateOTP();
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
         
-        return 'OTP resent successfully';
+      // Stocker l'OTP en mémoire
+      this.otpStore.set(email, { otp, expiresAt });
+        
+      // Mettre à jour l'utilisateur dans la base de données
+      await this.userRepository.update(UserEntity.create({
+        ...user,
+        updatedAt: new Date(),
+      }));
+
+      // Envoyer l'OTP par email
+      await this.sendOTP(email, otp);
+        
+      return 'OTP resent successfully';
     }
 
 
@@ -192,42 +201,49 @@ export class AuthService {
         // if (!user.otpVerified) throw new UnauthorizedException('OTP not verified, please verify your otp');
         
         const payload = {
-            email: user.email, 
-            sub: user.id, 
+          email: user.email, 
+          sub: user.id, 
+          role: user.role,
         };
         
         return { access_token: this.jwtService.sign(payload, { expiresIn: '1h' }) };
     }
 
     async register(user: UserEntity) {
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-        const otp = this.generateOTP();
-        const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
-        this.otpStore.set(user.email, { otp, expiresAt });
-        await this.sendOTP(user.email, otp);
 
-        const newUser = await this.userRepository.create(
-            UserEntity.create({
-                id: '',
-                name: user.name,
-                email: user.email,
-                password: hashedPassword,
-                createdBy: user.createdBy || '', // S'assurer que createdBy est défini
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            })
-        )
+      // verifier que le mail est unique
+      const existingUser = await this.userRepository.findByEmail(user.email);
+      if (existingUser) throw new UnauthorizedException('Email already registered');
+
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      const otp = this.generateOTP();
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
+      this.otpStore.set(user.email, { otp, expiresAt });
+      await sendBrevoEmail(user.email, otp);
+
+      const newUser = await this.userRepository.create(
+        UserEntity.create({
+          id: '',
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          password: hashedPassword,
+          createdBy: user.createdBy || '', // S'assurer que createdBy est défini
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+      )
         
-        // Generate JWT with the correct user ID from the created user
-        const payload = {
-            email: newUser.email, 
-            sub: newUser.id, 
-            // role: newUser.createdBy,
-            // teamId: newUser.createdBy,
-        };
-        const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
+      // Generate JWT with the correct user ID from the created user
+      const payload = {
+        email: newUser.email, 
+        sub: newUser.id, 
+        role: newUser.role,
+      };
+      
+      const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
         
-        return { user: newUser, access_token };
+      return { user: newUser, access_token };
     }
 
 

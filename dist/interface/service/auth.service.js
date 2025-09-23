@@ -51,9 +51,9 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcryptjs"));
 const userTeam_user_entity_1 = require("../../domain/entities/userTeam/userTeam.user.entity");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
-const otpMailer_1 = require("../../utils/mailer/otpMailer");
 const axios_1 = __importDefault(require("axios"));
 const firebaseAdmin = __importStar(require("firebase-admin"));
+const otpMailer_1 = require("../../utils/mailer/otpMailer");
 let AuthService = class AuthService {
     constructor(jwtService, userRepository) {
         this.jwtService = jwtService;
@@ -139,11 +139,13 @@ let AuthService = class AuthService {
     }
     async verifyOTP(email, otp) {
         const storedOTP = this.otpStore.get(email);
+        console.log('storedOTP', storedOTP);
         if (!storedOTP) {
             throw new common_1.UnauthorizedException('No otp found for this email, please resend otp');
         }
         ;
         if (storedOTP.expiresAt < new Date()) {
+            console.log('OTP expired, please resend otp');
             throw new common_1.UnauthorizedException('OTP expired, please resend otp');
         }
         ;
@@ -164,7 +166,7 @@ let AuthService = class AuthService {
         return true;
     }
     async sendOTP(email, otp) {
-        await (0, otpMailer_1.sendOTPEmail)(email, otp);
+        await (0, otpMailer_1.sendOTPEmailBrevo)(email, otp);
     }
     async resendOtp(email) {
         const user = await this.userRepository.findByEmail(email);
@@ -199,10 +201,14 @@ let AuthService = class AuthService {
         const payload = {
             email: user.email,
             sub: user.id,
+            role: user.role,
         };
         return { access_token: this.jwtService.sign(payload, { expiresIn: '1h' }) };
     }
     async register(user) {
+        const existingUser = await this.userRepository.findByEmail(user.email);
+        if (existingUser)
+            throw new common_1.UnauthorizedException('Email already registered');
         const hashedPassword = await bcrypt.hash(user.password, 10);
         const otp = this.generateOTP();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
@@ -212,6 +218,7 @@ let AuthService = class AuthService {
             id: '',
             name: user.name,
             email: user.email,
+            role: user.role,
             password: hashedPassword,
             createdBy: user.createdBy || '',
             createdAt: new Date(),
@@ -220,6 +227,7 @@ let AuthService = class AuthService {
         const payload = {
             email: newUser.email,
             sub: newUser.id,
+            role: newUser.role,
         };
         const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
         return { user: newUser, access_token };

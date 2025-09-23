@@ -1,7 +1,10 @@
+import { Role } from "../../../utils/constance/constance.role";
+
 export class UserEntity {
   id: string;
   name: string;
   email: string;
+  role: Role;
   password: string
   createdBy?: string;
   createdAt: Date;
@@ -12,6 +15,7 @@ export class UserEntity {
     id: string;
     name: string;
     email: string;
+    role: Role;
     password: string;
     createdBy?: string;
     createdAt?: Date;
@@ -21,6 +25,7 @@ export class UserEntity {
     this.id = props.id;
     this.name = props.name;
     this.email = props.email;
+    this.role = props.role;
     this.password = props.password;
     this.createdBy = props.createdBy;
     this.createdAt = props.createdAt || new Date();
@@ -33,6 +38,7 @@ export class UserEntity {
     name: string;
     email: string;
     password: string;
+    role: Role;
     createdBy?: string;
     createdAt?: Date;
     updatedAt?: Date;

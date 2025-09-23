@@ -8,6 +8,8 @@ import { RegisterUserDto } from '../../../utils/dto/users/register.dto';
 import { UserService } from '../../service/user.service';
 import { LoginDto } from '../../../utils/dto/users/login.dta';
 import { UpdateFcmDto } from '../../../utils/dto/users/UpdateFcmDto';
+import { sendOTPEmailBrevo } from '../../../utils/mailer/otpMailer';
+
 
 @Controller('auth')
 export class AuthController {
@@ -16,55 +18,56 @@ export class AuthController {
         private readonly userService: UserService
     ) {}
 
-    @Post('register-test')
-    @UsePipes(new ValidationPipe({ transform: true }))
-    async registerUser(@Body() registerUserDTo: RegisterUserDto, @Res() res: Response) {
-      const newUser = await this.userService.registerUser(registerUserDTo);
-      return formatResponse(res, 200, 'success', 'User registered successfully', newUser);
-    }
-    
-    @Post('login')
-    @UsePipes(new ValidationPipe({ transform: true }))
-    async loginFirebase(@Body() loginDto: LoginDto, @Res() res: Response) {
-      const token = await this.authService.loginUser(loginDto);
-      console.log('-------------------------------------------------------------------');
-      console.log('User logged in successfully');
-      return formatResponse(res, 200, 'success', 'User logged in successfully', token);
-    }
-    
-    // @Post('register')
-    // async register(
-    //     @Body() user: { name: string, email: string, password: string },
-    //     @Res() res: Response
-    // ) {
-    //     try {
-    //         console.log('Registering user:', user.email);
-    //         const newUser = await this.authService.register(UserEntity.create({
-    //             id: '',
-    //             name: user.name,
-    //             email: user.email,
-    //             createdBy: '',
-    //             password: user.password,
-    //             createdAt: new Date(),
-    //             updatedAt: new Date(),
-    //         }));
-    //         console.log('User created successfully:', newUser.user.id);
-    //         return formatResponse(res, 200, 'success', 'User created successfully', newUser);
-    //     } catch (error) {
-    //         console.error('Registration error:', error);
-            
-    //         // Si l'erreur est liée à l'envoi d'email, on peut quand même considérer l'inscription comme réussie
-    //         if (error.message && (error.message.includes('email') || error.message.includes('OTP'))) {
-    //             return formatResponse(res, 200, 'success', 'User created successfully, but OTP email failed to send. Please try resending OTP.', {
-    //                 user: null,
-    //                 access_token: null,
-    //                 emailSent: false
-    //             });
-    //         }
-            
-    //         return formatResponse(res, 400, 'failed', 'User creation failed', error);
-    //     }
+    // @Post('register-test')
+    // @UsePipes(new ValidationPipe({ transform: true }))
+    // async registerUser(@Body() registerUserDTo: RegisterUserDto, @Res() res: Response) {
+    //   const newUser = await this.userService.registerUser(registerUserDTo);
+    //   return formatResponse(res, 200, 'success', 'User registered successfully', newUser);
     // }
+    
+    // @Post('login')
+    // @UsePipes(new ValidationPipe({ transform: true }))
+    // async loginFirebase(@Body() loginDto: LoginDto, @Res() res: Response) {
+    //   const token = await this.authService.loginUser(loginDto);
+    //   console.log('-------------------------------------------------------------------');
+    //   console.log('User logged in successfully');
+    //   return formatResponse(res, 200, 'success', 'User logged in successfully', token);
+    // }
+    
+    @Post('register')
+    async register(
+        @Body() user: { name: string, email: string, password: string },
+        @Res() res: Response
+    ) {
+        try {
+            console.log('Registering user:', user.email);
+            const newUser = await this.authService.register(UserEntity.create({
+                id: '',
+                name: user.name,
+                email: user.email,
+                role: Role.OWNER,
+                createdBy: '',
+                password: user.password,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            }));
+            console.log('User created successfully:', newUser.user.id);
+            return formatResponse(res, 200, 'success', 'User created successfully', newUser);
+        } catch (error) {
+            console.error('Registration error:', error);
+            
+            // Si l'erreur est liée à l'envoi d'email, on peut quand même considérer l'inscription comme réussie
+            if (error.message && (error.message.includes('email') || error.message.includes('OTP'))) {
+                return formatResponse(res, 200, 'success', 'OTP email failed to send. Please try resending OTP.', {
+                    user: null,
+                    access_token: null,
+                    emailSent: false
+                });
+            }
+            
+            return formatResponse(res, 400, 'failed', 'User creation failed', error);
+        }
+    }
 
     @Post('verify-otp')
     async verifyOtp(
@@ -93,18 +96,18 @@ export class AuthController {
         }
     }
 
-    // @Post('login')
-    // async login(
-    //     @Body() user: { email: string, password: string },
-    //     @Res() res: Response
-    // ) {
-    //     try {
-    //         const token = await this.authService.login(user.email, user.password);
-    //         return formatResponse(res, 200, 'success', 'User logged in successfully', token);
-    //     } catch (error) {
-    //         return formatResponse(res, 400, 'failed', 'User login failed', error);
-    //     }
-    // }
+    @Post('login')
+    async login(
+        @Body() user: { email: string, password: string },
+        @Res() res: Response
+    ) {
+        try {
+            const token = await this.authService.login(user.email, user.password);
+            return formatResponse(res, 200, 'success', 'User logged in successfully', token);
+        } catch (error) {
+            return formatResponse(res, 400, 'failed', 'User login failed', error);
+        }
+    }
 
     @Post('logout')
     async logout(

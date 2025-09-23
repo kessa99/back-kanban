@@ -26,6 +26,7 @@ export declare class UserService {
         name?: string;
         email?: string;
         password?: string;
+        role?: string;
     }): Promise<UserEntity>;
     deleteUser(id: string): Promise<void>;
     inviteUser(teamId: string, inviteData: {

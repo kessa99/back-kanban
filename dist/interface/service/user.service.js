@@ -46,6 +46,7 @@ exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
 const userTeam_user_entity_1 = require("../../domain/entities/userTeam/userTeam.user.entity");
+const constance_role_1 = require("../../utils/constance/constance.role");
 const firebase_team_repository_1 = require("../../infrastructure/repositories/firebase-team.repository");
 const jwt_1 = require("@nestjs/jwt");
 const invitMail_1 = require("../../utils/mailer/invitMail");
@@ -104,6 +105,7 @@ let UserService = class UserService {
             name: createUserDto.name,
             email: createUserDto.email,
             password: createUserDto.password,
+            role: constance_role_1.Role.MEMBER,
             createdBy: createdBy,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -123,6 +125,7 @@ let UserService = class UserService {
             name: userData.name,
             email,
             password: userData.password,
+            role: constance_role_1.Role.MEMBER,
             createdBy: ownerId,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -159,6 +162,7 @@ let UserService = class UserService {
         user.name = updateData.name || user.name;
         user.email = updateData.email || user.email;
         user.password = updateData.password || user.password;
+        user.role = updateData.role || user.role;
         const updatedUser = await this.userRepository.update(user);
         console.log('-------------------------------------------------------------------');
         console.log('User updated with succès dans le service');

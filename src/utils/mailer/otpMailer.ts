@@ -1,15 +1,7 @@
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: process.env.EMAIL_HOST || "smtp.gmail.com",
-    port: Number(process.env.EMAIL_PORT) || 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_HOST_USER || "kessadavidkipre@gmail.com",
-      pass: process.env.EMAIL_HOST_PASSWORD || "xrfw ohnu ukok vukb",
-    },
-  });
+import { transporter } from "../../config/configMail/gmail.smtp";
+import { transporterBrevo } from "../../config/configMail/brevo.smtp";
+import { transporterEtheral } from "../../config/configMail/ethereal.smtp";
+import nodemailer from 'nodemailer';
 
 export const sendOTPEmail = async (email: string, otp: string) => {
   try {
@@ -41,6 +33,87 @@ export const sendOTPEmail = async (email: string, otp: string) => {
     };
 
     await transporter.sendMail(mailOptions);
+    console.log(`Mail envoyé à : ${email}`);
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'email :", error);
+    throw new Error("Impossible d'envoyer l'email OTP.");
+  }
+};
+
+
+export const sendOTPEmailBrevo = async (email: string, otp: string) => {
+  try {
+    // Debug: Log environment variables
+    console.log('Email config:', {
+      host: process.env.SMTP_BREVO_HOST,
+      port: process.env.SMTP_BREVO_PORT,
+      user: process.env.SMTP_BREVO_USER,
+      pass: process.env.SMTP_BREVO_PASS ? '***' : 'undefined'
+    });
+
+    const mailOptions = {
+      from: `"Kanban" <${process.env.SMTP_BREVO_USER}>`, // utilise l'email SMTP Brevo
+      to: email,
+      subject: "Vérification OTP - Kanban",
+      text: `Votre code OTP est : ${otp}\nCe code expirera dans 5 minutes.\nSi vous n'avez pas demandé ce code, ignorez cet e-mail.`,
+      html: `
+        <h2 style="text-align: center; color: #333;">Vérification de votre compte Kanban</h2>
+        <p style="text-align: center; color: #666;">
+          Voici votre code de vérification. Ce code expirera dans 5 minutes.
+        </p>
+        <div style="text-align: center; margin: 30px 0;">
+          <span style="font-size: 32px; font-weight: bold; color: #0a74f0; padding: 10px 20px; border: 2px solid #007bff; border-radius: 5px;">
+            ${otp}
+          </span>
+        </div>
+        <p style="text-align: center; color: #666;">Si vous n'avez pas demandé ce code, ignorez cet e-mail.</p>
+      `,
+    };
+    
+
+    const info = await transporterBrevo.sendMail(mailOptions);
+    console.log(`✅ Email envoyé à ${email}, MessageId: ${info.messageId}`);
+  } catch (error) {
+    console.error("❌ Erreur lors de l'envoi de l'email :", error);
+    throw new Error("Impossible d'envoyer l'email OTP.");
+  }
+};
+
+
+
+
+export const sendOTPEmailEtheral = async (email: string, otp: string) => {
+  try {
+    // Debug: Log environment variables
+    console.log('Email config:', {
+      host: process.env.SMTP_ETHEREAL_HOST,
+      port: process.env.SMTP_ETHEREAL_PORT,
+      user: process.env.SMTP_ETHEREAL_USER,
+      pass: process.env.SMTP_ETHEREAL_PASS
+    });
+
+    const mailOptions = {
+      from: `"Kanban" <${process.env.SMTP_ETHEREAL_USER}>`, // utilise l'email SMTP Brevo
+      to: email,
+      subject: "Vérification OTP - Kanban",
+      text: `Votre code OTP est : ${otp}\nCe code expirera dans 5 minutes.\nSi vous n'avez pas demandé ce code, ignorez cet e-mail.`,
+      html: `
+        <h2 style="text-align: center; color: #333;">Vérification de votre compte Kanban</h2>
+        <p style="text-align: center; color: #666;">
+          Voici votre code de vérification. Ce code expirera dans 5 minutes.
+        </p>
+        <div style="text-align: center; margin: 30px 0;">
+          <span style="font-size: 32px; font-weight: bold; color: #0a74f0; padding: 10px 20px; border: 2px solid #007bff; border-radius: 5px;">
+            ${otp}
+          </span>
+        </div>
+        <p style="text-align: center; color: #666;">Si vous n'avez pas demandé ce code, ignorez cet e-mail.</p>
+      `,
+    };
+    
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     console.log(`Mail envoyé à : ${email}`);
   } catch (error) {
     console.error("Erreur lors de l'envoi de l'email :", error);

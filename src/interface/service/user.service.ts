@@ -85,6 +85,7 @@ export class UserService {
       name: createUserDto.name,
       email: createUserDto.email,
       password: createUserDto.password,
+      role: Role.MEMBER,
       createdBy: createdBy,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -107,6 +108,7 @@ export class UserService {
         name: userData.name,
         email,
         password: userData.password,
+        role: Role.MEMBER,
         createdBy: ownerId,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -143,7 +145,7 @@ export class UserService {
     return this.userRepository.findUsersByCreatedBy(createdBy);
   }
 
-  async updateUser(id: string, updateData: { name?: string, email?: string, password?: string }): Promise<UserEntity> {
+  async updateUser(id: string, updateData: { name?: string, email?: string, password?: string, role?: string }): Promise<UserEntity> {
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException("User not found");
@@ -151,7 +153,7 @@ export class UserService {
     user.name = updateData.name || user.name;
     user.email = updateData.email || user.email;
     user.password = updateData.password || user.password;
-
+    user.role = updateData.role as Role || user.role;
     const updatedUser = await this.userRepository.update(user);
     console.log('-------------------------------------------------------------------');
     console.log('User updated with succès dans le service');
