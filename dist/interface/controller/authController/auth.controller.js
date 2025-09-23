@@ -15,35 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("../../../interface/service/auth.service");
-const userTeam_user_entity_1 = require("../../../domain/entities/userTeam/userTeam.user.entity");
 const formatRespons_1 = require("../../../utils/formatResponse/formatRespons");
-const constance_role_1 = require("../../../utils/constance/constance.role");
+const register_dto_1 = require("../../../utils/dto/users/register.dto");
 const user_service_1 = require("../../service/user.service");
 let AuthController = class AuthController {
     constructor(authService, userService) {
         this.authService = authService;
         this.userService = userService;
     }
-    async register(user, res) {
+    async register(userDto, res) {
         try {
-            console.log('Registering user:', user.email);
-            const newUser = await this.authService.register(userTeam_user_entity_1.UserEntity.create({
-                id: '',
-                name: user.name,
-                email: user.email,
-                role: constance_role_1.Role.OWNER,
-                createdBy: '',
-                password: user.password,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            }));
+            console.log('Registering user:', userDto.email);
+            const newUser = await this.authService.register(userDto);
             console.log('User created successfully:', newUser.user.id);
             return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User created successfully', newUser);
         }
         catch (error) {
             console.error('Registration error:', error);
             if (error.message && (error.message.includes('email') || error.message.includes('OTP'))) {
-                return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'OTP email failed to send. Please try resending OTP.', {
+                return (0, formatRespons_1.formatResponse)(res, 400, 'failed', 'OTP email failed to send. Please try resending OTP.', {
                     user: null,
                     access_token: null,
                     emailSent: false
@@ -73,6 +63,7 @@ let AuthController = class AuthController {
     }
     async login(user, res) {
         try {
+            console.log('Login user:', user);
             const token = await this.authService.login(user.email, user.password);
             return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User logged in successfully', token);
         }
@@ -95,7 +86,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [register_dto_1.RegisterUserDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([

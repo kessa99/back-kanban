@@ -63,23 +63,21 @@ let FirebaseUserRepository = class FirebaseUserRepository {
     }
     async create(user) {
         const hashedPassword = await bcrypt.hash(user.password, 10);
-        const docRef = await this.userCollection.add({
+        const data = {
             name: user.name,
             email: user.email,
             password: hashedPassword,
+            role: user.role,
+            emailVerified: user.emailVerified,
+            otp: user.otp,
             createdBy: user.createdBy,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
-        });
+        };
+        const docRef = await this.userCollection.add(data);
         return userTeam_user_entity_1.UserEntity.create({
             id: docRef.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            password: hashedPassword,
-            createdBy: user.createdBy,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
+            ...data
         });
     }
     async findByEmail(email) {
@@ -94,6 +92,8 @@ let FirebaseUserRepository = class FirebaseUserRepository {
             name: data.name,
             email: data.email,
             role: data.role,
+            emailVerified: data.emailVerified,
+            otp: data.otp,
             password: data.password,
             createdAt: data.createdAt?.toDate(),
             updatedAt: data.updatedAt?.toDate(),
@@ -105,6 +105,8 @@ let FirebaseUserRepository = class FirebaseUserRepository {
             id: doc.id,
             name: doc.data().name,
             email: doc.data().email,
+            emailVerified: doc.data().emailVerified,
+            otp: doc.data().otp,
             role: doc.data().role,
             password: doc.data().password,
             createdAt: doc.data().createdAt?.toDate(),
@@ -117,6 +119,8 @@ let FirebaseUserRepository = class FirebaseUserRepository {
             id: doc.id,
             name: doc.data().name,
             email: doc.data().email,
+            emailVerified: doc.data().emailVerified,
+            otp: doc.data().otp,
             role: doc.data().role,
             password: doc.data().password,
             createdBy: doc.data().createdBy,
@@ -142,6 +146,8 @@ let FirebaseUserRepository = class FirebaseUserRepository {
             name: data?.name,
             email: data?.email,
             role: data?.role,
+            emailVerified: data?.emailVerified,
+            otp: data?.otp,
             password: data?.password,
             createdAt: data?.createdAt?.toDate(),
             updatedAt: data?.updatedAt?.toDate(),
@@ -154,6 +160,8 @@ let FirebaseUserRepository = class FirebaseUserRepository {
             name: doc.data().name,
             email: doc.data().email,
             role: doc.data().role,
+            emailVerified: doc.data().emailVerified,
+            otp: doc.data().otp,
             password: doc.data().password,
             createdAt: doc.data().createdAt?.toDate(),
             updatedAt: doc.data().updatedAt?.toDate(),
@@ -163,10 +171,51 @@ let FirebaseUserRepository = class FirebaseUserRepository {
         await this.userCollection.doc(user.id).update({
             name: user.name,
             email: user.email,
+            otp: user.otp,
             password: user.password,
             updatedAt: new Date(),
         });
         return user;
+    }
+    async updateVerifyOtp(userId, emailVerified, otp) {
+        await this.userCollection.doc(userId).update({
+            emailVerified,
+            otp,
+            updatedAt: new Date(),
+        });
+        const doc = await this.userCollection.doc(userId).get();
+        const data = doc.data();
+        return userTeam_user_entity_1.UserEntity.create({
+            id: doc.id,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            emailVerified: data.emailVerified,
+            otp: '',
+            password: data.password,
+            createdAt: data.createdAt?.toDate(),
+            updatedAt: data.updatedAt?.toDate(),
+        });
+    }
+    async updateOtp(userId, otp, expiresAt) {
+        await this.userCollection.doc(userId).update({
+            otp,
+            expiresAt,
+            updatedAt: new Date(),
+        });
+        const doc = await this.userCollection.doc(userId).get();
+        const data = doc.data();
+        return userTeam_user_entity_1.UserEntity.create({
+            id: doc.id,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            emailVerified: data.emailVerified,
+            otp: data.otp,
+            password: data.password,
+            createdAt: data.createdAt?.toDate(),
+            updatedAt: data.updatedAt?.toDate(),
+        });
     }
     async delete(id) {
         await this.userCollection.doc(id).delete();

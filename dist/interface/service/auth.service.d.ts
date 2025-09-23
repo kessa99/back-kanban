@@ -2,6 +2,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../../domain/entities/userTeam/userTeam.user.entity';
 import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
 import { LoginDto } from '../../utils/dto/users/login.dta';
+import { RegisterUserDto } from '../../utils/dto/users/register.dto';
 export declare class AuthService {
     private readonly jwtService;
     private readonly userRepository;
@@ -23,7 +24,7 @@ export declare class AuthService {
     login(email: string, password: string): Promise<{
         access_token: string;
     }>;
-    register(user: UserEntity): Promise<{
+    register(dto: RegisterUserDto): Promise<{
         user: UserEntity;
         access_token: string;
     }>;

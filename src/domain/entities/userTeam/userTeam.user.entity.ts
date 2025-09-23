@@ -6,6 +6,8 @@ export class UserEntity {
   email: string;
   role: Role;
   password: string
+  emailVerified: boolean
+  otp: string
   createdBy?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -16,6 +18,8 @@ export class UserEntity {
     name: string;
     email: string;
     role: Role;
+    emailVerified: boolean
+    otp: string
     password: string;
     createdBy?: string;
     createdAt?: Date;
@@ -26,6 +30,8 @@ export class UserEntity {
     this.name = props.name;
     this.email = props.email;
     this.role = props.role;
+    this.emailVerified = props.emailVerified
+    this.otp = props.otp
     this.password = props.password;
     this.createdBy = props.createdBy;
     this.createdAt = props.createdAt || new Date();
@@ -39,6 +45,8 @@ export class UserEntity {
     email: string;
     password: string;
     role: Role;
+    emailVerified: boolean
+    otp: string
     createdBy?: string;
     createdAt?: Date;
     updatedAt?: Date;

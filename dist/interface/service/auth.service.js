@@ -51,6 +51,7 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcryptjs"));
 const userTeam_user_entity_1 = require("../../domain/entities/userTeam/userTeam.user.entity");
 const firebase_user_repository_1 = require("../../infrastructure/repositories/firebase-user.repository");
+const constance_role_1 = require("../../utils/constance/constance.role");
 const otpMailer_1 = require("../../utils/mailer/otpMailer");
 const axios_1 = __importDefault(require("axios"));
 const firebaseAdmin = __importStar(require("firebase-admin"));
@@ -149,19 +150,19 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('OTP expired, please resend otp');
         }
         ;
+        console.log('storedOTP', storedOTP);
+        console.log('otp', otp);
         if (storedOTP.otp !== otp) {
             throw new common_1.UnauthorizedException('Invalid otp, please resend otp');
         }
         ;
+        const emailVerified = true;
         const user = await this.userRepository.findByEmail(email);
         if (!user) {
             throw new common_1.UnauthorizedException('User not found, please register');
         }
         ;
-        await this.userRepository.update(userTeam_user_entity_1.UserEntity.create({
-            ...user,
-            updatedAt: new Date(),
-        }));
+        await this.userRepository.updateVerifyOtp(user.id, emailVerified, otp);
         this.otpStore.delete(email);
         return true;
     }
@@ -176,59 +177,62 @@ let AuthService = class AuthService {
         const otp = this.generateOTP();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
         this.otpStore.set(email, { otp, expiresAt });
-        await this.userRepository.update(userTeam_user_entity_1.UserEntity.create({
-            ...user,
-            updatedAt: new Date(),
-        }));
+        await this.userRepository.updateOtp(user.id, otp, expiresAt);
         await this.sendOTP(email, otp);
         return 'OTP resent successfully';
     }
     async validateUser(email, password) {
         const user = await this.userRepository.findByEmail(email);
+        console.log('user', user);
         if (!user) {
             throw new common_1.UnauthorizedException('Invalid email credentials');
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log('isPasswordValid', isPasswordValid);
         if (!isPasswordValid) {
             throw new common_1.UnauthorizedException('Invalid password credentials');
         }
         return user;
     }
     async login(email, password) {
+        console.log('Login with email:', email);
         const user = await this.validateUser(email, password);
         if (!user)
             throw new common_1.UnauthorizedException('Invalid credentials');
+        if (!user.emailVerified)
+            throw new common_1.UnauthorizedException('OTP not verified, please verify your otp');
         const payload = {
             email: user.email,
             sub: user.id,
             role: user.role,
+            emailVerified: user.emailVerified,
         };
+        console.log('payload', payload);
         return { access_token: this.jwtService.sign(payload, { expiresIn: '1h' }) };
     }
-    async register(user) {
-        const existingUser = await this.userRepository.findByEmail(user.email);
+    async register(dto) {
+        const existingUser = await this.userRepository.findByEmail(dto.email);
         if (existingUser)
             throw new common_1.UnauthorizedException('Email already registered');
-        const hashedPassword = await bcrypt.hash(user.password, 10);
+        const hashedPassword = await bcrypt.hash(dto.password, 10);
         const otp = this.generateOTP();
         const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-        this.otpStore.set(user.email, { otp, expiresAt });
-        await this.sendOTP(user.email, otp);
+        this.otpStore.set(dto.email, { otp, expiresAt });
         const newUser = await this.userRepository.create(userTeam_user_entity_1.UserEntity.create({
             id: '',
-            name: user.name,
-            email: user.email,
-            role: user.role,
+            name: dto.name,
+            email: dto.email,
             password: hashedPassword,
-            createdBy: user.createdBy || '',
+            role: constance_role_1.Role.OWNER,
+            emailVerified: false,
+            otp,
+            createdBy: dto.createdBy || '',
             createdAt: new Date(),
             updatedAt: new Date(),
         }));
-        const payload = {
-            email: newUser.email,
-            sub: newUser.id,
-            role: newUser.role,
-        };
+        console.log('User object before sending to Firestore:', newUser);
+        await this.sendOTP(dto.email, otp);
+        const payload = { email: newUser.email, sub: newUser.id, role: newUser.role, emailVerified: newUser.emailVerified };
         const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
         return { user: newUser, access_token };
     }

@@ -23,7 +23,8 @@ import { UpdateFcmDto } from '../../utils/dto/users/UpdateFcmDto';
 import { sendOTPEmailBrevo } from '../../utils/mailer/otpMailer';
 import { sendOTPEmailEtheral } from '../../utils/mailer/otpMailer';
 import { BrevoMailer } from '../../config/configMail/brevoMailer';
-
+import { IsEmail } from 'class-validator';
+import { RegisterUserDto } from '../../utils/dto/users/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -67,56 +68,58 @@ export class AuthService {
       password,
       returnSecureToken: true,
     }); 
+  }
+  
+  private async sendPostRequest(url: string, data: any) {
+    try {
+      const response = await axios.post(url, data, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.log('error', error);
     }
-      private async sendPostRequest(url: string, data: any) {
-        try {
-          const response = await axios.post(url, data, {
-            headers: { 'Content-Type': 'application/json' },
-          });
-          return response.data;
-        } catch (error) {
-          console.log('error', error);
-        }
-    }
+  }
 
-    async validateRequest(req: Request): Promise<boolean> {
-        const authHeader = req.headers['authorization'];
+  async validateRequest(req: Request): Promise<boolean> {
+    const authHeader = req.headers['authorization'];
         
-        if (!authHeader) {
-          console.log('Authorization header not provided.');
-          return false;
-        }
-    
-        const [bearer, token] = authHeader.split(' ');
-        
-        if (bearer !== 'Bearer' || !token) {
-          console.log('Invalid authorization format. Expected "Bearer <token>".');
-          return false;
-        }
-    
-        try {
-          const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
-          console.log('Decoded Token:', decodedToken);
-          
-          // Add user info to request for the controller to use
-          (req as any).user = {
-            id: decodedToken.uid,
-            email: decodedToken.email,
-            name: decodedToken.name,
-          };
-          
-          return true;
-        } catch (error) {
-          if (error.code === 'auth/id-token-expired') {
-            console.error('Token has expired.');
-          } else if (error.code === 'auth/invalid-id-token') {
-            console.error('Invalid ID token provided.');
-          } else {
-            console.error('Error verifying token:', error);
-          }
-          return false;
-        }
+    if (!authHeader) {
+      console.log('Authorization header not provided.');
+      return false;
     }
+    
+    const [bearer, token] = authHeader.split(' ');
+        
+    if (bearer !== 'Bearer' || !token) {
+      console.log('Invalid authorization format. Expected "Bearer <token>".');
+      return false;
+    }
+    
+    try {
+      const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
+      console.log('Decoded Token:', decodedToken);
+          
+      // Add user info to request for the controller to use
+      (req as any).user = {
+        id: decodedToken.uid,
+        email: decodedToken.email,
+        name: decodedToken.name,
+      };
+          
+      return true;
+    } catch (error) {
+      if (error.code === 'auth/id-token-expired') {
+        console.error('Token has expired.');
+      } else if (error.code === 'auth/invalid-id-token') {
+        console.error('Invalid ID token provided.');
+      } else {
+        console.error('Error verifying token:', error);
+      }
+        return false;
+    }
+  }
 
   private generateOTP(): string {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -127,124 +130,130 @@ export class AuthService {
     console.log('storedOTP', storedOTP);
 
     if (!storedOTP) {
-      throw new UnauthorizedException('No otp found for this email, please resend otp');      };
-      if (storedOTP.expiresAt < new Date()) {
-        console.log('OTP expired, please resend otp');
-        throw new UnauthorizedException('OTP expired, please resend otp');
-      };
+      throw new UnauthorizedException('No otp found for this email, please resend otp');
+    };
 
-      if (storedOTP.otp !== otp) {
-        throw new UnauthorizedException('Invalid otp, please resend otp');
-      };
+    if (storedOTP.expiresAt < new Date()) {
+      console.log('OTP expired, please resend otp');
+      throw new UnauthorizedException('OTP expired, please resend otp');
+    };
 
-      const user = await this.userRepository.findByEmail(email);
-      if (!user) {
-        throw new UnauthorizedException('User not found, please register');
-      };
+    console.log('storedOTP', storedOTP);
+    console.log('otp', otp);
+    if (storedOTP.otp !== otp) {
+      throw new UnauthorizedException('Invalid otp, please resend otp');
+    };
 
-      await this.userRepository.update(UserEntity.create({
-        ...user,
-          updatedAt: new Date(),
-      }))
+    const emailVerified = true;
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('User not found, please register');
+    };
 
-      // delete otp from store
-      this.otpStore.delete(email);
-      return true;
+    await this.userRepository.updateVerifyOtp(user.id, emailVerified, otp);
+
+    // delete otp from store
+    this.otpStore.delete(email);
+    return true;
   }
 
-    private async sendOTP(email: string, otp: string) {
-        await sendOTPEmail(email, otp);
+  private async sendOTP(email: string, otp: string) {
+    await sendOTPEmail(email, otp);
+  }
+
+  async resendOtp(email: string) {
+    // Vérifier que l'utilisateur existe
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('User not found, please register first');
     }
 
-    async resendOtp(email: string) {
-      // Vérifier que l'utilisateur existe
-      const user = await this.userRepository.findByEmail(email);
-      if (!user) {
-        throw new UnauthorizedException('User not found, please register first');
-      }
 
+    const otp = this.generateOTP();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
+        
+    // Stocker l'OTP en mémoire
+    this.otpStore.set(email, { otp, expiresAt });
+        
+    // Mettre à jour l'utilisateur dans la base de données
+    await this.userRepository.updateOtp(user.id, otp, expiresAt);
 
-      const otp = this.generateOTP();
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
+    // Envoyer l'OTP par email
+    await this.sendOTP(email, otp);
         
-      // Stocker l'OTP en mémoire
-      this.otpStore.set(email, { otp, expiresAt });
+    return 'OTP resent successfully';
+  }
+
+  async validateUser(email: string, password: string): Promise<UserEntity | null> {
+    const user = await this.userRepository.findByEmail(email);
+    console.log('user', user);
+    if (!user) {
+      throw new UnauthorizedException('Invalid email credentials');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('isPasswordValid', isPasswordValid);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid password credentials');
+    }
+    return user;
+  }
+
+  async login(email: string, password: string) {
+    console.log('Login with email:', email);
+    const user = await this.validateUser(email, password);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user.emailVerified) throw new UnauthorizedException('OTP not verified, please verify your otp');
         
-      // Mettre à jour l'utilisateur dans la base de données
-      await this.userRepository.update(UserEntity.create({
-        ...user,
+    const payload = {
+      email: user.email, 
+      sub: user.id, 
+      role: user.role,
+      emailVerified: user.emailVerified,
+    };
+    console.log('payload', payload);
+        
+    return { access_token: this.jwtService.sign(payload, { expiresIn: '1h' }) };
+  }
+
+  async register(dto: RegisterUserDto) {
+    // Vérifier que l'email est unique
+    const existingUser = await this.userRepository.findByEmail(dto.email);
+    if (existingUser) throw new UnauthorizedException('Email already registered');
+    
+    // Hasher le mot de passe
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    
+    // Générer OTP
+    const otp = this.generateOTP();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+    this.otpStore.set(dto.email, { otp, expiresAt });
+    
+    // Créer l'utilisateur avec OTP et emailVerified
+    const newUser = await this.userRepository.create(
+      UserEntity.create({
+        id: '',
+        name: dto.name,
+        email: dto.email,
+        password: hashedPassword,
+        role: Role.OWNER,
+        emailVerified: false,
+        otp,
+        createdBy: dto.createdBy || '',
+        createdAt: new Date(),
         updatedAt: new Date(),
-      }));
+      })
+    );
 
-      // Envoyer l'OTP par email
-      await this.sendOTP(email, otp);
-        
-      return 'OTP resent successfully';
-    }
-
-
-    async validateUser(email: string, password: string): Promise<UserEntity | null> {
-        const user = await this.userRepository.findByEmail(email);
-        if (!user) {
-            throw new UnauthorizedException('Invalid email credentials');
-        }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            throw new UnauthorizedException('Invalid password credentials'); // Correction de la typo
-        }
-        return user;
-    }
-
-    async login(email: string, password: string) {
-        const user = await this.validateUser(email, password);
-        if (!user) throw new UnauthorizedException('Invalid credentials');
-        // if (!user.otpVerified) throw new UnauthorizedException('OTP not verified, please verify your otp');
-        
-        const payload = {
-          email: user.email, 
-          sub: user.id, 
-          role: user.role,
-        };
-        
-        return { access_token: this.jwtService.sign(payload, { expiresIn: '1h' }) };
-    }
-
-    async register(user: UserEntity) {
-
-      // verifier que le mail est unique
-      const existingUser = await this.userRepository.findByEmail(user.email);
-      if (existingUser) throw new UnauthorizedException('Email already registered');
-
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-      const otp = this.generateOTP();
-      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min
-      this.otpStore.set(user.email, { otp, expiresAt });
-      await this.sendOTP(user.email, otp);
-
-      const newUser = await this.userRepository.create(
-        UserEntity.create({
-          id: '',
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          password: hashedPassword,
-          createdBy: user.createdBy || '', // S'assurer que createdBy est défini
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-      )
-        
-      // Generate JWT with the correct user ID from the created user
-      const payload = {
-        email: newUser.email, 
-        sub: newUser.id, 
-        role: newUser.role,
-      };
-      
-      const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
-        
-      return { user: newUser, access_token };
-    }
-
-
+    console.log('User object before sending to Firestore:', newUser);
+    
+    // Envoyer l'OTP par email
+    await this.sendOTP(dto.email, otp);
+    
+    // Générer JWT
+    const payload = { email: newUser.email, sub: newUser.id, role: newUser.role, emailVerified: newUser.emailVerified };
+    const access_token = this.jwtService.sign(payload, { expiresIn: '1h' });
+    
+    return { user: newUser, access_token };
+  }
 }

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { Role } from '../../constance/constance.role';
 
-import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 export class RegisterUserDto {
   @ApiProperty({ description: "The user's first name" })
   @IsNotEmpty()
@@ -17,15 +18,32 @@ export class RegisterUserDto {
   @Length(8, 20)
   password: string;
 
-  @IsString()
+  @ApiProperty({ description: "The user's role", required: false })
   @IsOptional()
+  role?: Role | string;
+
+  @ApiProperty({ description: "Is the email verified", required: false })
+  @IsOptional()
+  @IsBoolean()
+  emailVerified?: boolean;
+
+  @ApiProperty({ description: "OTP code", required: false })
+  @IsOptional()
+  @IsString()
+  otp?: string;
+
+  @ApiProperty({ description: "Created by user id", required: false })
+  @IsOptional()
+  @IsString()
   createdBy?: string;
 
-  @IsDate()
+  @ApiProperty({ description: "Created timestamp", required: false })
   @IsOptional()
+  @IsDate()
   createdAt?: Date;
 
-  @IsDate()
+  @ApiProperty({ description: "Updated timestamp", required: false })
   @IsOptional()
+  @IsDate()
   updatedAt?: Date;
 }

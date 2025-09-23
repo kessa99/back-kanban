@@ -5,6 +5,8 @@ export declare class UserEntity {
     email: string;
     role: Role;
     password: string;
+    emailVerified: boolean;
+    otp: string;
     createdBy?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -16,6 +18,8 @@ export declare class UserEntity {
         email: string;
         password: string;
         role: Role;
+        emailVerified: boolean;
+        otp: string;
         createdBy?: string;
         createdAt?: Date;
         updatedAt?: Date;

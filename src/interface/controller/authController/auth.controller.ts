@@ -36,38 +36,32 @@ export class AuthController {
     
     @Post('register')
     async register(
-        @Body() user: { name: string, email: string, password: string },
-        @Res() res: Response
+      @Body() userDto: RegisterUserDto,
+      @Res() res: Response
     ) {
-        try {
-            console.log('Registering user:', user.email);
-            const newUser = await this.authService.register(UserEntity.create({
-                id: '',
-                name: user.name,
-                email: user.email,
-                role: Role.OWNER,
-                createdBy: '',
-                password: user.password,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            }));
-            console.log('User created successfully:', newUser.user.id);
-            return formatResponse(res, 200, 'success', 'User created successfully', newUser);
-        } catch (error) {
-            console.error('Registration error:', error);
-            
-            // Si l'erreur est liée à l'envoi d'email, on peut quand même considérer l'inscription comme réussie
-            if (error.message && (error.message.includes('email') || error.message.includes('OTP'))) {
-                return formatResponse(res, 200, 'success', 'OTP email failed to send. Please try resending OTP.', {
-                    user: null,
-                    access_token: null,
-                    emailSent: false
-                });
-            }
-            
-            return formatResponse(res, 400, 'failed', 'User creation failed', error);
+      try {
+        console.log('Registering user:', userDto.email);
+        
+        // On passe le DTO directement au service
+        const newUser = await this.authService.register(userDto);
+        
+        console.log('User created successfully:', newUser.user.id);
+        return formatResponse(res, 200, 'success', 'User created successfully', newUser);
+      } catch (error) {
+        console.error('Registration error:', error);
+        
+        if (error.message && (error.message.includes('email') || error.message.includes('OTP'))) {
+          return formatResponse(res, 400, 'failed', 'OTP email failed to send. Please try resending OTP.', {
+            user: null,
+            access_token: null,
+            emailSent: false
+          });
         }
+        
+        return formatResponse(res, 400, 'failed', 'User creation failed', error);
+      }
     }
+    
 
     @Post('verify-otp')
     async verifyOtp(
@@ -102,6 +96,7 @@ export class AuthController {
         @Res() res: Response
     ) {
         try {
+            console.log('Login user:', user);
             const token = await this.authService.login(user.email, user.password);
             return formatResponse(res, 200, 'success', 'User logged in successfully', token);
         } catch (error) {

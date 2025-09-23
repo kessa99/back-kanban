@@ -5,6 +5,7 @@ import { firestore } from "firebase-admin";
 import * as bcrypt from 'bcryptjs';
 import * as admin from 'firebase-admin';
 import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
+import { use } from "passport";
 
 @Injectable()
 export class FirebaseUserRepository implements IUserRepository {
@@ -22,28 +23,30 @@ export class FirebaseUserRepository implements IUserRepository {
       updatedAt: new Date(),
     });
   }
+  
   async create(user: UserEntity): Promise<UserEntity> {
     const hashedPassword = await bcrypt.hash(user.password, 10);
-    const docRef = await this.userCollection.add({
+  
+    const data = {
       name: user.name,
       email: user.email,
       password: hashedPassword,
+      role: user.role,
+      emailVerified: user.emailVerified,
+      otp: user.otp,
       createdBy: user.createdBy,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-    });
-    
+    };
+  
+    const docRef = await this.userCollection.add(data);
+  
     return UserEntity.create({
       id: docRef.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      password: hashedPassword,
-      createdBy: user.createdBy,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      ...data
     });
   }
+  
 
   // entity to dto
   async findByEmail(email: string): Promise<UserEntity | null> {
@@ -61,6 +64,8 @@ export class FirebaseUserRepository implements IUserRepository {
       name: data.name,
       email: data.email,
       role: data.role,
+      emailVerified: data.emailVerified,
+      otp: data.otp,
       password: data.password,
       createdAt: data.createdAt?.toDate(),
       updatedAt: data.updatedAt?.toDate(),
@@ -73,6 +78,8 @@ export class FirebaseUserRepository implements IUserRepository {
       id: doc.id,
       name: doc.data().name,
       email: doc.data().email,
+      emailVerified: doc.data().emailVerified,
+      otp: doc.data().otp,
       role: doc.data().role,
       password: doc.data().password,
       createdAt: doc.data().createdAt?.toDate(),
@@ -86,7 +93,8 @@ export class FirebaseUserRepository implements IUserRepository {
       id: doc.id,
       name: doc.data().name,
       email: doc.data().email,
-  
+      emailVerified: doc.data().emailVerified,
+      otp: doc.data().otp,
       role: doc.data().role,
       password: doc.data().password,
       createdBy: doc.data().createdBy,
@@ -125,6 +133,8 @@ export class FirebaseUserRepository implements IUserRepository {
       name: data?.name,
       email: data?.email,
       role: data?.role,
+      emailVerified: data?.emailVerified,
+      otp: data?.otp,
       password: data?.password,
       createdAt: data?.createdAt?.toDate(),
       updatedAt: data?.updatedAt?.toDate(),
@@ -138,6 +148,8 @@ export class FirebaseUserRepository implements IUserRepository {
       name: doc.data().name,
       email: doc.data().email,
       role: doc.data().role,
+      emailVerified: doc.data().emailVerified,
+      otp: doc.data().otp,
       password: doc.data().password,
       createdAt: doc.data().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate(),
@@ -148,11 +160,58 @@ export class FirebaseUserRepository implements IUserRepository {
     await this.userCollection.doc(user.id).update({
       name: user.name,
       email: user.email,
+      otp: user.otp,
       password: user.password,
       updatedAt: new Date(),
     });
     
     return user;
+  }
+
+  async updateVerifyOtp(userId: string, emailVerified: boolean, otp: string): Promise<UserEntity> {
+    await this.userCollection.doc(userId).update({
+      emailVerified,
+      otp,
+      updatedAt: new Date(),
+    });
+
+    const doc = await this.userCollection.doc(userId).get();
+    const data = doc.data();
+
+    return UserEntity.create({
+      id: doc.id,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      emailVerified: data.emailVerified,
+      otp: '',
+      password: data.password,
+      createdAt: data.createdAt?.toDate(),
+      updatedAt: data.updatedAt?.toDate(),
+    });
+  }
+
+  async updateOtp(userId: string, otp: string, expiresAt: Date): Promise<UserEntity> {
+    await this.userCollection.doc(userId).update({
+      otp,
+      expiresAt,
+      updatedAt: new Date(),
+    });
+
+    const doc = await this.userCollection.doc(userId).get();
+    const data = doc.data();
+
+    return UserEntity.create({
+      id: doc.id,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      emailVerified: data.emailVerified,
+      otp: data.otp,
+      password: data.password,
+      createdAt: data.createdAt?.toDate(),
+      updatedAt: data.updatedAt?.toDate(),
+    });
   }
 
   async delete(id: string): Promise<void> {
