@@ -25,12 +25,11 @@ export class FirebaseUserRepository implements IUserRepository {
   }
   
   async create(user: UserEntity): Promise<UserEntity> {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
   
     const data = {
       name: user.name,
       email: user.email,
-      password: hashedPassword,
+      password: user.password,
       role: user.role,
       emailVerified: user.emailVerified,
       otp: user.otp,
