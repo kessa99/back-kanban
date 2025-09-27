@@ -1,13 +1,13 @@
 import { Controller, Post, Body, UseGuards, Request, Res, Get, ValidationPipe, UsePipes, Patch, Param } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from '../../../interface/service/auth.service';
-import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
+// import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
 import { formatResponse } from '../../../utils/formatResponse/formatRespons';
-import { Role } from '../../../utils/constance/constance.role';
+// import { Role } from '../../../utils/constance/constance.role';
 import { RegisterUserDto } from '../../../utils/dto/users/register.dto';
 import { UserService } from '../../service/user.service';
 import { LoginDto } from '../../../utils/dto/users/login.dta';
-import { UpdateFcmDto } from '../../../utils/dto/users/UpdateFcmDto';
+// import { UpdateFcmDto } from '../../../utils/dto/users/UpdateFcmDto';
 
 @Controller('auth')
 export class AuthController {

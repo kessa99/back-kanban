@@ -14,12 +14,12 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UserEntity } from '../../domain/entities/userTeam/userTeam.user.entity';
 import { FirebaseUserRepository } from '../../infrastructure/repositories/firebase-user.repository';
-import { Role } from '../../utils/constance/constance.role';
+// import { Role } from '../../utils/constance/constance.role';
 import { sendOTPEmail } from '../../utils/mailer/otpMailer';
 import { LoginDto } from '../../utils/dto/users/login.dta';
 import axios from 'axios';
 import * as firebaseAdmin from 'firebase-admin';
-import { UpdateFcmDto } from '../../utils/dto/users/UpdateFcmDto';
+// import { UpdateFcmDto } from '../../utils/dto/users/UpdateFcmDto';
 
 @Injectable()
 export class AuthService {

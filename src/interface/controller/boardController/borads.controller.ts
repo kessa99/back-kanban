@@ -1,21 +1,21 @@
 import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request, Res, ValidationPipe, UsePipes } from '@nestjs/common';
 import { BoardsService } from '../../../interface/service/board.service';
-import { AuthGuard } from '@nestjs/passport';
+// import { AuthGuard } from '@nestjs/passport';
 import { CreateBoardDto } from '../../../utils/dto/boad/create-board.dto';
 import { UpdateBoardDto } from '../../../utils/dto/boad/update-board.dto';
-import type { KanbanBoardEntity } from '../../../domain/entities/kanban/kaban.board.entity';
-import { KanbanTaskEntity } from '../../../domain/entities/kanban/kanban.task.entity';
-import type { KanbanCommentEntity } from '../../../domain/entities/collaboration/collaboration.comment.entity';
-import type { CollaborationAttachementEntity } from '../../../domain/entities/collaboration/collaboration.attachement.entity';
-import type { CollaborationTaskViewEntity } from '../../../domain/entities/collaboration/collaboration.taskView.entity';
+// import type { KanbanBoardEntity } from '../../../domain/entities/kanban/kaban.board.entity';
+// import { KanbanTaskEntity } from '../../../domain/entities/kanban/kanban.task.entity';
+// import type { KanbanCommentEntity } from '../../../domain/entities/collaboration/collaboration.comment.entity';
+// import type { CollaborationAttachementEntity } from '../../../domain/entities/collaboration/collaboration.attachement.entity';
+// import type { CollaborationTaskViewEntity } from '../../../domain/entities/collaboration/collaboration.taskView.entity';
 import { formatResponse } from '../../../utils/formatResponse/formatRespons';
 import type { Response } from 'express';
 import type { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
 import { FirebaseTaskRepository } from '../../../infrastructure/repositories/firebase-task.repository';
 import { FirebaseUserRepository } from '../../../infrastructure/repositories/firebase-user.repository';
 import { UserService } from '../../../interface/service/user.service';
-import { Status } from '../../../utils/constance/constance.status';
-import { Priority } from '../../../utils/constance/constance.priority';
+// import { Status } from '../../../utils/constance/constance.status';
+// import { Priority } from '../../../utils/constance/constance.priority';
 import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
 
 
@@ -30,7 +30,6 @@ export class BoardController {
     private readonly userService: UserService,
   ) {}
 
-  // 1. Routes spécifiques (sans paramètres)
   @Get('user')
   async findAllBoardUser(@Request() req, @Res() res: Response) {
     try {

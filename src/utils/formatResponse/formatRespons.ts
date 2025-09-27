@@ -9,7 +9,7 @@
 */
 
 import { Response } from "express";
-import { STATUS_CODES } from "http";
+// import { STATUS_CODES } from "http";
 
 export const formatResponse = (res: Response, statusCode: number, status: string, message: string, content: any) => {
   return res.status(statusCode).json({

@@ -11,13 +11,13 @@ import { UserService } from "../../interface/service/user.service";
 // import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity";
 import { formatResponse } from "../../utils/formatResponse/formatRespons";
 import { JwtService } from "@nestjs/jwt";
-import { Role } from "../../utils/constance/constance.role";
+// import { Role } from "../../utils/constance/constance.role";
 // import { AuthGuard } from '@nestjs/passport';
 // import { RegisterUserDto } from "../../utils/dto/users/register.dto";
 import { FirebaseAuthGuard } from "../../config/jwt/firebase-auth.guard";
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
-import * as firebaseAdmin from 'firebase-admin';
-import { firestore } from "../../config/firebase/firebase.config";
+// import * as firebaseAdmin from 'firebase-admin';
+// import { firestore } from "../../config/firebase/firebase.config";
 import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
 
 

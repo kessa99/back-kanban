@@ -3,7 +3,7 @@ import type { Response } from 'express';
 import { TeamService } from '../../../interface/service/team.service';
 import { CreateTeamDto } from '../../../utils/dto/team/create-team.dto';
 import { UpdateTeamDto } from '../../../utils/dto/team/update-team.dto';
-import { AuthGuard } from '@nestjs/passport';
+// import { AuthGuard } from '@nestjs/passport';
 import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
 import { formatResponse } from '../../../utils/formatResponse/formatRespons';
 import { JwtService } from '@nestjs/jwt';

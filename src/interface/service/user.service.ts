@@ -8,7 +8,7 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { FirebaseUserRepository } from "../../infrastructure/repositories/firebase-user.repository";
 import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity";
-import { Role } from "../../utils/constance/constance.role";
+// import { Role } from "../../utils/constance/constance.role";
 import { FirebaseTeamRepository } from "../../infrastructure/repositories/firebase-team.repository";
 import { JwtService } from '@nestjs/jwt';
 import { sendOTPEmail } from "../../utils/mailer/invitMail";

@@ -1,4 +1,3 @@
-// src/config/provider/fireStoreProvider.ts
 import * as admin from 'firebase-admin';
 
 export const FireStoreProvider = {

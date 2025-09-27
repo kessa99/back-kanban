@@ -6,8 +6,8 @@ import { KanbanColumnEntity } from '../../domain/entities/kanban/kaban.column.en
 import { FirebaseColumnRepository } from '../../infrastructure/repositories/firebase-column.repository'; // À créer
 import { FirebaseTaskRepository } from '../../infrastructure/repositories/firebase-task.repository'; // À créer
 import { FirebaseCommentRepository, FirebaseFileRepository } from '../../infrastructure/repositories/firebase-commentAndFile.repo';
-import { ICommentRepository } from '../../domain/repositories/comment.repository';
-import { IFileRepository } from '../../domain/repositories/file.repository';
+// import { ICommentRepository } from '../../domain/repositories/comment.repository';
+// import { IFileRepository } from '../../domain/repositories/file.repository';
 import { KanbanTaskEntity } from '../../domain/entities/kanban/kanban.task.entity';
 import { KanbanCommentEntity } from '../../domain/entities/collaboration/collaboration.comment.entity';
 import { CollaborationAttachementEntity } from '../../domain/entities/collaboration/collaboration.attachement.entity';
