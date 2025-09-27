@@ -5,14 +5,14 @@
     It is used to handle the user data.
 */
 
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpException, HttpStatus, UseGuards, Request, ValidationPipe, UsePipes } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpException, HttpStatus, UseGuards, Request, ValidationPipe, UsePipes, Query } from "@nestjs/common";
 import type { Response } from "express";
 import { UserService } from "../../interface/service/user.service";
 // import { UserEntity } from "../../domain/entities/userTeam/userTeam.user.entity";
 import { formatResponse } from "../../utils/formatResponse/formatRespons";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "../../utils/constance/constance.role";
-// import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from '@nestjs/passport';
 // import { RegisterUserDto } from "../../utils/dto/users/register.dto";
 import { FirebaseAuthGuard } from "../../config/jwt/firebase-auth.guard";
 import { RegisterUserDto } from "../../utils/dto/users/register.dto";
@@ -23,8 +23,8 @@ import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
 
 
 @Controller("users")
-// @UseGuards(AuthGuard('jwt'))
-@UseGuards(FirebaseAuthGuard)
+@UseGuards(AuthGuard('jwt'))
+// @UseGuards(FirebaseAuthGuard)
 @UsePipes(new ValidationPipe({ transform: true }))
 export class UserController {
   constructor(
@@ -181,30 +181,26 @@ export class UserController {
   }
 
 
-  // @Post('invite')
-  // async inviteUser(@Body() inviteData: { email: string, teamId: string }, @Request() req: any, @Res() res: Response) {
-  //   try {
-  //     const createdBy = req.user?.id;
+  @Post('invite')
+  async inviteUser(
+    @Body() inviteData: { email: string },
+    @Request() req: any, 
+    @Res() res: Response
+  ) {
+    try {
+      const createdBy = req.user?.id;
       
-  //     if (!createdBy) {
-  //       return formatResponse(res, 401, "failed", "User not authenticated", null);
-  //     }
+      if (!createdBy) {
+        return formatResponse(res, 401, "failed", "User not authenticated", null);
+      }
       
-  //     const result = await this.userService.inviteUser(inviteData.teamId, { email: inviteData.email }, createdBy, Role.MEMBER);
-  //     return formatResponse(res, 200, "success", "Invitation sent successfully", result);
-  //   } catch (error) {
-  //     console.error('Invite user error:', error);
-  //     return formatResponse(res, 400, "failed", "Failed to send invitation", error);
-  //   }
-  // }
+      const result = await this.userService.inviteUser(inviteData.email, createdBy, Role.MEMBER);
+      return formatResponse(res, 200, "success", "Invitation sent successfully", result);
+    } catch (error) {
+      console.error('Invite user error:', error);
+      return formatResponse(res, 400, "failed", "Failed to send invitation", error);
+    }
+  }
 
-  // @Post('verify-invite')
-  // async verifyInvite(@Body('token') token: string, @Body() userData: { name: string; password: string }, @Res() res: Response) {
-  //   try {
-  //     const user = await this.userService.verifyInvite(token, userData);
-  //     return formatResponse(res, 200, "success", "Invitation approved", user);
-  //   } catch (error) {
-  //     return formatResponse(res, 400, "failed", "Invalid token or expired", {});
-  //   }
-  // }
+
 }

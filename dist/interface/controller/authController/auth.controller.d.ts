@@ -18,5 +18,9 @@ export declare class AuthController {
         email: string;
         password: string;
     }, res: Response): Promise<Response<any, Record<string, any>>>;
+    verifyInvite(token: string, userData: {
+        name: string;
+        password: string;
+    }, res: Response): Promise<Response<any, Record<string, any>>>;
     logout(res: Response): Promise<Response<any, Record<string, any>>>;
 }

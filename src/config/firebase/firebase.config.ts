@@ -4,7 +4,6 @@
 import * as admin from 'firebase-admin';
 import { ServiceAccount } from 'firebase-admin';
 
-// Firebase configuration from environment variables
 const serviceAccount: ServiceAccount = {
   projectId: process.env.FIREBASE_PROJECT_ID,
   privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),

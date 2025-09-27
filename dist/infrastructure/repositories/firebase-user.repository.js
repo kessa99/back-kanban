@@ -142,6 +142,25 @@ let FirebaseUserRepository = class FirebaseUserRepository {
         });
         return user;
     }
+    async updateVerifyInviteUser(email, name, password) {
+        await this.userCollection.doc(email).update({
+            email,
+            password,
+        });
+        const doc = await this.userCollection.doc(email).get();
+        const data = doc.data();
+        return userTeam_user_entity_1.UserEntity.create({
+            id: doc.id,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+            emailVerified: data.emailVerified,
+            otp: '',
+            password: data.password,
+            createdAt: data.createdAt?.toDate(),
+            updatedAt: data.updatedAt?.toDate(),
+        });
+    }
     async updateVerifyOtp(userId, emailVerified, otp) {
         await this.userCollection.doc(userId).update({
             emailVerified,
@@ -158,6 +177,28 @@ let FirebaseUserRepository = class FirebaseUserRepository {
             emailVerified: data.emailVerified,
             otp: '',
             password: data.password,
+            createdAt: data.createdAt?.toDate(),
+            updatedAt: data.updatedAt?.toDate(),
+        });
+    }
+    async updateById(userId, updateData) {
+        const docRef = this.userCollection.doc(userId);
+        await docRef.update({
+            ...updateData,
+            updatedAt: new Date(),
+        });
+        const doc = await docRef.get();
+        const data = doc.data();
+        return userTeam_user_entity_1.UserEntity.create({
+            id: doc.id,
+            name: data.name,
+            email: data.email,
+            statusInvite: data.statusInvite,
+            role: data.role,
+            emailVerified: data.emailVerified,
+            otp: data.otp,
+            password: data.password,
+            createdBy: data.createdBy,
             createdAt: data.createdAt?.toDate(),
             updatedAt: data.updatedAt?.toDate(),
         });

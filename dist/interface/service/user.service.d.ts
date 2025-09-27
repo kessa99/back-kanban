@@ -29,9 +29,7 @@ export declare class UserService {
         role?: string;
     }): Promise<UserEntity>;
     deleteUser(id: string): Promise<void>;
-    inviteUser(teamId: string, inviteData: {
-        email: string;
-    }, ownerId: string, role: string): Promise<{
+    inviteUser(email: any, createdBy: string, role: string): Promise<{
         message: string;
     }>;
     updateFcmToken(userId: string, updateFcmDto: UpdateFcmDto): Promise<{

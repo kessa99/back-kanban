@@ -16,6 +16,9 @@ import { RegisterUserDto } from "../../utils/dto/users/register.dto";
 import * as firebaseAdmin from 'firebase-admin';
 import { firestore } from "../../config/firebase/firebase.config";
 import { UpdateFcmDto } from "../../utils/dto/users/UpdateFcmDto";
+import * as bcrypt from 'bcryptjs';
+import { Status } from "../../utils/constance/constance.status";
+
 
 @Injectable()
 export class UserService {
@@ -100,25 +103,26 @@ export class UserService {
 
   async verifyInvite(token: string, userData: { name: string; password: string }): Promise<UserEntity> {
     const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
-    const { email, teamId, role, ownerId } = payload;
+    console.log('payload', payload);
+    const { email, role, createdBy } = payload;
     const existingUser = await this.userRepository.findByEmail(email);
-    if (existingUser) throw new HttpException('Email already registered', HttpStatus.BAD_REQUEST);
+    console.log('-------------------------------------------------------------------');
+    console.log('existingUser', existingUser);
+    // if (existingUser) throw new HttpException('Email already registered', HttpStatus.BAD_REQUEST);
 
-    const newUser = await this.userRepository.create(
-      UserEntity.create({
-        id: '',
-        name: userData.name,
-        email,
-        password: userData.password,
-        emailVerified: false,
-        otp: '',
-        role: Role.MEMBER,
-        createdBy: ownerId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-    );
-    return newUser;
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    console.log('-------------------------------------------------------------------');
+    const updatedUser = await this.userRepository.updateById(existingUser.id, {
+      name: userData.name,
+      password: hashedPassword,
+      statusInvite: Status.COMPLETED,
+      emailVerified: true,
+    });
+    console.log('-------------------------------------------------------------------');
+    console.log('updatedUser', updatedUser);
+    console.log('-------------------------------------------------------------------');
+    
+    return updatedUser;
   }
 
 
@@ -171,24 +175,40 @@ export class UserService {
     await this.userRepository.delete(id);
   }
 
-  async inviteUser(teamId: string, inviteData: { email: string }, ownerId: string, role: string): Promise<{ message: string }> {
-    const owner = await this.userRepository.findById(ownerId);
-    if (!owner) throw new NotFoundException(`Owner with ID ${ownerId} not found`);
-    // if (owner.role !== Role.OWNER) throw new UnauthorizedException('Only owners can invite users');
+  async inviteUser(email, createdBy: string, role: string): Promise<{ message: string }> {
+    const owner = await this.userRepository.findById(createdBy);
+    if (!owner) throw new NotFoundException(`Owner with ID ${createdBy} not found`);
+    if (owner.role !== Role.OWNER) throw new UnauthorizedException('Only owners can invite users');
 
-    // Vérifie si l'équipe existe
-    const team = await this.teamRepository.findById(teamId);
-    if (!team) throw new NotFoundException(`Team with ID ${teamId} not found`);
+    // enregistrer dans la bdd
+    const newUser = await this.userRepository.create(
+      UserEntity.create({
+        id: '',
+        name: '',
+        email,
+        password: '',
+        emailVerified: false,
+        otp: '',
+        statusInvite: Status.PENDING,
+        role: Role.MEMBER,
+        createdBy: createdBy,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+    );
+
+    console.log('-------------------------------------------------------------------');
+    console.log('new user invited', newUser);
 
     // Génère un token d'invitation
-    const payload = { email: inviteData.email, teamId, role, ownerId };
+    const payload = { email, role, createdBy};
     const inviteToken = this.jwtService.sign(payload, { expiresIn: '24h' });
 
     // Crée un lien d'invitation
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-invite?token=${inviteToken}`;
+    const verificationLink = `${process.env.FRONTEND_URL}/auth/verify-invite?token=${inviteToken}`;
 
     // Envoie l'email avec le lien
-    await sendOTPEmail(inviteData.email, verificationLink);
+    await sendOTPEmail(email, verificationLink);
 
     return { message: 'User invited successfully' };
   }

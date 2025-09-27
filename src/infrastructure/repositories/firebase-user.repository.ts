@@ -30,6 +30,7 @@ export class FirebaseUserRepository implements IUserRepository {
       name: user.name,
       email: user.email,
       password: user.password,
+      statusInvite: user.statusInvite,
       role: user.role,
       emailVerified: user.emailVerified,
       otp: user.otp,
@@ -167,6 +168,29 @@ export class FirebaseUserRepository implements IUserRepository {
     return user;
   }
 
+  async updateVerifyInviteUser(email: string, name: string, password): Promise<UserEntity> {
+    await this.userCollection.doc(email).update({
+      email,
+      password,
+
+    });
+
+    const doc = await this.userCollection.doc(email).get();
+    const data = doc.data();
+
+    return UserEntity.create({
+      id: doc.id,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      emailVerified: data.emailVerified,
+      otp: '',
+      password: data.password,
+      createdAt: data.createdAt?.toDate(),
+      updatedAt: data.updatedAt?.toDate(),
+    });
+  }
+
   async updateVerifyOtp(userId: string, emailVerified: boolean, otp: string): Promise<UserEntity> {
     await this.userCollection.doc(userId).update({
       emailVerified,
@@ -189,6 +213,37 @@ export class FirebaseUserRepository implements IUserRepository {
       updatedAt: data.updatedAt?.toDate(),
     });
   }
+
+  // user.repository.ts
+  async updateById(userId: string, updateData: Partial<UserEntity>): Promise<UserEntity> {
+    const docRef = this.userCollection.doc(userId);
+
+    // Mettre à jour uniquement les champs fournis
+    await docRef.update({
+      ...updateData,
+      updatedAt: new Date(), // toujours mettre à jour updatedAt
+    });
+
+    // Récupérer le document mis à jour
+    const doc = await docRef.get();
+    const data = doc.data();
+
+    // Retourner une instance UserEntity
+    return UserEntity.create({
+      id: doc.id,
+      name: data.name,
+      email: data.email,
+      statusInvite: data.statusInvite,
+      role: data.role,
+      emailVerified: data.emailVerified,
+      otp: data.otp,
+      password: data.password,
+      createdBy: data.createdBy,
+      createdAt: data.createdAt?.toDate(),
+      updatedAt: data.updatedAt?.toDate(),
+    });
+  }
+
 
   async updateOtp(userId: string, otp: string, expiresAt: Date): Promise<UserEntity> {
     await this.userCollection.doc(userId).update({

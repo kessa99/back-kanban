@@ -18,4 +18,7 @@ export declare class UserController {
     }, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     removeUser(id: string, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     getTasks(req: any, res: Response): Promise<Response<any, Record<string, any>>>;
+    inviteUser(inviteData: {
+        email: string;
+    }, req: any, res: Response): Promise<Response<any, Record<string, any>>>;
 }

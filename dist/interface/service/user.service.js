@@ -52,6 +52,8 @@ const jwt_1 = require("@nestjs/jwt");
 const invitMail_1 = require("../../utils/mailer/invitMail");
 const firebaseAdmin = __importStar(require("firebase-admin"));
 const firebase_config_1 = require("../../config/firebase/firebase.config");
+const bcrypt = __importStar(require("bcryptjs"));
+const constance_status_1 = require("../../utils/constance/constance.status");
 let UserService = class UserService {
     constructor(userRepository, teamRepository, jwtService) {
         this.userRepository = userRepository;
@@ -118,23 +120,23 @@ let UserService = class UserService {
     }
     async verifyInvite(token, userData) {
         const payload = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
-        const { email, teamId, role, ownerId } = payload;
+        console.log('payload', payload);
+        const { email, role, createdBy } = payload;
         const existingUser = await this.userRepository.findByEmail(email);
-        if (existingUser)
-            throw new common_1.HttpException('Email already registered', common_1.HttpStatus.BAD_REQUEST);
-        const newUser = await this.userRepository.create(userTeam_user_entity_1.UserEntity.create({
-            id: '',
+        console.log('-------------------------------------------------------------------');
+        console.log('existingUser', existingUser);
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
+        console.log('-------------------------------------------------------------------');
+        const updatedUser = await this.userRepository.updateById(existingUser.id, {
             name: userData.name,
-            email,
-            password: userData.password,
-            emailVerified: false,
-            otp: '',
-            role: constance_role_1.Role.MEMBER,
-            createdBy: ownerId,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        }));
-        return newUser;
+            password: hashedPassword,
+            statusInvite: constance_status_1.Status.COMPLETED,
+            emailVerified: true,
+        });
+        console.log('-------------------------------------------------------------------');
+        console.log('updatedUser', updatedUser);
+        console.log('-------------------------------------------------------------------');
+        return updatedUser;
     }
     async addUserToTeam(userId, teamId) {
         const user = await this.userRepository.findById(userId);
@@ -177,17 +179,31 @@ let UserService = class UserService {
         await firebaseAdmin.auth().deleteUser(id);
         await this.userRepository.delete(id);
     }
-    async inviteUser(teamId, inviteData, ownerId, role) {
-        const owner = await this.userRepository.findById(ownerId);
+    async inviteUser(email, createdBy, role) {
+        const owner = await this.userRepository.findById(createdBy);
         if (!owner)
-            throw new common_1.NotFoundException(`Owner with ID ${ownerId} not found`);
-        const team = await this.teamRepository.findById(teamId);
-        if (!team)
-            throw new common_1.NotFoundException(`Team with ID ${teamId} not found`);
-        const payload = { email: inviteData.email, teamId, role, ownerId };
+            throw new common_1.NotFoundException(`Owner with ID ${createdBy} not found`);
+        if (owner.role !== constance_role_1.Role.OWNER)
+            throw new common_1.UnauthorizedException('Only owners can invite users');
+        const newUser = await this.userRepository.create(userTeam_user_entity_1.UserEntity.create({
+            id: '',
+            name: '',
+            email,
+            password: '',
+            emailVerified: false,
+            otp: '',
+            statusInvite: constance_status_1.Status.PENDING,
+            role: constance_role_1.Role.MEMBER,
+            createdBy: createdBy,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }));
+        console.log('-------------------------------------------------------------------');
+        console.log('new user invited', newUser);
+        const payload = { email, role, createdBy };
         const inviteToken = this.jwtService.sign(payload, { expiresIn: '24h' });
-        const verificationLink = `${process.env.FRONTEND_URL}/verify-invite?token=${inviteToken}`;
-        await (0, invitMail_1.sendOTPEmail)(inviteData.email, verificationLink);
+        const verificationLink = `${process.env.FRONTEND_URL}/auth/verify-invite?token=${inviteToken}`;
+        await (0, invitMail_1.sendOTPEmail)(email, verificationLink);
         return { message: 'User invited successfully' };
     }
     async updateFcmToken(userId, updateFcmDto) {

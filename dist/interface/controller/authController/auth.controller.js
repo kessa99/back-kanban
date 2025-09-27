@@ -71,6 +71,15 @@ let AuthController = class AuthController {
             return (0, formatRespons_1.formatResponse)(res, 400, 'failed', 'User login failed', error);
         }
     }
+    async verifyInvite(token, userData, res) {
+        try {
+            const user = await this.userService.verifyInvite(token, userData);
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Invitation approved", user);
+        }
+        catch (error) {
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Invalid token or expired", {});
+        }
+    }
     async logout(res) {
         try {
             return (0, formatRespons_1.formatResponse)(res, 200, 'success', 'User logged out successfully', null);
@@ -113,6 +122,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('verify-invite'),
+    __param(0, (0, common_1.Query)('token')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifyInvite", null);
 __decorate([
     (0, common_1.Post)('logout'),
     __param(0, (0, common_1.Res)()),

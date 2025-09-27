@@ -1,5 +1,3 @@
-// src/config/jwt/jwt.config.firebase.ts
-
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { PassportStrategy } from '@nestjs/passport';

@@ -18,7 +18,9 @@ export declare class FirebaseUserRepository implements IUserRepository {
     findById(id: string): Promise<UserEntity | null>;
     findAll(): Promise<UserEntity[]>;
     update(user: UserEntity): Promise<UserEntity>;
+    updateVerifyInviteUser(email: string, name: string, password: any): Promise<UserEntity>;
     updateVerifyOtp(userId: string, emailVerified: boolean, otp: string): Promise<UserEntity>;
+    updateById(userId: string, updateData: Partial<UserEntity>): Promise<UserEntity>;
     updateOtp(userId: string, otp: string, expiresAt: Date): Promise<UserEntity>;
     delete(id: string): Promise<void>;
 }

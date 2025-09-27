@@ -1,4 +1,5 @@
 import { Role } from "../../../utils/constance/constance.role";
+import { Status } from "../../../utils/constance/constance.status";
 
 export class UserEntity {
   id: string;
@@ -6,6 +7,7 @@ export class UserEntity {
   email: string;
   role: Role;
   password: string
+  statusInvite?: Status;
   emailVerified: boolean
   otp: string
   createdBy?: string;
@@ -18,6 +20,7 @@ export class UserEntity {
     name: string;
     email: string;
     role: Role;
+    statusInvite?: Status;
     emailVerified: boolean
     otp: string
     password: string;
@@ -30,6 +33,7 @@ export class UserEntity {
     this.name = props.name;
     this.email = props.email;
     this.role = props.role;
+    this.statusInvite = props.statusInvite;
     this.emailVerified = props.emailVerified
     this.otp = props.otp
     this.password = props.password;
@@ -45,6 +49,7 @@ export class UserEntity {
     email: string;
     password: string;
     role: Role;
+    statusInvite?: Status;
     emailVerified: boolean
     otp: string
     createdBy?: string;

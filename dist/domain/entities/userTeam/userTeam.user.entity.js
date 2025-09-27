@@ -7,6 +7,7 @@ class UserEntity {
         this.name = props.name;
         this.email = props.email;
         this.role = props.role;
+        this.statusInvite = props.statusInvite;
         this.emailVerified = props.emailVerified;
         this.otp = props.otp;
         this.password = props.password;

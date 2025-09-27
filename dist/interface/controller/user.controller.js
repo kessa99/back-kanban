@@ -17,7 +17,8 @@ const common_1 = require("@nestjs/common");
 const user_service_1 = require("../../interface/service/user.service");
 const formatRespons_1 = require("../../utils/formatResponse/formatRespons");
 const jwt_1 = require("@nestjs/jwt");
-const firebase_auth_guard_1 = require("../../config/jwt/firebase-auth.guard");
+const constance_role_1 = require("../../utils/constance/constance.role");
+const passport_1 = require("@nestjs/passport");
 const register_dto_1 = require("../../utils/dto/users/register.dto");
 const UpdateFcmDto_1 = require("../../utils/dto/users/UpdateFcmDto");
 let UserController = class UserController {
@@ -143,6 +144,20 @@ let UserController = class UserController {
             return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to retrieve tasks", error);
         }
     }
+    async inviteUser(inviteData, req, res) {
+        try {
+            const createdBy = req.user?.id;
+            if (!createdBy) {
+                return (0, formatRespons_1.formatResponse)(res, 401, "failed", "User not authenticated", null);
+            }
+            const result = await this.userService.inviteUser(inviteData.email, createdBy, constance_role_1.Role.MEMBER);
+            return (0, formatRespons_1.formatResponse)(res, 200, "success", "Invitation sent successfully", result);
+        }
+        catch (error) {
+            console.error('Invite user error:', error);
+            return (0, formatRespons_1.formatResponse)(res, 400, "failed", "Failed to send invitation", error);
+        }
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -207,9 +222,18 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getTasks", null);
+__decorate([
+    (0, common_1.Post)('invite'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "inviteUser", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)("users"),
-    (0, common_1.UseGuards)(firebase_auth_guard_1.FirebaseAuthGuard),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true })),
     __metadata("design:paramtypes", [user_service_1.UserService,
         jwt_1.JwtService])

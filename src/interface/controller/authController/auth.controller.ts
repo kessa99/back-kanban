@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Res, Get, ValidationPipe, UsePipes, Patch, Param } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Res, Get, ValidationPipe, UsePipes, Patch, Param, Query } from '@nestjs/common';
 import type { Response } from 'express';
 import { AuthService } from '../../../interface/service/auth.service';
 import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.entity';
@@ -102,6 +102,20 @@ export class AuthController {
         } catch (error) {
             return formatResponse(res, 400, 'failed', 'User login failed', error);
         }
+    }
+
+    @Post('verify-invite')
+    async verifyInvite(
+      @Query('token') token: string, 
+      @Body() userData: { name: string; password: string }, 
+      @Res() res: Response
+    ) {
+      try {
+        const user = await this.userService.verifyInvite(token, userData);
+        return formatResponse(res, 200, "success", "Invitation approved", user);
+      } catch (error) {
+        return formatResponse(res, 400, "failed", "Invalid token or expired", {});
+      }
     }
 
     @Post('logout')
