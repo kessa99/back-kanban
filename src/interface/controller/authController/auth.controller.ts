@@ -98,6 +98,7 @@ export class AuthController {
         try {
             console.log('Login user:', user);
             const token = await this.authService.login(user.email, user.password);
+            console.log('token', token);
             return formatResponse(res, 200, 'success', 'User logged in successfully', token);
         } catch (error) {
             return formatResponse(res, 400, 'failed', 'User login failed', error);

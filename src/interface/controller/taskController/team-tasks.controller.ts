@@ -1,11 +1,12 @@
 import { Controller, Get, Request, Res, HttpStatus, UseGuards, Param } from '@nestjs/common';
 import type { Response } from 'express';
-import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
+// import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
 import { formatResponse } from '../../../utils/formatResponse/formatRespons';
 import { TeamTasksService } from '../../service/team-tasks.service';
+import { JwtAuthGuard } from '../../../config/jwt/jwtAuth.guard';
 
 @Controller('teams')
-@UseGuards(FirebaseAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class TeamTasksController {
   constructor(private readonly teamTasksService: TeamTasksService) {}
 

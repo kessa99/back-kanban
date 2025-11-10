@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 import { Role } from '../../constance/constance.role';
+import { Status } from '../../constance/constance.status';
 
 export class RegisterUserDto {
   @ApiProperty({ description: "The user's first name" })
@@ -31,6 +32,10 @@ export class RegisterUserDto {
   @IsOptional()
   @IsString()
   otp?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  statusInvite?: Status;
 
   @ApiProperty({ description: "Created by user id", required: false })
   @IsOptional()

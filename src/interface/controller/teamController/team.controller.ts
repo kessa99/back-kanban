@@ -8,9 +8,10 @@ import { UserEntity } from '../../../domain/entities/userTeam/userTeam.user.enti
 import { formatResponse } from '../../../utils/formatResponse/formatRespons';
 import { JwtService } from '@nestjs/jwt';
 import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
+import { JwtAuthGuard} from '../../../config/jwt/jwtAuth.guard';
 
 @Controller('teams')
-@UseGuards(FirebaseAuthGuard)
+@UseGuards(JwtAuthGuard)
 @UsePipes(new ValidationPipe({ transform: true }))
 export class TeamController {
     constructor(

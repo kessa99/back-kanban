@@ -8,7 +8,7 @@ async function bootstrap() {
   
   // Enable CORS
   app.enableCors({
-    origin: ['https://kanban-test-project.vercel.app'],
+    origin: ['https://kanban-test-project.vercel.app', 'http://localhost:8080'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

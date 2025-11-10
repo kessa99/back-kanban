@@ -212,6 +212,7 @@ export class AuthService {
       emailVerified: user.emailVerified,
     };
     console.log('payload', payload);
+    console.log('access_token', this.jwtService.sign(payload, { expiresIn: '1h' }));
         
     return { access_token: this.jwtService.sign(payload, { expiresIn: '1h' }) };
   }
@@ -239,7 +240,8 @@ export class AuthService {
         role: Role.OWNER,
         emailVerified: false,
         otp,
-        createdBy: dto.createdBy || '',
+        statusInvite: dto.statusInvite || null,
+        createdBy: dto.createdBy || null,
         createdAt: new Date(),
         updatedAt: new Date(),
       })

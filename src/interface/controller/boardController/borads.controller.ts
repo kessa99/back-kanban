@@ -16,11 +16,11 @@ import { FirebaseUserRepository } from '../../../infrastructure/repositories/fir
 import { UserService } from '../../../interface/service/user.service';
 import { Status } from '../../../utils/constance/constance.status';
 import { Priority } from '../../../utils/constance/constance.priority';
-import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
-
+// import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
+import { JwtAuthGuard} from '../../../config/jwt/jwtAuth.guard';
 
 @Controller('boards')
-@UseGuards(FirebaseAuthGuard)
+@UseGuards(JwtAuthGuard)
 @UsePipes(new ValidationPipe({ transform: true }))
 export class BoardController {
   constructor(

@@ -15,10 +15,11 @@ import { TasksService } from '../../service/task.service';
 import { CreateTaskDto } from '../../../utils/dto/task.dto';
 import { FirebaseAuthGuard } from '../../../config/jwt/firebase-auth.guard';
 import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-
+//guardjwt
+import { JwtAuthGuard } from '../../../config/jwt/jwtAuth.guard';
 
 @Controller('boards/:boardId/tasks')
-@UseGuards(FirebaseAuthGuard)
+@UseGuards(JwtAuthGuard)
 @UsePipes(new ValidationPipe({ transform: true }))
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
